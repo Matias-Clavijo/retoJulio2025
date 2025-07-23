@@ -20,7 +20,7 @@ export default function CommonTable({
   rowsPerPageOptions = [10, 25, 100],
   searchSignal
 }) {
-  const [page, setPage] = useState(0);
+  const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(defaultRowsPerPage);
 
   const handleChangePage = (event, newPage) => {
