@@ -1,5 +1,19 @@
 
+import React, { useState } from 'react';
+import { Button, Container } from '@mui/material';
+import AgregarMarca from '../components/Agregarmarca';
+
 export default function Home() {
-  return <h1>Inicio</h1>;
+  const [openModal, setOpenModal] = useState(false);
+
+  return (
+    <Container>
+      <h1>Home</h1>
+      <Button variant="contained" onClick={() => setOpenModal(true)}>
+        Agregar Marca
+      </Button>
+      <AgregarMarca open={openModal} onClose={() => setOpenModal(false)} />
+    </Container>
+  );
 }
 
