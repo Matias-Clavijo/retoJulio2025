@@ -5,12 +5,16 @@ import EditarDeposito from '../components/editarDeposito';
 import AgregarProductoDialog from "../components/DialogProductos";
 import AgregarMarca from "../components/Agregarmarca.jsx";
 import GestionStockDialog from "../components/DialogStock.jsx";
+import Eliminar from "../components/Eliminar";
+
 
 export default function Home() {
     const [openEditarDeposito, setOpenEditarDeposito] = useState(false);
     const [openAgregarProducto, setOpenAgregarProducto] = useState(false);
     const [openStockDialog, setOpenStockDialog] = useState(false);
     const [openAgregarMarca, setOpenAgregarMarca] = useState(false);
+    const [openEliminar, setOpenEliminar] = useState(false);
+
 
     return (
         <Container>
@@ -47,6 +51,16 @@ export default function Home() {
                 Agregar Marca
             </Button>
 
+            <Button
+                variant="contained"
+                color="error"
+                onClick={() => setOpenEliminar(true)}
+                sx={{ mt: 2 }}
+            >       
+                Eliminar
+            </Button>
+
+
             <EditarDeposito
                 open={openEditarDeposito}
                 onClose={() => setOpenEditarDeposito(false)}
@@ -66,6 +80,18 @@ export default function Home() {
                 open={openAgregarMarca}
                 onClose={() => setOpenAgregarMarca(false)}
             />
+
+            <Eliminar
+                open={openEliminar}
+                onClose={() => setOpenEliminar(false)}
+                onConfirm={() => {
+                console.log('Producto eliminado');
+                setOpenEliminar(false);
+              }}
+            />
+
         </Container>
     );
+
+    
 }
