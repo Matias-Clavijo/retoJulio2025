@@ -6,6 +6,8 @@ import AgregarProductoDialog from "../components/DialogProductos";
 import AgregarMarca from "../components/Agregarmarca.jsx";
 import GestionStockDialog from "../components/DialogStock.jsx";
 import Eliminar from "../components/Eliminar";
+import AgregarStock from '../components/AgregarStock';
+
 
 
 export default function Home() {
@@ -14,6 +16,8 @@ export default function Home() {
     const [openStockDialog, setOpenStockDialog] = useState(false);
     const [openAgregarMarca, setOpenAgregarMarca] = useState(false);
     const [openEliminar, setOpenEliminar] = useState(false);
+    const [openAgregarStock, setOpenAgregarStock] = useState(false);
+
 
 
     return (
@@ -60,6 +64,15 @@ export default function Home() {
                 Eliminar
             </Button>
 
+            <Button
+                variant="contained"
+                onClick={() => setOpenAgregarStock(true)}
+                sx={{ mt: 2 }}
+            >
+                Agregar Stock
+            </Button>
+
+
 
             <EditarDeposito
                 open={openEditarDeposito}
@@ -89,6 +102,12 @@ export default function Home() {
                 setOpenEliminar(false);
               }}
             />
+
+            <AgregarStockDialog
+                open={openAgregarStock}
+                onClose={() => setOpenAgregarStock(false)}
+            />
+
 
         </Container>
     );
