@@ -6,8 +6,8 @@ import AgregarProductoDialog from '../components/DialogProductos';
 import AgregarMarca from '../components/Agregarmarca';
 import GestionStockDialog from '../components/DialogStock';
 import AgregarProveedorDialog from '../components/DialogProveedor';
+import AgregarCategoriaDialog from '../components/AgregarCategoría.jsx';
 import Eliminar from "../components/Eliminar";
-
 
 export default function Home() {
     const [openEditarDeposito, setOpenEditarDeposito] = useState(false);
@@ -15,8 +15,8 @@ export default function Home() {
     const [openStockDialog, setOpenStockDialog] = useState(false);
     const [openAgregarMarca, setOpenAgregarMarca] = useState(false);
     const [openDialogProveedor, setOpenAgregarProveedor] = useState(false);
+    const [openDialogCategoria, setOpenAgregarCategoria] = useState(false);
     const [openEliminar, setOpenEliminar] = useState(false);
-
 
     return (
         <Container>
@@ -42,6 +42,10 @@ export default function Home() {
                 <Button variant="contained" onClick={() => setOpenAgregarProveedor(true)}>
                     Agregar Proveedor
                 </Button>
+
+                <Button variant="contained" onClick={() => setOpenAgregarCategoria(true)}>
+                    Agregar Categoría
+                </Button>
             </Box>
 
             <Button
@@ -49,10 +53,9 @@ export default function Home() {
                 color="error"
                 onClick={() => setOpenEliminar(true)}
                 sx={{ mt: 2 }}
-            >       
+            >
                 Eliminar
             </Button>
-
 
             <EditarDeposito
                 open={openEditarDeposito}
@@ -79,17 +82,19 @@ export default function Home() {
                 onClose={() => setOpenAgregarProveedor(false)}
             />
 
+            <AgregarCategoriaDialog
+                open={openDialogCategoria}
+                onClose={() => setOpenAgregarCategoria(false)}
+            />
+
             <Eliminar
                 open={openEliminar}
                 onClose={() => setOpenEliminar(false)}
                 onConfirm={() => {
-                console.log('Producto eliminado');
-                setOpenEliminar(false);
-              }}
+                    console.log('Producto eliminado');
+                    setOpenEliminar(false);
+                }}
             />
-
         </Container>
     );
-
-    
 }
