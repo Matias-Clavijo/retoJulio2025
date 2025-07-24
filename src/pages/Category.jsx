@@ -1,10 +1,12 @@
 import React, { useState } from "react";
 import CommonTable from "../components/common/Table";
 import TitleHeader from "../components/common/TitelHeader";
-import VisibilityIcon from '@mui/icons-material/Visibility';
-import EditIcon from '@mui/icons-material/Edit';
-import DeleteIcon from '@mui/icons-material/Delete';
-import IconButton from '@mui/material/IconButton';
+import AgregarCategoriaDialog from "../components/AgregarCategoría.jsx";
+import Button from "@mui/material/Button";
+import VisibilityIcon from "@mui/icons-material/Visibility";
+import EditIcon from "@mui/icons-material/Edit";
+import DeleteIcon from "@mui/icons-material/Delete";
+import IconButton from "@mui/material/IconButton";
 
 export default function Category() {
   const estiloContenedor = {
@@ -128,46 +130,65 @@ export default function Category() {
   };
 
   const columns = [
-  { id: 'codigo', label: 'Código', minWidth: 100, align: 'left' },
-  { id: 'nombre', label: 'Nombre', minWidth: 100, align: 'left' },
-  { id: 'precio', label: 'Precio', minWidth: 100, align: 'left', format: (value) => `$${value.toFixed(2)}` },
-  { id: 'acciones', label: 'Acciones', minWidth: 120, align: 'center' },
-];
+    { id: "codigo", label: "Código", minWidth: 100, align: "left" },
+    { id: "nombre", label: "Nombre", minWidth: 100, align: "left" },
+    {
+      id: "precio",
+      label: "Precio",
+      minWidth: 100,
+      align: "left",
+      format: (value) => `$${value.toFixed(2)}`,
+    },
+    { id: "acciones", label: "Acciones", minWidth: 120, align: "center" },
+  ];
 
-const rows = [
-  { id: 1, codigo: 'A001', nombre: 'Producto 1', precio: 123.45 },
-  { id: 2, codigo: 'A002', nombre: 'Producto 2', precio: 67.89 },
-].map((row) => ({
-  ...row,
-  acciones: (
+  const rows = [
+    { id: 1, codigo: "A001", nombre: "Producto 1", precio: 123.45 },
+    { id: 2, codigo: "A002", nombre: "Producto 2", precio: 67.89 },
+  ].map((row) => ({
+    ...row,
+    acciones: (
+      <>
+        <IconButton size="small" onClick={() => toggleVer(row.id)}>
+          <VisibilityIcon fontSize="small" />
+        </IconButton>
+        <IconButton size="small" onClick={() => iniciarEdicion(row)}>
+          <EditIcon fontSize="small" />
+        </IconButton>
+        <IconButton size="small" onClick={() => eliminarPersona(row.id)}>
+          <DeleteIcon fontSize="small" />
+        </IconButton>
+      </>
+    ),
+  }));
+
+  const [openDialogCategoria, setOpenAgregarCategoria] = useState(false);
+
+  return (
     <>
-      <IconButton size="small" onClick={() => toggleVer(row.id)}>
-        <VisibilityIcon fontSize="small" />
-      </IconButton>
-      <IconButton size="small" onClick={() => iniciarEdicion(row)}>
-        <EditIcon fontSize="small" />
-      </IconButton>
-      <IconButton size="small" onClick={() => eliminarPersona(row.id)}>
-        <DeleteIcon fontSize="small" />
-      </IconButton>
+      <AgregarCategoriaDialog
+        open={openDialogCategoria}
+        onClose={() => setOpenAgregarCategoria(false)}
+      />
+      <TitleHeader
+        title={"Gestión de Categorías"}
+        description={"Administra las categorías de los productos"}
+        button={
+          <Button
+            variant="contained"
+            onClick={() => setOpenAgregarCategoria(true)}
+          >
+            Agregar Categoría
+          </Button>
+        }
+      />
+      <CommonTable
+        title="Lista de catgorias"
+        columns={columns}
+        rows={rows}
+        defaultRowsPerPage={5}
+        rowsPerPageOptions={[5, 10, 25]}
+      />
     </>
-  ),
-}));
-
-
-return (
-  <><TitleHeader
-  title={"Gestión de Categorías"}
-  description={"Administra las categorías de los productos"}
-  />
-  <CommonTable
-    title="Lista de catgorias"
-    columns={columns}
-    rows={rows}
-    defaultRowsPerPage={5}
-    rowsPerPageOptions={[5, 10, 25]}
-  />
-  </>
-);
-
+  );
 }
