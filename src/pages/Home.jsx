@@ -9,6 +9,9 @@ import AgregarProveedorDialog from '../components/DialogProveedor';
 import AgregarCategoriaDialog from '../components/AgregarCategoría.jsx';
 import AgregarVentaDialog from '../components/DialogVenta.jsx';
 import Eliminar from "../components/Eliminar";
+import AgregarStock from '../components/AgregarStock';
+
+
 
 export default function Home() {
     const [openEditarDeposito, setOpenEditarDeposito] = useState(false);
@@ -19,6 +22,8 @@ export default function Home() {
     const [openDialogCategoria, setOpenAgregarCategoria] = useState(false);
     const [openAgregarVenta, setOpenAgregarVenta] = useState(false);
     const [openEliminar, setOpenEliminar] = useState(false);
+    const [openAgregarStock, setOpenAgregarStock] = useState(false);
+
 
     return (
         <Container>
@@ -52,16 +57,25 @@ export default function Home() {
                 <Button variant="contained" onClick={() => setOpenAgregarVenta(true)}>
                     Agregar Venta
                 </Button>
+
+                <Button
+                    variant="contained"
+                    color="error"
+                    onClick={() => setOpenEliminar(true)}
+                    sx={{ mt: 2 }}
+                >
+                    Eliminar
+                </Button>
+
+                <Button
+                    variant="contained"
+                    onClick={() => setOpenAgregarStock(true)}
+                    sx={{ mt: 2 }}
+                >
+                    Agregar Stock
+                </Button>
             </Box>
 
-            <Button
-                variant="contained"
-                color="error"
-                onClick={() => setOpenEliminar(true)}
-                sx={{ mt: 2 }}
-            >
-                Eliminar
-            </Button>
 
             <EditarDeposito
                 open={openEditarDeposito}
@@ -106,6 +120,14 @@ export default function Home() {
                     setOpenEliminar(false);
                 }}
             />
+
+            <AgregarStock
+                open={openAgregarStock}
+                onClose={() => setOpenAgregarStock(false)}
+            />
+
+
+
         </Container>
     );
 }
