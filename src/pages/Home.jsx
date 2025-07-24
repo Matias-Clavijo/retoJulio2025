@@ -7,6 +7,7 @@ import AgregarMarca from '../components/Agregarmarca';
 import GestionStockDialog from '../components/DialogStock';
 import AgregarProveedorDialog from '../components/DialogProveedor';
 import AgregarCategoriaDialog from '../components/AgregarCategoría.jsx';
+import AgregarVentaDialog from '../components/DialogVenta.jsx';
 import Eliminar from "../components/Eliminar";
 
 export default function Home() {
@@ -16,6 +17,7 @@ export default function Home() {
     const [openAgregarMarca, setOpenAgregarMarca] = useState(false);
     const [openDialogProveedor, setOpenAgregarProveedor] = useState(false);
     const [openDialogCategoria, setOpenAgregarCategoria] = useState(false);
+    const [openAgregarVenta, setOpenAgregarVenta] = useState(false);
     const [openEliminar, setOpenEliminar] = useState(false);
 
     return (
@@ -45,6 +47,10 @@ export default function Home() {
 
                 <Button variant="contained" onClick={() => setOpenAgregarCategoria(true)}>
                     Agregar Categoría
+                </Button>
+
+                <Button variant="contained" onClick={() => setOpenAgregarVenta(true)}>
+                    Agregar Venta
                 </Button>
             </Box>
 
@@ -85,6 +91,11 @@ export default function Home() {
             <AgregarCategoriaDialog
                 open={openDialogCategoria}
                 onClose={() => setOpenAgregarCategoria(false)}
+            />
+
+            <AgregarVentaDialog
+                open={openAgregarVenta}
+                onClose={() => setOpenAgregarVenta(false)}
             />
 
             <Eliminar
