@@ -6,7 +6,11 @@ import AgregarProductoDialog from '../components/DialogProductos';
 import AgregarMarca from '../components/Agregarmarca';
 import GestionStockDialog from '../components/DialogStock';
 import AgregarProveedorDialog from '../components/DialogProveedor';
+import AgregarCategoriaDialog from '../components/AgregarCategoría.jsx';
+import AgregarVentaDialog from '../components/DialogVenta.jsx';
 import Eliminar from "../components/Eliminar";
+import AgregarStock from '../components/AgregarStock';
+
 
 
 export default function Home() {
@@ -15,7 +19,10 @@ export default function Home() {
     const [openStockDialog, setOpenStockDialog] = useState(false);
     const [openAgregarMarca, setOpenAgregarMarca] = useState(false);
     const [openDialogProveedor, setOpenAgregarProveedor] = useState(false);
+    const [openDialogCategoria, setOpenAgregarCategoria] = useState(false);
+    const [openAgregarVenta, setOpenAgregarVenta] = useState(false);
     const [openEliminar, setOpenEliminar] = useState(false);
+    const [openAgregarStock, setOpenAgregarStock] = useState(false);
 
 
     return (
@@ -42,16 +49,32 @@ export default function Home() {
                 <Button variant="contained" onClick={() => setOpenAgregarProveedor(true)}>
                     Agregar Proveedor
                 </Button>
-            </Box>
 
-            <Button
-                variant="contained"
-                color="error"
-                onClick={() => setOpenEliminar(true)}
-                sx={{ mt: 2 }}
-            >       
-                Eliminar
-            </Button>
+                <Button variant="contained" onClick={() => setOpenAgregarCategoria(true)}>
+                    Agregar Categoría
+                </Button>
+
+                <Button variant="contained" onClick={() => setOpenAgregarVenta(true)}>
+                    Agregar Venta
+                </Button>
+
+                <Button
+                    variant="contained"
+                    color="error"
+                    onClick={() => setOpenEliminar(true)}
+                    sx={{ mt: 2 }}
+                >
+                    Eliminar
+                </Button>
+
+                <Button
+                    variant="contained"
+                    onClick={() => setOpenAgregarStock(true)}
+                    sx={{ mt: 2 }}
+                >
+                    Agregar Stock
+                </Button>
+            </Box>
 
 
             <EditarDeposito
@@ -79,17 +102,32 @@ export default function Home() {
                 onClose={() => setOpenAgregarProveedor(false)}
             />
 
+            <AgregarCategoriaDialog
+                open={openDialogCategoria}
+                onClose={() => setOpenAgregarCategoria(false)}
+            />
+
+            <AgregarVentaDialog
+                open={openAgregarVenta}
+                onClose={() => setOpenAgregarVenta(false)}
+            />
+
             <Eliminar
                 open={openEliminar}
                 onClose={() => setOpenEliminar(false)}
                 onConfirm={() => {
-                console.log('Producto eliminado');
-                setOpenEliminar(false);
-              }}
+                    console.log('Producto eliminado');
+                    setOpenEliminar(false);
+                }}
             />
+
+            <AgregarStock
+                open={openAgregarStock}
+                onClose={() => setOpenAgregarStock(false)}
+            />
+
+
 
         </Container>
     );
-
-    
 }
