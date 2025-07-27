@@ -9,9 +9,8 @@ import AgregarProveedorDialog from '../components/DialogProveedor';
 import AgregarCategoriaDialog from '../components/AgregarCategoría.jsx';
 import AgregarVentaDialog from '../components/DialogVenta.jsx';
 import Eliminar from "../components/Eliminar";
+import Category from './Category';
 import AgregarStock from '../components/AgregarStock';
-
-
 
 export default function Home() {
     const [openEditarDeposito, setOpenEditarDeposito] = useState(false);
@@ -28,7 +27,6 @@ export default function Home() {
     return (
         <Container>
             <h1>Inicio</h1>
-
             <Box display="flex" flexWrap="wrap" gap={2} mb={4}>
                 <Button variant="contained" onClick={() => setOpenEditarDeposito(true)}>
                     Agregar Depósito
