@@ -4,6 +4,10 @@ import About from './pages/About';
 import Login from './pages/Login';
 import Signup from "./pages/Signup";
 import Category from './pages/Category';
+import Brands from './pages/Brands';
+import Products from './pages/Products';
+import StockMovements from './pages/StockMovements';
+import Deposits from './pages/Deposits';
 
 export default function App() {
   return (
@@ -14,6 +18,10 @@ export default function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
         <Route path="/category" element={<Category />} />
+        <Route path="/brands" element={<Brands />} />
+        <Route path="/products" element={<Products />} />
+        <Route path="/movements" element={<StockMovements />} />
+        <Route path="/warehouses" element={<Deposits />} />
       </Routes>
     </BrowserRouter>
   );

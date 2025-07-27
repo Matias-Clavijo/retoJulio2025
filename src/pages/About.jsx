@@ -1,4 +1,4 @@
-import CommonTable from '../components/common/Table';
+import CommonTable from '../components/common/CommonTable';
 
 
 const columns = [
