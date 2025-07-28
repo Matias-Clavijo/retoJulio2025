@@ -1,131 +1,70 @@
-import React, { useState } from 'react';
-import { Button, Container, Box } from '@mui/material';
+import React from 'react';
+import { useNavigate } from 'react-router-dom';
+import {
+    Grid,
+    Paper,
+    Typography,
+    Box,
+    IconButton
+} from '@mui/material';
+import {
+    Inventory, LocalOffer, Category, Warehouse, Store,
+    TrendingUp, PointOfSale
+} from '@mui/icons-material';
 
-import EditarDeposito from '../components/editarDeposito';
-import AgregarProductoDialog from '../components/DialogProductos';
-import AgregarMarca from '../components/Agregarmarca';
-import GestionStockDialog from '../components/DialogStock';
-import AgregarProveedorDialog from '../components/DialogProveedor';
-import AgregarCategoriaDialog from '../components/AgregarCategoría.jsx';
-import AgregarVentaDialog from '../components/DialogVenta.jsx';
-import Eliminar from "../components/Eliminar";
-import Category from './Category';
-import AgregarStock from '../components/AgregarStock';
+const options = [
+    { label: 'Productos', icon: <Inventory fontSize="large" />, path: '/products' },
+    { label: 'Marcas', icon: <LocalOffer fontSize="large" />, path: '/brands' },
+    { label: 'Categorías', icon: <Category fontSize="large" />, path: '/category' },
+    { label: 'Depósitos', icon: <Warehouse fontSize="large" />, path: '/warehouses' },
+    { label: 'Proveedores', icon: <Store fontSize="large" />, path: '/suppliers' },
+    { label: 'Movimientos', icon: <TrendingUp fontSize="large" />, path: '/movements' },
+    { label: 'Ventas', icon: <PointOfSale fontSize="large" />, path: '/sales' },
+];
 
-export default function Home() {
-    const [openEditarDeposito, setOpenEditarDeposito] = useState(false);
-    const [openAgregarProducto, setOpenAgregarProducto] = useState(false);
-    const [openStockDialog, setOpenStockDialog] = useState(false);
-    const [openAgregarMarca, setOpenAgregarMarca] = useState(false);
-    const [openDialogProveedor, setOpenAgregarProveedor] = useState(false);
-    const [openDialogCategoria, setOpenAgregarCategoria] = useState(false);
-    const [openAgregarVenta, setOpenAgregarVenta] = useState(false);
-    const [openEliminar, setOpenEliminar] = useState(false);
-    const [openAgregarStock, setOpenAgregarStock] = useState(false);
-
+const Home = () => {
+    const navigate = useNavigate();
 
     return (
-        <Container>
-            <h1>Inicio</h1>
-            <Box display="flex" flexWrap="wrap" gap={2} mb={4}>
-                <Button variant="contained" onClick={() => setOpenEditarDeposito(true)}>
-                    Agregar Depósito
-                </Button>
+        <Box sx={{ p: 4 }}>
+            <Typography variant="h4" gutterBottom fontWeight="bold">
+                Bienvenido
+            </Typography>
 
-                <Button variant="contained" onClick={() => setOpenAgregarProducto(true)}>
-                    Agregar Producto
-                </Button>
+            <Typography variant="subtitle1" gutterBottom>
+                Accedé rápidamente a las secciones del sistema:
+            </Typography>
 
-                <Button variant="contained" onClick={() => setOpenStockDialog(true)}>
-                    Gestión de Stock
-                </Button>
-
-                <Button variant="contained" onClick={() => setOpenAgregarMarca(true)}>
-                    Agregar Marca
-                </Button>
-
-                <Button variant="contained" onClick={() => setOpenAgregarProveedor(true)}>
-                    Agregar Proveedor
-                </Button>
-
-                <Button variant="contained" onClick={() => setOpenAgregarCategoria(true)}>
-                    Agregar Categoría
-                </Button>
-
-                <Button variant="contained" onClick={() => setOpenAgregarVenta(true)}>
-                    Agregar Venta
-                </Button>
-
-                <Button
-                    variant="contained"
-                    color="error"
-                    onClick={() => setOpenEliminar(true)}
-                    sx={{ mt: 2 }}
-                >
-                    Eliminar
-                </Button>
-
-                <Button
-                    variant="contained"
-                    onClick={() => setOpenAgregarStock(true)}
-                    sx={{ mt: 2 }}
-                >
-                    Agregar Stock
-                </Button>
-            </Box>
-
-
-            <EditarDeposito
-                open={openEditarDeposito}
-                onClose={() => setOpenEditarDeposito(false)}
-            />
-
-            <AgregarProductoDialog
-                open={openAgregarProducto}
-                onClose={() => setOpenAgregarProducto(false)}
-            />
-
-            <GestionStockDialog
-                open={openStockDialog}
-                onClose={() => setOpenStockDialog(false)}
-            />
-
-            <AgregarMarca
-                open={openAgregarMarca}
-                onClose={() => setOpenAgregarMarca(false)}
-            />
-
-            <AgregarProveedorDialog
-                open={openDialogProveedor}
-                onClose={() => setOpenAgregarProveedor(false)}
-            />
-
-            <AgregarCategoriaDialog
-                open={openDialogCategoria}
-                onClose={() => setOpenAgregarCategoria(false)}
-            />
-
-            <AgregarVentaDialog
-                open={openAgregarVenta}
-                onClose={() => setOpenAgregarVenta(false)}
-            />
-
-            <Eliminar
-                open={openEliminar}
-                onClose={() => setOpenEliminar(false)}
-                onConfirm={() => {
-                    console.log('Producto eliminado');
-                    setOpenEliminar(false);
-                }}
-            />
-
-            <AgregarStock
-                open={openAgregarStock}
-                onClose={() => setOpenAgregarStock(false)}
-            />
-
-
-
-        </Container>
+            <Grid container spacing={3} mt={2}>
+                {options.map((item, index) => (
+                    <Grid item xs={12} sm={6} md={4} key={index}>
+                        <Paper
+                            elevation={4}
+                            sx={{
+                                p: 3,
+                                textAlign: 'center',
+                                cursor: 'pointer',
+                                transition: '0.3s',
+                                '&:hover': {
+                                    boxShadow: '0 6px 20px rgba(0,0,0,0.15)',
+                                    backgroundColor: 'primary.light',
+                                    color: 'white'
+                                }
+                            }}
+                            onClick={() => navigate(item.path)}
+                        >
+                            <IconButton color="primary">
+                                {item.icon}
+                            </IconButton>
+                            <Typography variant="h6" fontWeight="600">
+                                {item.label}
+                            </Typography>
+                        </Paper>
+                    </Grid>
+                ))}
+            </Grid>
+        </Box>
     );
-}
+};
+
+export default Home;
