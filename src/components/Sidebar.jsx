@@ -28,6 +28,7 @@ import {
 } from '@mui/icons-material';
 import { useNavigate, useLocation } from 'react-router-dom';
 import InfoUsuario from './Infousuario';
+import logo from '../assets/logo.jpeg';
 
 const drawerWidth = 280;
 
@@ -114,15 +115,17 @@ const Sidebar = ({ onClose }) => {
             display: 'flex',
             flexDirection: 'column'
         }}>
-            <Divider variant="middle" />
-            <Box sx={{ p: 3 }}>
-                <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-                    <Business sx={{ fontSize: 32, color: 'primary.main' }} />
-                    <Typography variant="h6" sx={{ fontWeight: 600 }}>
-                        Nombre empresa + logo
-                    </Typography>
-                </Box>
+            <Divider variant="middle" /><Box sx={{ p: 3 }}>
+            <Box sx={{ p: 3, display: 'flex', justifyContent: 'center' }}>
+                <img
+                    src={logo}
+                    alt="Logo Brava Store"
+                    style={{ width: 110, height: 'auto', objectFit: 'contain' }}
+                />
             </Box>
+
+        </Box>
+
 
             <Divider variant="middle" />
 
