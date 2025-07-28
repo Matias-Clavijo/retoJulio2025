@@ -5,13 +5,28 @@ import Button from "@mui/material/Button";
 import IconButton from "@mui/material/IconButton";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
-import AgregarProveedorDialog from "../components/DialogProveedor"; // Ajustá ruta
+import AgregarProveedorDialog from "../components/DialogProveedor";
+import Eliminar from '../components/Eliminar';
+
 
 export default function Proveedor() {
   const [openAgregarProveedor, setOpenAgregarProveedor] = useState(false);
   const [proveedorEditar, setProveedorEditar] = useState(null);
+  const [openEliminar, setOpenEliminar] = useState(false);
+  const [proveedorAEliminar, setProveedorAEliminar] = useState(null);
 
-  const [rows, setRows] = useState([
+  const handleEliminarClick = (proveedor) => {
+    setProveedorAEliminar(proveedor);
+    setOpenEliminar(true);
+};
+
+  const handleConfirmEliminar = () => {
+    setRows(prev => prev.filter(p => p.codigo !== proveedorAEliminar.codigo));
+    setOpenEliminar(false);
+    setProveedorAEliminar(null);
+};
+
+    const [rows, setRows] = useState([
     {
       id: 1,
       codigo: "P001",
@@ -60,7 +75,7 @@ export default function Proveedor() {
       </IconButton>
       <IconButton
         size="small"
-        onClick={() => alert(`Eliminar proveedor ${proveedor.id}`)}
+        onClick={() => handleEliminarClick(proveedor)}
       >
         <DeleteIcon fontSize="small" />
       </IconButton>
@@ -78,7 +93,15 @@ export default function Proveedor() {
 
   return (
     <>
-      <AgregarProveedorDialog
+
+    <Eliminar
+    open={openEliminar}
+    onClose={() => setOpenEliminar(false)}
+    onConfirm={handleConfirmEliminar}
+    title="¿Quieres eliminar este proveedor?"
+    />
+
+    <AgregarProveedorDialog
         open={openAgregarProveedor}
         onClose={() => {
           setOpenAgregarProveedor(false);
@@ -86,9 +109,9 @@ export default function Proveedor() {
         }}
         onSave={handleGuardarProveedor}
         proveedorEditar={proveedorEditar}
-      />
+    />
 
-      <TitleHeader
+    <TitleHeader
         title="Gestión de Proveedores"
         description="Administrá los datos de contacto de los proveedores"
         button={
@@ -102,9 +125,9 @@ export default function Proveedor() {
             + NUEVO PROVEEDOR
           </Button>
         }
-      />
+    />
 
-      <CommonTable
+    <CommonTable
         title="Lista de Proveedores"
         columns={columns}
         rows={rows.map((row) => ({
@@ -113,7 +136,7 @@ export default function Proveedor() {
         }))}
         defaultRowsPerPage={5}
         rowsPerPageOptions={[5, 10, 25]}
-      />
+    />
     </>
   );
 }

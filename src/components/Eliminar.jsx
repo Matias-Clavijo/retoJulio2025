@@ -6,7 +6,7 @@ import {
   Button
 } from '@mui/material';
 
-const Eliminar = ({ open, onClose, onConfirm }) => {
+const Eliminar = ({ open, onClose, onConfirm, title = "¿Quieres eliminar este producto?" }) => {
   return (
     <Dialog
       open={open}
@@ -19,7 +19,7 @@ const Eliminar = ({ open, onClose, onConfirm }) => {
       }}
     >
       <DialogTitle sx={{ textAlign: 'center', fontSize: '1.1rem' }}>
-        ¿Quieres eliminar este producto?
+        {title}
       </DialogTitle>
 
       <DialogActions sx={{ display: 'flex', justifyContent: 'center', pb: 2 }}>
@@ -35,5 +35,6 @@ const Eliminar = ({ open, onClose, onConfirm }) => {
 };
 
 export default Eliminar;
+
 
 
