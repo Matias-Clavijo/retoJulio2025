@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
     Drawer,
     List,
@@ -10,7 +10,8 @@ import {
     Box,
     Divider,
     Avatar,
-    Paper
+    Paper,
+    IconButton
 } from '@mui/material';
 import {
     Business,
@@ -22,15 +23,18 @@ import {
     TrendingUp,
     PointOfSale,
     People,
-    AccountCircle
+    AccountCircle,
+    Settings
 } from '@mui/icons-material';
 import { useNavigate, useLocation } from 'react-router-dom';
+import InfoUsuario from './Infousuario';
 
 const drawerWidth = 280;
 
 const Sidebar = ({ onClose }) => {
     const navigate = useNavigate();
     const location = useLocation();
+    const [openInfoUsuario, setOpenInfoUsuario] = useState(false);
 
     const inventoryItems = [
         { text: 'Productos', icon: <Inventory />, path: '/products' },
@@ -44,7 +48,7 @@ const Sidebar = ({ onClose }) => {
         { text: 'Movimientos', icon: <TrendingUp />, path: '/movements' },
         { text: 'Ventas', icon: <PointOfSale />, path: '/sales' }
     ];
-    
+
     const handleItemClick = (path) => {
         navigate(path);
         if (onClose) onClose();
@@ -109,11 +113,9 @@ const Sidebar = ({ onClose }) => {
             height: '100%',
             display: 'flex',
             flexDirection: 'column'
-                    }}>
+        }}>
             <Divider variant="middle" />
-            <Box sx={{
-                p: 3
-            }}>
+            <Box sx={{ p: 3 }}>
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
                     <Business sx={{ fontSize: 32, color: 'primary.main' }} />
                     <Typography variant="h6" sx={{ fontWeight: 600 }}>
@@ -129,9 +131,7 @@ const Sidebar = ({ onClose }) => {
                 {renderMenuSection('Operaciones', operationsItems)}
             </Box>
 
-            <Box sx={{
-                p: 2
-            }}>
+            <Box sx={{ p: 2, position: 'relative' }}>
                 <Paper
                     elevation={0}
                     sx={{
@@ -139,8 +139,10 @@ const Sidebar = ({ onClose }) => {
                         backgroundColor: 'grey.50',
                         borderRadius: 2,
                         border: '1px solid',
-                        borderColor: 'grey.200'
+                        borderColor: 'grey.200',
+                        cursor: 'pointer'
                     }}
+                    onClick={() => setOpenInfoUsuario(true)}
                 >
                     <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
                         <Avatar sx={{ width: 40, height: 40, backgroundColor: 'primary.main' }}>
@@ -154,9 +156,14 @@ const Sidebar = ({ onClose }) => {
                                 usuario@email.com
                             </Typography>
                         </Box>
+                        <IconButton size="small">
+                            <Settings fontSize="small" />
+                        </IconButton>
                     </Box>
                 </Paper>
             </Box>
+
+            <InfoUsuario open={openInfoUsuario} onClose={() => setOpenInfoUsuario(false)} />
         </Box>
     );
 
@@ -179,4 +186,4 @@ const Sidebar = ({ onClose }) => {
     );
 };
 
-export default Sidebar; 
+export default Sidebar;
