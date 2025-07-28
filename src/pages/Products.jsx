@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Inventory } from "@mui/icons-material";
 import DataManagementPage from "../components/DataManagementPage";
 import AgregarProductoDialog from "../components/DialogProductos";
+import Eliminar from "../components/Eliminar";
 import { productsAPI } from "../services/api/stockBack";
 
 export default function Products() {
@@ -10,6 +11,8 @@ export default function Products() {
     const [error, setError] = useState(null);
     const [page, setPage] = useState(1);
     const [rowsPerPage, setRowsPerPage] = useState(10);
+    const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
+    const [selectedProduct, setSelectedProduct] = useState(null);
 
     useEffect(() => {
         const fetchProducts = async () => {
@@ -33,7 +36,7 @@ export default function Products() {
                 } else {
                     setError(response.error || "Error al cargar los productos");
                 }
-            } catch (_err) {
+            } catch {
                 setError("Error al conectar con el servidor");
             } finally {
                 setLoading(false);
@@ -67,7 +70,42 @@ export default function Products() {
     };
 
     const handleDelete = (product) => {
-        console.log("Deleting product:", product.original || product);
+        setSelectedProduct(product);
+        setOpenDeleteDialog(true);
+    };
+
+    const handleCloseDelete = () => {
+        setOpenDeleteDialog(false);
+    };
+
+    const handleConfirmDelete = async () => {
+        try {
+            setLoading(true);
+            const response = await productsAPI.deleteProduct(selectedProduct.original.id);
+            if (response.success) {
+                // Recargar la lista después de eliminar
+                const newResponse = await productsAPI.getProducts(page, rowsPerPage);
+                if (newResponse.success) {
+                    const transformedProducts = newResponse.data.map(product => ({
+                        producto: product.name,
+                        descripcion: product.description,
+                        marca: product.brand.name,
+                        categoria: product.category.name,
+                        depositos: product.depositsCount,
+                        total_stock: product.depositsCount * 10,
+                        original: product
+                    }));
+                    setProducts(transformedProducts);
+                }
+            } else {
+                setError(response.error || "Error al eliminar el producto");
+            }
+        } catch {
+            setError("Error al conectar con el servidor");
+        } finally {
+            setLoading(false);
+            handleCloseDelete();
+        }
     };
 
     const handleView = (product) => {
@@ -84,25 +122,33 @@ export default function Products() {
     };
 
     return (
-        <DataManagementPage
-            title="Gestión de Productos"
-            description="Administra el catálogo de productos del sistema"
-            addButtonText="NUEVO PRODUCTO"
-            addButtonIcon={<Inventory />}
-            tableTitle="Lista de productos"
-            columns={columns}
-            data={products}
-            defaultRowsPerPage={rowsPerPage}
-            rowsPerPageOptions={[5, 10, 25, 50]}
-            showViewAction={true}
-            onEdit={handleEdit}
-            onDelete={handleDelete}
-            onView={handleView}
-            onPageChange={handlePageChange}
-            onRowsPerPageChange={handleRowsPerPageChange}
-            addDialog={<AgregarProductoDialog />}
-            loading={loading}
-            error={error}
-        />
+        <>
+            <DataManagementPage
+                title="Gestión de Productos"
+                description="Administra el catálogo de productos del sistema"
+                addButtonText="NUEVO PRODUCTO"
+                addButtonIcon={<Inventory />}
+                tableTitle="Lista de productos"
+                columns={columns}
+                data={products}
+                defaultRowsPerPage={rowsPerPage}
+                rowsPerPageOptions={[5, 10, 25, 50]}
+                showViewAction={true}
+                onEdit={handleEdit}
+                onDelete={handleDelete}
+                onView={handleView}
+                onPageChange={handlePageChange}
+                onRowsPerPageChange={handleRowsPerPageChange}
+                addDialog={<AgregarProductoDialog />}
+                loading={loading}
+                error={error}
+            />
+            <Eliminar
+                open={openDeleteDialog}
+                onClose={handleCloseDelete}
+                onConfirm={handleConfirmDelete}
+                title={`¿Estás seguro que deseas eliminar el producto "${selectedProduct?.producto}"?`}
+            />
+        </>
     );
 } 

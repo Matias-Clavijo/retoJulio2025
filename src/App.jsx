@@ -8,6 +8,7 @@ import Brands from './pages/Brands';
 import Products from './pages/Products';
 import StockMovements from './pages/StockMovements';
 import Deposits from './pages/Deposits';
+import Sales from './pages/Sales';
 
 export default function App() {
   return (
@@ -22,6 +23,7 @@ export default function App() {
         <Route path="/products" element={<Products />} />
         <Route path="/movements" element={<StockMovements />} />
         <Route path="/warehouses" element={<Deposits />} />
+        <Route path="/sales" element={<Sales />} />
       </Routes>
     </BrowserRouter>
   );

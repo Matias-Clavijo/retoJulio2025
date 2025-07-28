@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { LocalOffer } from "@mui/icons-material";
 import DataManagementPage from "../components/DataManagementPage";
 import AgregarMarca from "../components/Agregarmarca";
+import Eliminar from "../components/Eliminar";
 import { brandsAPI } from "../services/api/stockBack";
 
 export default function Brands() {
@@ -10,6 +11,8 @@ export default function Brands() {
   const [error, setError] = useState(null);
   const [page, setPage] = useState(1);
   const [rowsPerPage, setRowsPerPage] = useState(10);
+  const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
+  const [selectedBrand, setSelectedBrand] = useState(null);
 
   useEffect(() => {
     const fetchBrands = async () => {
@@ -61,7 +64,43 @@ export default function Brands() {
   };
 
   const handleDelete = (brand) => {
-    console.log("Deleting brand:", brand.original || brand);
+    console.log("Deleting brand:", brand);
+    setSelectedBrand(brand);
+    setOpenDeleteDialog(true);
+  };
+
+  const handleCloseDelete = () => {
+    setOpenDeleteDialog(false);
+    setSelectedBrand(null);
+  };
+
+  const handleConfirmDelete = async () => {
+    try {
+      setLoading(true);
+      const response = await brandsAPI.deleteBrand(selectedBrand.original.id);
+      if (response.success) {
+        // Recargar la lista después de eliminar
+        const newResponse = await brandsAPI.getBrands(page, rowsPerPage);
+        if (newResponse.success) {
+          const transformedBrands = newResponse.data.map(brand => ({
+            nombre: brand.name,
+            description: brand.description,
+            country: brand.country,
+            products_associated: brand.associatedProductCount,
+            created_at: new Date(brand.createdAt).toLocaleDateString(),
+            original: brand
+          }));
+          setBrands(transformedBrands);
+        }
+      } else {
+        setError(response.error || "Error al eliminar la marca");
+      }
+    } catch {
+      setError("Error al conectar con el servidor");
+    } finally {
+      setLoading(false);
+      handleCloseDelete();
+    }
   };
 
   const handlePageChange = (newPage) => {
@@ -74,6 +113,7 @@ export default function Brands() {
   };
 
   return (
+    <>
     <DataManagementPage
       title="Gestión de Marcas"
       description="Administra las marcas de los productos"
@@ -92,5 +132,12 @@ export default function Brands() {
       loading={loading}
       error={error}
     />
+    <Eliminar
+      open={openDeleteDialog}
+      onClose={handleCloseDelete}
+      onConfirm={handleConfirmDelete}
+      title={`¿Estás seguro que deseas eliminar la marca "${selectedBrand?.nombre}"?`}
+    />
+    </>
   );
 }

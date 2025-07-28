@@ -3,6 +3,7 @@ import { Warehouse } from "@mui/icons-material";
 import DataManagementPage from "../components/DataManagementPage";
 import EditarDeposito from "../components/editarDeposito";
 import { depositsAPI } from "../services/api/stockBack";
+import Eliminar from "../components/Eliminar";
 
 export default function Deposits() {
   const [deposits, setDeposits] = useState([]);
@@ -10,6 +11,8 @@ export default function Deposits() {
   const [error, setError] = useState(null);
   const [page, setPage] = useState(1);
   const [rowsPerPage, setRowsPerPage] = useState(10);
+  const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
+  const [selectedDeposit, setSelectedDeposit] = useState(null);
 
   useEffect(() => {
     const fetchDeposits = async () => {
@@ -32,7 +35,7 @@ export default function Deposits() {
         } else {
           setError(response.error || "Error al cargar los depósitos");
         }
-      } catch (_err) {
+      } catch {
         setError("Error al conectar con el servidor");
       } finally {
         setLoading(false);
@@ -61,7 +64,42 @@ export default function Deposits() {
   };
 
   const handleDelete = (deposit) => {
-    console.log("Deleting deposit:", deposit.original || deposit);
+    console.log("Deleting deposit:",deposit);
+    setSelectedDeposit(deposit);
+    setOpenDeleteDialog(true);
+  };
+
+  const handleCloseDelete = () => {
+    setOpenDeleteDialog(false);
+  };
+
+  const handleConfirmDelete = async () => {
+    try {
+      setLoading(true);
+      const response = await depositsAPI.deleteDeposit(selectedDeposit.original.id);
+      if (response.success) {
+        // Recargar la lista después de eliminar
+        const newResponse = await depositsAPI.getDeposits(page, rowsPerPage);
+        if (newResponse.success) {
+          const transformedDeposits = newResponse.data.map(deposit => ({
+            nombre: deposit.name,
+            description: deposit.description,
+            location: deposit.location,
+            products_associated: deposit.productCount,
+            associated: deposit.associatedDate,
+            original: deposit
+          }));
+          setDeposits(transformedDeposits);
+        }
+      } else {
+        setError(response.error || "Error al eliminar el depósito");
+      }
+    } catch {
+      setError("Error al conectar con el servidor");
+    } finally {
+      setLoading(false);
+      handleCloseDelete();
+    }
   };
 
   const handleView = (deposit) => {
@@ -78,6 +116,7 @@ export default function Deposits() {
   };
 
   return (
+    <>
     <DataManagementPage
       title="Gestión de Depósitos"
       description="Administra el catálogo de depósitos del sistema"
@@ -98,5 +137,12 @@ export default function Deposits() {
       loading={loading}
       error={error}
     />
+        <Eliminar
+          open={openDeleteDialog}
+          onClose={handleCloseDelete}
+          onConfirm={handleConfirmDelete}
+          title={`¿Estás seguro que deseas eliminar el depósito "${selectedDeposit?.nombre}"?`}
+        />
+    </>
   );
 }
