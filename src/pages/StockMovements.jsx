@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { LocalShipping } from "@mui/icons-material";
+import { Box } from "@mui/material";
 import DataManagementPage from "../components/DataManagementPage";
 import DialogStock from "../components/DialogStock";
 import { stockMovementsAPI } from "../services/api/stockBack";
@@ -32,7 +33,7 @@ export default function StockMovements() {
                 } else {
                     setError(response.error || "Error al cargar los movimientos de stock");
                 }
-            } catch (_err) {
+            } catch {
                 setError("Error al conectar con el servidor");
             } finally {
                 setLoading(false);
@@ -48,8 +49,23 @@ export default function StockMovements() {
         { 
             id: "tipo", 
             label: "Tipo", 
-            align: "left",
-            format: (value) => value === "IN" ? "Entrada" : "Salida"
+            align: "center",
+            format: (value) => (
+                <Box
+                    sx={{
+                        backgroundColor: value === "IN" ? '#e8f5e9' : '#ffebee',
+                        color: value === "IN" ? '#2e7d32' : '#c62828',
+                        borderRadius: 1,
+                        px: 1.5,
+                        py: 0.5,
+                        display: 'inline-block',
+                        fontSize: '0.875rem',
+                        fontWeight: 'medium'
+                    }}
+                >
+                    {value === "IN" ? "Entrada" : "Salida"}
+                </Box>
+            )
         },
         { 
             id: "cantidad", 

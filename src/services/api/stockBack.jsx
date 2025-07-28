@@ -104,8 +104,8 @@ const mockUsers = [
 
 const mockSales = [
   {
-    id: 13,
-    date: "2025-07-24",
+    id: 1,
+    date: "2025-07-22",
     price: {
       value: 1234,
       currency: "USD"
@@ -114,8 +114,92 @@ const mockSales = [
       id: 1,
       count: 1
     },
-    paymentMethod: "credit_card",
+    paymentMethod: "Efectivo",
     reseller: "Juan Pérez"
+  },
+  {
+    id: 2,
+    date: "2025-07-23",
+    price: {
+      value: 2150,
+      currency: "USD"
+    },
+    product: {
+      id: 2,
+      count: 1
+    },
+    paymentMethod: "Tarjeta",
+    reseller: "María González"
+  },
+  {
+    id: 3,
+    date: "2025-07-22",
+    price: {
+      value: 850,
+      currency: "USD"
+    },
+    product: {
+      id: 1,
+      count: 1
+    },
+    paymentMethod: "Mercado pago",
+    reseller: "Carlos López"
+  },
+  {
+    id: 4,
+    date: "2025-07-21",
+    price: {
+      value: 3200,
+      currency: "USD"
+    },
+    product: {
+      id: 2,
+      count: 2
+    },
+    paymentMethod: "Apple pay",
+    reseller: "Ana Martínez"
+  },
+  {
+    id: 5,
+    date: "2025-07-20",
+    price: {
+      value: 1800,
+      currency: "USD"
+    },
+    product: {
+      id: 1,
+      count: 1
+    },
+    paymentMethod: "Paypal",
+    reseller: "Roberto Silva"
+  },
+  {
+    id: 6,
+    date: "2025-07-19",
+    price: {
+      value: 950,
+      currency: "USD"
+    },
+    product: {
+      id: 2,
+      count: 1
+    },
+    paymentMethod: "Efectivo",
+    reseller: "Lucía Rodríguez"
+  },
+  {
+    id: 7,
+    date: "2025-07-18",
+    price: {
+      value: 2700,
+      currency: "USD"
+    },
+    product: {
+      id: 1,
+      count: 2
+    },
+    paymentMethod: "Mercadopago",
+    reseller: "Diego Fernández"
   }
 ];
 
@@ -135,6 +219,28 @@ const mockStockMovements = [
     },
     referenceId: 1,
     quantity: 50,
+    date: "2025-07-24T10:00:00Z",
+    user: {
+      id: 1,
+      firstName: "Lucía",
+      lastName: "Gómez"
+    }
+  },
+  {
+    id: 2,
+    type: "OUT",
+    product: {
+      id: 2,
+      name: "Dell Laptop",
+      description: "17'' i7 Gaming Laptop"
+    },
+    deposit: {
+      id: 2,
+      name: "Depósito Norte",
+      description: "Zona norte"
+    },
+    referenceId: 2,
+    quantity: 10,
     date: "2025-07-24T10:00:00Z",
     user: {
       id: 1,

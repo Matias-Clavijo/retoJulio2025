@@ -25,7 +25,6 @@ const DataManagementPage = ({
   onView,
   addDialog,
   editDialog,
-  deleteDialog,
   customActions,
   showEditAction = true,
   showDeleteAction = true,
@@ -36,7 +35,6 @@ const DataManagementPage = ({
 }) => {
   const [openAddDialog, setOpenAddDialog] = useState(false);
   const [openEditDialog, setOpenEditDialog] = useState(false);
-  const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
   const [selectedItem, setSelectedItem] = useState(null);
 
   // Add default actions to each row if not provided in customActions
@@ -47,6 +45,7 @@ const DataManagementPage = ({
         {showEditAction && (
           <IconButton 
             size="small" 
+            sx={{ color: 'primary.main' }}
             onClick={() => {
               setSelectedItem(row);
               if (onEdit) {
@@ -62,13 +61,10 @@ const DataManagementPage = ({
         {showDeleteAction && (
           <IconButton 
             size="small" 
+            sx={{ color: 'error.main' }}
             onClick={() => {
               setSelectedItem(row);
-              if (onDelete) {
-                onDelete(row);
-              } else {
-                setOpenDeleteDialog(true);
-              }
+              onDelete(row);
             }}
           >
             <DeleteIcon fontSize="small" />
@@ -77,6 +73,7 @@ const DataManagementPage = ({
         {showViewAction && (
           <IconButton 
             size="small" 
+            sx={{ color: 'info.main' }}
             onClick={() => {
               if (onView) {
                 onView(row);
@@ -104,11 +101,6 @@ const DataManagementPage = ({
 
   const handleCloseEditDialog = () => {
     setOpenEditDialog(false);
-    setSelectedItem(null);
-  };
-
-  const handleCloseDeleteDialog = () => {
-    setOpenDeleteDialog(false);
     setSelectedItem(null);
   };
 
@@ -168,13 +160,6 @@ const DataManagementPage = ({
         {editDialog && React.cloneElement(editDialog, {
           open: openEditDialog,
           onClose: handleCloseEditDialog,
-          item: selectedItem
-        })}
-        
-        {/* Delete Dialog */}
-        {deleteDialog && React.cloneElement(deleteDialog, {
-          open: openDeleteDialog,
-          onClose: handleCloseDeleteDialog,
           item: selectedItem
         })}
       </>
