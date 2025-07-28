@@ -1,99 +1,132 @@
-﻿import React, { useState } from 'react';
+﻿import React, { useEffect, useState } from "react";
 import {
-    Dialog,
-    DialogTitle,
-    DialogContent,
-    DialogActions,
-    Button,
-    TextField,
-    MenuItem,
-    FormControl,
-    InputLabel,
-    Select,
-    IconButton
-} from '@mui/material';
-import CloseIcon from '@mui/icons-material/Close';
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  TextField,
+  Button,
+  IconButton,
+} from "@mui/material";
+import CloseIcon from "@mui/icons-material/Close";
 
-export default function AgregarProveedorDialog({ open, onClose }) {
-    const [tipo, setTipo] = useState('Persona');
-    const [nombre, setNombre] = useState('');
-    const [apellido, setApellido] = useState('');
-    const [telefono, setTelefono] = useState('');
-    const [email, setEmail] = useState('');
+const AgregarProveedorDialog = ({ open, onClose, onSave, proveedorEditar }) => {
+  const [codigo, setCodigo] = useState("");
+  const [nombre, setNombre] = useState("");
+  const [telefono, setTelefono] = useState("");
+  const [email, setEmail] = useState("");
+  const [direccion, setDireccion] = useState("");
 
-    const handleGuardar = () => {
-        const proveedor = { tipo, nombre, apellido, telefono, email };
-        console.log('Proveedor guardado:', proveedor);
-        onClose();
+  useEffect(() => {
+    if (proveedorEditar) {
+      setCodigo(proveedorEditar.codigo || "");
+      setNombre(proveedorEditar.nombre || "");
+      setTelefono(proveedorEditar.telefono || "");
+      setEmail(proveedorEditar.email || "");
+      setDireccion(proveedorEditar.direccion || "");
+    } else {
+      setCodigo("");
+      setNombre("");
+      setTelefono("");
+      setEmail("");
+      setDireccion("");
+    }
+  }, [proveedorEditar]);
+
+  const handleGuardar = () => {
+    const nuevoProveedor = {
+      id: proveedorEditar?.id, // solo lo usamos si es edición
+      codigo,
+      nombre,
+      telefono,
+      email,
+      direccion,
     };
+    onSave(nuevoProveedor);
+  };
 
-    return (
-        <Dialog open={open} onClose={onClose} maxWidth="xs" fullWidth>
-            <DialogTitle>
-                Agregar Proveedor
-                <IconButton
-                    aria-label="close"
-                    onClick={onClose}
-                    sx={{ position: 'absolute', right: 8, top: 8 }}
-                >
-                    <CloseIcon />
-                </IconButton>
-            </DialogTitle>
+  return (
+    <Dialog
+      open={open}
+      onClose={onClose}
+      PaperProps={{
+        sx: {
+          width: 280,
+          minHeight: 440,
+        },
+      }}
+    >
+      <DialogTitle sx={{ m: 0, p: 2 }}>
+        {proveedorEditar ? "Editar Proveedor" : "Agregar Proveedor"}
+        <IconButton
+          aria-label="close"
+          onClick={onClose}
+          sx={{
+            position: "absolute",
+            right: 8,
+            top: 8,
+            color: (theme) => theme.palette.grey[500],
+          }}
+        >
+          <CloseIcon />
+        </IconButton>
+      </DialogTitle>
 
-            <DialogContent>
-                <FormControl fullWidth margin="dense">
-                    <InputLabel>Tipo</InputLabel>
-                    <Select
-                        value={tipo}
-                        label="Tipo"
-                        onChange={(e) => setTipo(e.target.value)}
-                    >
-                        <MenuItem value="Persona">Persona</MenuItem>
-                        <MenuItem value="Empresa">Empresa</MenuItem>
-                    </Select>
-                </FormControl>
+      <DialogContent dividers>
+        <TextField
+          autoFocus
+          margin="dense"
+          label="Código"
+          fullWidth
+          variant="outlined"
+          value={codigo}
+          onChange={(e) => setCodigo(e.target.value)}
+        />
+        <TextField
+          margin="dense"
+          label="Nombre *"
+          fullWidth
+          variant="outlined"
+          value={nombre}
+          onChange={(e) => setNombre(e.target.value)}
+        />
+        <TextField
+          margin="dense"
+          label="Teléfono"
+          fullWidth
+          variant="outlined"
+          value={telefono}
+          onChange={(e) => setTelefono(e.target.value)}
+        />
+        <TextField
+          margin="dense"
+          label="Email"
+          fullWidth
+          variant="outlined"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+        />
+        <TextField
+          margin="dense"
+          label="Dirección"
+          fullWidth
+          variant="outlined"
+          value={direccion}
+          onChange={(e) => setDireccion(e.target.value)}
+        />
+      </DialogContent>
 
-                <TextField
-                    fullWidth
-                    margin="dense"
-                    label="Nombre *"
-                    value={nombre}
-                    onChange={(e) => setNombre(e.target.value)}
-                />
+      <DialogActions>
+        <Button
+          variant="contained"
+          onClick={handleGuardar}
+          sx={{ bgcolor: "#2196f3" }}
+        >
+          GUARDAR PROVEEDOR
+        </Button>
+      </DialogActions>
+    </Dialog>
+  );
+};
 
-                {tipo === 'Persona' && (
-                    <TextField
-                        fullWidth
-                        margin="dense"
-                        label="Apellido *"
-                        value={apellido}
-                        onChange={(e) => setApellido(e.target.value)}
-                    />
-                )}
-
-                <TextField
-                    fullWidth
-                    margin="dense"
-                    label="Teléfono"
-                    value={telefono}
-                    onChange={(e) => setTelefono(e.target.value)}
-                />
-
-                <TextField
-                    fullWidth
-                    margin="dense"
-                    label="Email"
-                    type="email"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                />
-            </DialogContent>
-
-            <DialogActions sx={{ px: 3, pb: 3 }}>
-                <Button variant="contained" fullWidth onClick={handleGuardar}>
-                    GUARDAR PROVEEDOR
-                </Button>
-            </DialogActions>
-        </Dialog>
-    );
-}
+export default AgregarProveedorDialog;
