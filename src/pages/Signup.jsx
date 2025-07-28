@@ -18,6 +18,7 @@ import {
     MailOutline,
     LockOutlined
 } from '@mui/icons-material';
+import logo from '../assets/logo.jpeg'; // asegurate de que esté ahí
 
 function SignUp() {
     const [showPassword, setShowPassword] = useState(false);
@@ -32,10 +33,16 @@ function SignUp() {
             justifyContent="center"
             alignItems="center"
             minHeight="100vh"
-            bgcolor="#f5f5f5"
+            sx={{
+                background: 'linear-gradient(135deg, #071d49, #f9c525)',
+            }}
         >
-            <Paper elevation={3} sx={{ padding: 4, width: 350 }}>
-                <Typography variant="h5" gutterBottom>
+            <Paper elevation={6} sx={{ padding: 4, width: 370, borderRadius: 3 }}>
+                <Box display="flex" justifyContent="center" mb={3}>
+                    <img src={logo} alt="Brava Store Logo" style={{ width: 100 }} />
+                </Box>
+
+                <Typography variant="h5" gutterBottom align="center">
                     Sign Up
                 </Typography>
 
@@ -51,7 +58,7 @@ function SignUp() {
                     InputProps={{
                         startAdornment: (
                             <InputAdornment position="start">
-                                <MailOutline sx={{ color: 'action.active' }} />
+                                <MailOutline sx={{ color: '#071d49' }} />
                             </InputAdornment>
                         )
                     }}
@@ -65,7 +72,7 @@ function SignUp() {
                     InputProps={{
                         startAdornment: (
                             <InputAdornment position="start">
-                                <LockOutlined sx={{ color: 'action.active' }} />
+                                <LockOutlined sx={{ color: '#071d49' }} />
                             </InputAdornment>
                         ),
                         endAdornment: (
@@ -86,7 +93,7 @@ function SignUp() {
                     InputProps={{
                         startAdornment: (
                             <InputAdornment position="start">
-                                <LockOutlined sx={{ color: 'action.active' }} />
+                                <LockOutlined sx={{ color: '#071d49' }} />
                             </InputAdornment>
                         ),
                         endAdornment: (
@@ -115,7 +122,14 @@ function SignUp() {
                 <Button
                     variant="contained"
                     fullWidth
-                    sx={{ mt: 2 }}
+                    sx={{
+                        mt: 2,
+                        backgroundColor: '#071d49',
+                        '&:hover': {
+                            backgroundColor: '#f9c525',
+                            color: '#071d49'
+                        }
+                    }}
                 >
                     Sign up
                 </Button>
