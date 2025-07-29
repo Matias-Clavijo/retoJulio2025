@@ -82,13 +82,13 @@ const Sidebar = ({ onClose }) => {
                                     backgroundColor: 'action.hover',
                                 },
                                 '&.Mui-selected': {
-                                    backgroundColor: 'primary.main',
-                                    color: 'primary.contrastText',
+                                    backgroundColor: '#0B2240',
+                                    color: 'white',
                                     '&:hover': {
-                                        backgroundColor: 'primary.dark',
+                                        backgroundColor: '#08172e',
                                     },
                                     '& .MuiListItemIcon-root': {
-                                        color: 'primary.contrastText',
+                                        color: 'white',
                                     },
                                 },
                             }}
@@ -155,7 +155,7 @@ const Sidebar = ({ onClose }) => {
                     onClick={() => setOpenInfoUsuario(true)}
                 >
                     <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-                        <Avatar sx={{ width: 40, height: 40, backgroundColor: 'primary.main' }}>
+                        <Avatar sx={{ width: 40, height: 40, backgroundColor: '#0B2240' }}>
                             <AccountCircle />
                         </Avatar>
                         <Box sx={{ flex: 1 }}>
