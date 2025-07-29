@@ -14,7 +14,6 @@ import {
     IconButton
 } from '@mui/material';
 import {
-    Business,
     Inventory,
     Category,
     LocalOffer,
@@ -22,7 +21,6 @@ import {
     Store,
     TrendingUp,
     PointOfSale,
-    People,
     AccountCircle,
     Settings
 } from '@mui/icons-material';
@@ -98,9 +96,7 @@ const Sidebar = ({ onClose }) => {
                             <ListItemIcon sx={{ minWidth: 40, color: location.pathname === item.path ? 'primary.contrastText' : 'text.secondary' }}>
                                 {item.icon}
                             </ListItemIcon>
-                            <ListItemText
-                                primary={item.text}
-                            />
+                            <ListItemText primary={item.text} />
                         </ListItemButton>
                     </ListItem>
                 ))}
@@ -109,23 +105,34 @@ const Sidebar = ({ onClose }) => {
     );
 
     const drawerContent = (
-        <Box sx={{
-            width: drawerWidth,
-            height: '100%',
-            display: 'flex',
-            flexDirection: 'column'
-        }}>
-            <Divider variant="middle" /><Box sx={{ p: 3 }}>
-            <Box sx={{ p: 3, display: 'flex', justifyContent: 'center' }}>
+        <Box
+            sx={{
+                width: drawerWidth,
+                height: '100%',
+                display: 'flex',
+                flexDirection: 'column'
+            }}
+        >
+            <Divider variant="middle" />
+            <Box
+                sx={{
+                    p: 2,
+                    display: 'flex',
+                    justifyContent: 'center',
+                    cursor: 'pointer',
+                    transition: 'transform 0.2s ease-in-out',
+                    '&:hover': {
+                        transform: 'scale(1.05)',
+                    }
+                }}
+                onClick={() => navigate('/')}
+            >
                 <img
                     src={logo}
                     alt="Logo Brava Store"
-                    style={{ width: 110, height: 'auto', objectFit: 'contain' }}
+                    style={{ width: 180, height: 'auto', objectFit: 'contain' }}
                 />
             </Box>
-
-        </Box>
-
 
             <Divider variant="middle" />
 
