@@ -22,35 +22,48 @@ export default function Buttons() {
     const [openEliminar, setOpenEliminar] = useState(false);
     const [openAgregarStock, setOpenAgregarStock] = useState(false);
 
+    const yellow = '#F5C518';
+    const darkBlue = '#0B2240';
+
+    const buttonStyle = {
+        backgroundColor: yellow,
+        color: darkBlue,
+        fontWeight: 600,
+        boxShadow: 2,
+        '&:hover': {
+            backgroundColor: '#e4b414'
+        }
+    };
+
     return (
         <Container>
             <h1>Panel de Acciones</h1>
             <Box display="flex" flexWrap="wrap" gap={2} mb={4}>
-                <Button variant="contained" onClick={() => setOpenEditarDeposito(true)}>
+                <Button variant="contained" sx={buttonStyle} onClick={() => setOpenEditarDeposito(true)}>
                     Agregar Depósito
                 </Button>
 
-                <Button variant="contained" onClick={() => setOpenAgregarProducto(true)}>
+                <Button variant="contained" sx={buttonStyle} onClick={() => setOpenAgregarProducto(true)}>
                     Agregar Producto
                 </Button>
 
-                <Button variant="contained" onClick={() => setOpenStockDialog(true)}>
+                <Button variant="contained" sx={buttonStyle} onClick={() => setOpenStockDialog(true)}>
                     Gestión de Stock
                 </Button>
 
-                <Button variant="contained" onClick={() => setOpenAgregarMarca(true)}>
+                <Button variant="contained" sx={buttonStyle} onClick={() => setOpenAgregarMarca(true)}>
                     Agregar Marca
                 </Button>
 
-                <Button variant="contained" onClick={() => setOpenAgregarProveedor(true)}>
+                <Button variant="contained" sx={buttonStyle} onClick={() => setOpenAgregarProveedor(true)}>
                     Agregar Proveedor
                 </Button>
 
-                <Button variant="contained" onClick={() => setOpenAgregarCategoria(true)}>
+                <Button variant="contained" sx={buttonStyle} onClick={() => setOpenAgregarCategoria(true)}>
                     Agregar Categoría
                 </Button>
 
-                <Button variant="contained" onClick={() => setOpenAgregarVenta(true)}>
+                <Button variant="contained" sx={buttonStyle} onClick={() => setOpenAgregarVenta(true)}>
                     Agregar Venta
                 </Button>
 
@@ -58,7 +71,7 @@ export default function Buttons() {
                     variant="contained"
                     color="error"
                     onClick={() => setOpenEliminar(true)}
-                    sx={{ mt: 2 }}
+                    sx={{ mt: 2, fontWeight: 600 }}
                 >
                     Eliminar
                 </Button>
@@ -66,7 +79,7 @@ export default function Buttons() {
                 <Button
                     variant="contained"
                     onClick={() => setOpenAgregarStock(true)}
-                    sx={{ mt: 2 }}
+                    sx={{ ...buttonStyle, mt: 2 }}
                 >
                     Agregar Stock
                 </Button>
