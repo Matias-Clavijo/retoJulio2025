@@ -10,6 +10,7 @@ import StockMovements from './pages/StockMovements';
 import Deposits from './pages/Deposits';
 import Sales from './pages/Sales';
 import Buttons from './pages/Buttons';
+import ErrorPage404 from './components/common/errorPage';
 
 export default function App() {
   return (
@@ -26,6 +27,7 @@ export default function App() {
           <Route path="/warehouses" element={<Deposits />} />
           <Route path="/sales" element={<Sales />} />
           <Route path="/buttons" element={<Buttons />} />
+          <Route path= "*" element={<ErrorPage404/>} />
         </Routes>
       </BrowserRouter>
   );
