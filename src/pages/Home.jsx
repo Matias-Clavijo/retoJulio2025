@@ -20,7 +20,7 @@ const options = [
     { label: 'Marcas', icon: LocalOffer, path: '/brands' },
     { label: 'Categorías', icon: Category, path: '/category' },
     { label: 'Depósitos', icon: Warehouse, path: '/warehouses' },
-    { label: 'Proveedores', icon: Store, path: '/suppliers' },
+    { label: 'Proveedores', icon: Store, path: '/providers' },
     { label: 'Movimientos', icon: TrendingUp, path: '/movements' },
     { label: 'Ventas', icon: PointOfSale, path: '/sales' },
 ];

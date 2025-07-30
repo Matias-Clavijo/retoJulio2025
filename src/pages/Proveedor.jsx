@@ -83,11 +83,9 @@ export default function Proveedor() {
   );
 
   const columns = [
-    { id: "codigo", label: "Código", minWidth: 80 },
     { id: "nombre", label: "Nombre", minWidth: 150 },
     { id: "telefono", label: "Teléfono", minWidth: 100 },
     { id: "email", label: "Email", minWidth: 180 },
-    { id: "direccion", label: "Dirección", minWidth: 150 },
     { id: "acciones", label: "Acciones", minWidth: 100, align: "center" },
   ];
 
