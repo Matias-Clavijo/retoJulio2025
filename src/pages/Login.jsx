@@ -1,5 +1,5 @@
 import React from 'react';
-import { Link as RouterLink } from 'react-router-dom';
+import { Link as RouterLink, useNavigate } from 'react-router-dom';
 import {
     Box,
     TextField,
@@ -15,6 +15,13 @@ import { AccountCircle, Lock } from '@mui/icons-material';
 import logo from '../assets/logo.jpeg';
 
 function Login() {
+    const navigate = useNavigate(); // ← Hook para navegación
+
+    const handleLogin = () => {
+        // Aquí podrías validar usuario/contraseña si querés
+        navigate('/'); // ← Navega a la página home ("/")
+    };
+
     return (
         <Box
             display="flex"
@@ -84,6 +91,7 @@ function Login() {
                             color: '#071d49'
                         }
                     }}
+                    onClick={handleLogin} // ← Acción al hacer click
                 >
                     Log in
                 </Button>
