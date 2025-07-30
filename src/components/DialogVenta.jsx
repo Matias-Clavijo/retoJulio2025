@@ -26,6 +26,7 @@ export default function AgregarVentaDialog({ open, onClose }) {
     const [fecha, setFecha] = useState('');
     const [revendedor, setRevendedor] = useState('');
 
+
     const handleGuardar = () => {
         const nuevaVenta = { producto, total, moneda, metodoPago, fecha, revendedor };
         console.log('Venta guardada:', nuevaVenta);

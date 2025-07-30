@@ -12,6 +12,8 @@ import TitleHeader from "../components/common/TitelHeader";
 import Button from "@mui/material/Button";
 import Sidebar from "../components/Sidebar";
 import { salesAPI } from "../services/api/stockBack";
+import DialogWatchVenta from "../components/DialogWatchVenta";
+
 
 export default function Sales() {
     const [sales, setSales] = useState([]);
@@ -19,6 +21,8 @@ export default function Sales() {
     const [error, setError] = useState(null);
     const [totalIncome, setTotalIncome] = useState(0);
     const [openAddDialog, setOpenAddDialog] = useState(false);
+    const [selectedSale, setSelectedSale] = useState(null);
+    const [openWatchDialog, setOpenWatchDialog] = useState(false);
     
     // Valores fijos para la paginación inicial
     const page = 1;
@@ -65,7 +69,8 @@ export default function Sales() {
     };
 
     const handleView = (sale) => {
-        console.log("Viendo detalles de venta:", sale);
+        setSelectedSale(sale.original);
+        setOpenWatchDialog(true);
     };
 
     const columns = [
@@ -177,6 +182,12 @@ export default function Sales() {
                 <AgregarVentaDialog 
                     open={openAddDialog}
                     onClose={handleCloseAddDialog}
+                />
+
+                <DialogWatchVenta
+                    open={openWatchDialog}
+                    onClose={() => setOpenWatchDialog(false)}
+                    venta={selectedSale}
                 />
             </>
         );
