@@ -23,7 +23,7 @@ const ErrorPage404 = ({ title, subtitle, message }) => {
                 <Link to="/">
                     <button
                         style={{
-                            backgroundColor: '#2563eb',
+                            backgroundColor: '#0B2240',
                             color: '#fff',
                             padding: '12px 24px',
                             borderRadius: '30px',
