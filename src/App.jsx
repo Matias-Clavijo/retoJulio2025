@@ -27,11 +27,7 @@ export default function App() {
           <Route path="/movements" element={<StockMovements />} />
           <Route path="/warehouses" element={<Deposits />} />
           <Route path="/sales" element={<Sales />} />
-<<<<<<< Updated upstream
-          <Route path="/buttons" element={<Buttons />} />
           <Route path='/providers' element={<Proveedor />} />
-=======
->>>>>>> Stashed changes
           <Route path= "*" element={<ErrorPage404/>} />
           <Route path='/brand' element={<Brand />} />
         </Routes>
