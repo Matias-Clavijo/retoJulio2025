@@ -4,6 +4,8 @@ import { Box } from "@mui/material";
 import DataManagementPage from "../components/DataManagementPage";
 import DialogStockMovement from "../components/DialogStockMovement.jsx";
 import { stockMovementsAPI } from "../services/api/stockBack";
+import DialogWatchMovements from "../components/DialogWatchMovements.jsx";
+
 
 export default function StockMovements() {
     const [movements, setMovements] = useState([]);
@@ -11,6 +13,9 @@ export default function StockMovements() {
     const [error, setError] = useState(null);
     const [page, setPage] = useState(1);
     const [rowsPerPage, setRowsPerPage] = useState(10);
+    const [openVer, setOpenVer] = useState(false);
+    const [movimientoSeleccionado, setMovimientoSeleccionado] = useState(null);
+
 
     useEffect(() => {
         const fetchMovements = async () => {
@@ -86,7 +91,8 @@ export default function StockMovements() {
     };
 
     const handleView = (movement) => {
-        console.log("Viewing movement:", movement.original || movement);
+        setMovimientoSeleccionado(movement.original || movement);
+        setOpenVer(true);
     };
 
     const handlePageChange = (newPage) => {
@@ -99,6 +105,7 @@ export default function StockMovements() {
     };
 
     return (
+        <>
         <DataManagementPage
             title="Movimiento de Stock"
             description="Administra la cantidad de productos en los depósitos del sistema"
@@ -117,7 +124,15 @@ export default function StockMovements() {
             onRowsPerPageChange={handleRowsPerPageChange}
             addDialog={<DialogStockMovement/>}
             loading={loading}
-            error={error}
+            error={error}  
         />
+        <DialogWatchMovements
+            open={openVer}
+            onClose={() => setOpenVer(false)}
+            movimiento={movimientoSeleccionado}
+        />
+        </>
+
+        
     );
 } 

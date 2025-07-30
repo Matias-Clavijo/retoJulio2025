@@ -123,7 +123,6 @@ export default function Category() {
         columns={columns}
         data={categories}
         defaultRowsPerPage={rowsPerPage}
-        showViewAction={true}
         rowsPerPageOptions={[5, 10, 25, 50]}
         onEdit={handleEdit}
         onDelete={handleDelete}
