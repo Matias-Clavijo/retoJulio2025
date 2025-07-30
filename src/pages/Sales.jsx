@@ -85,10 +85,17 @@ export default function Sales() {
             align: "center",
             format: (_, row) => (
                 <Box sx={{ display: 'flex', justifyContent: 'center', gap: 1 }}>
+                    <IconButton
+                        size="small"
+                        onClick={() => handleView(row)}
+                        sx={{ color: '#0B2240' }}
+                    >
+                        <VisibilityIcon fontSize="small" />
+                    </IconButton>
                     <IconButton 
                         size="small" 
                         onClick={() => handleEdit(row)}
-                        sx={{ color: 'primary.main' }}
+                        sx={{ color: '#0B2240' }}
                     >
                         <EditIcon fontSize="small" />
                     </IconButton>
@@ -99,13 +106,7 @@ export default function Sales() {
                     >
                         <DeleteIcon fontSize="small" />
                     </IconButton>
-                    <IconButton 
-                        size="small" 
-                        onClick={() => handleView(row)}
-                        sx={{ color: 'info.main' }}
-                    >
-                        <VisibilityIcon fontSize="small" />
-                    </IconButton>
+                   
                 </Box>
             )
         }
