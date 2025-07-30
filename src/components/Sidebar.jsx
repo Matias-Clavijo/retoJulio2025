@@ -127,11 +127,17 @@ const Sidebar = ({ onClose }) => {
                 }}
                 onClick={() => navigate('/')}
             >
-                <img
-                    src={logo}
-                    alt="Logo Brava Store"
-                    style={{ width: 180, height: 'auto', objectFit: 'contain' }}
-                />
+                    <img 
+                        src={logo} 
+                        alt="Brava Store Logo" 
+                        style={{ 
+                            width: 210, 
+                            height: 110,
+                            objectFit: 'cover',
+                            objectPosition: 'center'
+                        }} 
+                    />
+                
             </Box>
 
             <Divider variant="middle" />

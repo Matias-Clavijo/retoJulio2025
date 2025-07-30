@@ -12,7 +12,8 @@ const mockProducts = [
     ],
     brand: { id: 1, name: "HP" },
     category: { id: 1, name: "Computing" },
-    depositsCount: 3
+    depositsCount: 3,
+    deposits: [ "Depósito 1", "Depósito 2", "Depósito 3", "Depósito 4", "Depósito 5", "Depósito 6", "Depósito 7", "Depósito 8", "Depósito 9", "Depósito 10" ]
   },
   {
     id: 2,
@@ -24,7 +25,8 @@ const mockProducts = [
     ],
     brand: { id: 2, name: "Dell" },
     category: { id: 1, name: "Computing" },
-    depositsCount: 2
+    depositsCount: 2,
+    deposits: [ "Depósito 1", "Depósito 2", "Depósito 3" ]
   }
 ];
 
