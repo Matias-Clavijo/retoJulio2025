@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import TitleHeader from "../components/common/TitelHeader";
-import CommonTable from "../components/common/Table";
+import CommonTable from "../components/common/CommonTable";
 import Button from "@mui/material/Button";
 import IconButton from "@mui/material/IconButton";
 import EditIcon from "@mui/icons-material/Edit";

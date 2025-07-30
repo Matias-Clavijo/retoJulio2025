@@ -12,6 +12,7 @@ import Sales from './pages/Sales';
 import Buttons from './pages/Buttons';
 import ErrorPage404 from './components/common/errorPage';
 import Brand from './pages/Brand';
+import Proveedor from './pages/Proveedor';
 
 export default function App() {
   return (
@@ -28,6 +29,7 @@ export default function App() {
           <Route path="/warehouses" element={<Deposits />} />
           <Route path="/sales" element={<Sales />} />
           <Route path="/buttons" element={<Buttons />} />
+          <Route path='/providers' element={<Proveedor />} />
           <Route path= "*" element={<ErrorPage404/>} />
           <Route path='/brand' element={<Brand />} />
         </Routes>
