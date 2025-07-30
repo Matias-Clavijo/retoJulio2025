@@ -4,6 +4,7 @@ import DataManagementPage from "../components/DataManagementPage";
 import EditarDeposito from "../components/DialogDeposito.jsx";
 import { depositsAPI } from "../services/api/stockBack";
 import Eliminar from "../components/Eliminar";
+import DialogWatchDeposit from "../components/DialogWatchDeposit.jsx";
 
 export default function Deposits() {
   const [deposits, setDeposits] = useState([]);
@@ -13,6 +14,8 @@ export default function Deposits() {
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
   const [selectedDeposit, setSelectedDeposit] = useState(null);
+  const [depositoSeleccionado, setDepositoSeleccionado] = useState(null);
+  const [openVer, setOpenVer] = useState(false);
 
   useEffect(() => {
     const fetchDeposits = async () => {
@@ -27,8 +30,9 @@ export default function Deposits() {
             location: deposit.location,
             products_associated: deposit.productCount,
             associated: deposit.associatedDate,
+            products: deposit.products || [],
             // Mantener los datos originales para edición/visualización
-            original: deposit
+            original: { ...deposit, products: deposit.products || [] }
           }));
           setDeposits(transformedDeposits);
           setError(null);
@@ -103,7 +107,8 @@ export default function Deposits() {
   };
 
   const handleView = (deposit) => {
-    console.log("Viewing deposit:", deposit.original || deposit);
+    setDepositoSeleccionado(deposit.original || deposit); // si usás transformaciones, accedé al original
+    setOpenVer(true);
   };
 
   const handlePageChange = (newPage) => {
@@ -143,6 +148,12 @@ export default function Deposits() {
           onConfirm={handleConfirmDelete}
           title={`¿Estás seguro que deseas eliminar el depósito "${selectedDeposit?.nombre}"?`}
         />
+        <DialogWatchDeposit
+          open={openVer}
+          onClose={() => setOpenVer(false)}
+          deposito={depositoSeleccionado}
+        />
+
     </>
   );
 }
