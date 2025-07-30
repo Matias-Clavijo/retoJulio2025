@@ -4,6 +4,8 @@ import DataManagementPage from "../components/DataManagementPage";
 import AgregarProductoDialog from "../components/DialogProductos";
 import Eliminar from "../components/Eliminar";
 import { productsAPI } from "../services/api/stockBack";
+import { Snackbar, Alert } from '@mui/material';
+
 
 // ✅ IMPORTAR EL CUSTOM HOOK
 import { useListFormatter } from "../hooks/useListFormatter";
@@ -19,6 +21,9 @@ export default function Products() {
     const [rowsPerPage, setRowsPerPage] = useState(10);
     const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
     const [selectedProduct, setSelectedProduct] = useState(null);
+    const [errorSnackbar, setErrorSnackbar] = useState(false);
+    const [errorMessage, setErrorMessage] = useState('');
+
 
     useEffect(() => {
         const fetchProducts = async () => {
@@ -127,6 +132,7 @@ export default function Products() {
             }
         } catch {
             setError("Error al conectar con el servidor");
+            setErrorSnackbar(true);
         } finally {
             setLoading(false);
             handleCloseDelete();
@@ -174,6 +180,18 @@ export default function Products() {
                 onConfirm={handleConfirmDelete}
                 title={`¿Estás seguro que deseas eliminar el producto "${selectedProduct?.producto}"?`}
             />
+
+            <Snackbar
+                open={errorSnackbar}
+                autoHideDuration={5000}
+                onClose={() => setErrorSnackbar(false)}
+                anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+            >
+                <Alert onClose={() => setErrorSnackbar(false)} severity="error" sx={{ width: '100%' }}>
+                    {errorMessage}
+                </Alert>
+            </Snackbar>
+            
         </>
     );
 } 
