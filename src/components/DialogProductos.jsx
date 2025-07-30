@@ -9,7 +9,6 @@ import {
     Box,
     Typography,
     IconButton,
-<<<<<<< Updated upstream
     FormControl,
     InputLabel,
     OutlinedInput,
@@ -17,14 +16,12 @@ import {
     Select,
     Chip,
     Divider
-=======
->>>>>>> Stashed changes
 } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 import AddIcon from '@mui/icons-material/Add';
 
-const primaryColor = '#0B2240';  // Azul del logo
-const accentColor = '#F5C518';   // Amarillo del logo
+const primaryColor = '#0B2240';
+const accentColor = '#F5C518';
 
 const currencies = [
     { code: 'UY', label: 'UYU' },
@@ -41,25 +38,14 @@ export default function AgregarProductoDialog({ open, onClose }) {
     const [moneda, setMoneda] = useState('UY');
     const [precioCompra, setPrecioCompra] = useState('');
     const [precioVenta, setPrecioVenta] = useState('');
-    
-    // Arrays para múltiples precios
     const [preciosCompra, setPreciosCompra] = useState([]);
     const [preciosVenta, setPreciosVenta] = useState([]);
 
     const handleAgregar = () => {
-        console.log({ 
-            nombre, 
-            descripcion, 
-            marca, 
-            categoria, 
-            moneda, 
-            preciosCompra,
-            preciosVenta 
-        });
+        console.log({ nombre, descripcion, marca, categoria, moneda, preciosCompra, preciosVenta });
         onClose();
     };
 
-    // Agregar precio de compra
     const agregarPrecioCompra = () => {
         if (precioCompra.trim() !== '') {
             const nuevoPrecio = {
@@ -72,7 +58,6 @@ export default function AgregarProductoDialog({ open, onClose }) {
         }
     };
 
-    // Agregar precio de venta
     const agregarPrecioVenta = () => {
         if (precioVenta.trim() !== '') {
             const nuevoPrecio = {
@@ -85,73 +70,46 @@ export default function AgregarProductoDialog({ open, onClose }) {
         }
     };
 
-    // Eliminar precio de compra
     const eliminarPrecioCompra = (id) => {
         setPreciosCompra(preciosCompra.filter(p => p.id !== id));
     };
 
-    // Eliminar precio de venta
     const eliminarPrecioVenta = (id) => {
         setPreciosVenta(preciosVenta.filter(p => p.id !== id));
     };
 
-    // Validación de campos requeridos
     const validarMonedasIguales = () => {
-        if (preciosCompra.length === 0 || preciosVenta.length === 0) {
-            return false;
-        }
-
+        if (preciosCompra.length === 0 || preciosVenta.length === 0) return false;
         const monedasCompra = [...new Set(preciosCompra.map(p => p.moneda))];
         const monedasVenta = [...new Set(preciosVenta.map(p => p.moneda))];
-
-        const todasComprasTienenVenta = monedasCompra.every(moneda => 
-            monedasVenta.includes(moneda)
-        );
-
-        const todasVentasTienenCompra = monedasVenta.every(moneda => 
-            monedasCompra.includes(moneda)
-        );
-
-        return todasComprasTienenVenta && todasVentasTienenCompra;
+        return monedasCompra.every(m => monedasVenta.includes(m)) &&
+            monedasVenta.every(m => monedasCompra.includes(m));
     };
 
     const getMensajeMonedasFaltantes = () => {
-        if (preciosCompra.length === 0 || preciosVenta.length === 0) {
-            return null;
-        }
-
+        if (preciosCompra.length === 0 || preciosVenta.length === 0) return null;
         const monedasCompra = [...new Set(preciosCompra.map(p => p.moneda))];
         const monedasVenta = [...new Set(preciosVenta.map(p => p.moneda))];
-
-        const faltanEnVenta = monedasCompra.filter(moneda => !monedasVenta.includes(moneda));
-        const faltanEnCompra = monedasVenta.filter(moneda => !monedasCompra.includes(moneda));
-
+        const faltanEnVenta = monedasCompra.filter(m => !monedasVenta.includes(m));
+        const faltanEnCompra = monedasVenta.filter(m => !monedasCompra.includes(m));
         if (faltanEnVenta.length > 0 || faltanEnCompra.length > 0) {
-            let mensaje = "⚠️ Monedas faltantes: ";
-            if (faltanEnVenta.length > 0) {
-                mensaje += `Venta en ${faltanEnVenta.join(', ')}`;
+            let msg = "⚠️ Monedas faltantes: ";
+            if (faltanEnVenta.length) msg += `Venta en ${faltanEnVenta.join(', ')}`;
+            if (faltanEnCompra.length) {
+                if (faltanEnVenta.length) msg += " | ";
+                msg += `Compra en ${faltanEnCompra.join(', ')}`;
             }
-            if (faltanEnCompra.length > 0) {
-                if (faltanEnVenta.length > 0) mensaje += " | ";
-                mensaje += `Compra en ${faltanEnCompra.join(', ')}`;
-            }
-            return mensaje;
+            return msg;
         }
         return null;
     };
 
-    const isFormValid = nombre.trim() !== '' && 
-                       descripcion.trim() !== '' && 
-                       preciosCompra.length > 0 && 
-                       preciosVenta.length > 0 &&
-                       validarMonedasIguales();
+    const isFormValid = nombre.trim() && descripcion.trim() &&
+        preciosCompra.length && preciosVenta.length &&
+        validarMonedasIguales();
 
     return (
-<<<<<<< Updated upstream
         <Dialog open={open} onClose={onClose} fullWidth maxWidth="md">
-            <DialogTitle>
-=======
-        <Dialog open={open} onClose={onClose} fullWidth maxWidth="sm">
             <Box
                 sx={{
                     backgroundColor: primaryColor,
@@ -168,7 +126,6 @@ export default function AgregarProductoDialog({ open, onClose }) {
                     borderTopRightRadius: '4px'
                 }}
             >
->>>>>>> Stashed changes
                 Agregar producto
                 <IconButton
                     aria-label="close"
@@ -185,10 +142,10 @@ export default function AgregarProductoDialog({ open, onClose }) {
             </Box>
 
             <DialogContent>
+                {/* Campos básicos */}
                 <FormControl fullWidth margin="dense">
-                    <InputLabel htmlFor="nombre">Nombre *</InputLabel>
+                    <InputLabel>Nombre *</InputLabel>
                     <OutlinedInput
-                        id="nombre"
                         value={nombre}
                         onChange={(e) => setNombre(e.target.value)}
                         label="Nombre *"
@@ -196,19 +153,17 @@ export default function AgregarProductoDialog({ open, onClose }) {
                 </FormControl>
 
                 <FormControl fullWidth margin="dense">
-                    <InputLabel htmlFor="descripcion">Descripción *</InputLabel>
+                    <InputLabel>Descripción *</InputLabel>
                     <OutlinedInput
-                        id="descripcion"
                         value={descripcion}
                         onChange={(e) => setDescripcion(e.target.value)}
-                        label="Descripción*"
+                        label="Descripción *"
                     />
                 </FormControl>
 
                 <FormControl fullWidth margin="dense">
-                    <InputLabel htmlFor="marca">Marca</InputLabel>
+                    <InputLabel>Marca</InputLabel>
                     <Select
-                        id="marca"
                         value={marca}
                         onChange={(e) => setMarca(e.target.value)}
                         label="Marca"
@@ -219,9 +174,8 @@ export default function AgregarProductoDialog({ open, onClose }) {
                 </FormControl>
 
                 <FormControl fullWidth margin="dense">
-                    <InputLabel htmlFor="categoria">Categoría</InputLabel>
+                    <InputLabel>Categoría</InputLabel>
                     <Select
-                        id="categoria"
                         value={categoria}
                         onChange={(e) => setCategoria(e.target.value)}
                         label="Categoría"
@@ -231,103 +185,65 @@ export default function AgregarProductoDialog({ open, onClose }) {
                     </Select>
                 </FormControl>
 
+                {/* Precios */}
                 <Box display="flex" gap={2} mt={2}>
                     <FormControl margin="dense" sx={{ width: '30%' }}>
-                        <InputLabel htmlFor="moneda">Moneda</InputLabel>
+                        <InputLabel>Moneda</InputLabel>
                         <Select
-                            id="moneda"
                             value={moneda}
                             onChange={(e) => setMoneda(e.target.value)}
                             label="Moneda"
                         >
-                            {currencies.map((option) => (
-                                <MenuItem key={option.code} value={option.code}>
-                                    {option.code}
-                                </MenuItem>
+                            {currencies.map(opt => (
+                                <MenuItem key={opt.code} value={opt.code}>{opt.code}</MenuItem>
                             ))}
                         </Select>
                     </FormControl>
 
                     <FormControl fullWidth margin="dense">
-                        <InputLabel htmlFor="precio-compra">Precio de Compra</InputLabel>
+                        <InputLabel>Precio de Compra</InputLabel>
                         <OutlinedInput
-                            id="precio-compra"
                             value={precioCompra}
                             onChange={(e) => setPrecioCompra(e.target.value)}
-                            startAdornment={
-                                <InputAdornment position="start">{moneda}</InputAdornment>
-                            }
+                            startAdornment={<InputAdornment position="start">{moneda}</InputAdornment>}
                             endAdornment={
                                 <InputAdornment position="end">
-                                    <IconButton 
-                                        onClick={agregarPrecioCompra}
-                                        disabled={!precioCompra.trim()}
-                                        size="small"
-                                        sx={{ color: primaryColor }}
-                                    >
+                                    <IconButton onClick={agregarPrecioCompra} disabled={!precioCompra.trim()} size="small" sx={{ color: primaryColor }}>
                                         <AddIcon />
                                     </IconButton>
                                 </InputAdornment>
                             }
+                            onKeyPress={(e) => e.key === 'Enter' && agregarPrecioCompra()}
                             label="Precio de Compra"
-                            onKeyPress={(e) => {
-                                if (e.key === 'Enter') {
-                                    agregarPrecioCompra();
-                                }
-                            }}
                         />
                     </FormControl>
 
                     <FormControl fullWidth margin="dense">
-                        <InputLabel htmlFor="precio-venta">Precio de Venta</InputLabel>
+                        <InputLabel>Precio de Venta</InputLabel>
                         <OutlinedInput
-                            id="precio-venta"
                             value={precioVenta}
                             onChange={(e) => setPrecioVenta(e.target.value)}
-                            startAdornment={
-                                <InputAdornment position="start">{moneda}</InputAdornment>
-                            }
+                            startAdornment={<InputAdornment position="start">{moneda}</InputAdornment>}
                             endAdornment={
                                 <InputAdornment position="end">
-                                    <IconButton 
-                                        onClick={agregarPrecioVenta}
-                                        disabled={!precioVenta.trim()}
-                                        size="small"
-                                        sx={{ color: primaryColor }}
-                                    >
+                                    <IconButton onClick={agregarPrecioVenta} disabled={!precioVenta.trim()} size="small" sx={{ color: primaryColor }}>
                                         <AddIcon />
                                     </IconButton>
                                 </InputAdornment>
                             }
+                            onKeyPress={(e) => e.key === 'Enter' && agregarPrecioVenta()}
                             label="Precio de Venta"
-                            onKeyPress={(e) => {
-                                if (e.key === 'Enter') {
-                                    agregarPrecioVenta();
-                                }
-                            }}
                         />
                     </FormControl>
                 </Box>
 
+                {/* Chips de precios */}
                 {preciosCompra.length > 0 && (
                     <Box mt={2}>
-                        <Typography variant="subtitle2" sx={{ mb: 1, color: primaryColor }}>
-                            Precios de Compra:
-                        </Typography>
+                        <Typography variant="subtitle2" sx={{ mb: 1, color: primaryColor }}>Precios de Compra:</Typography>
                         <Box display="flex" flexWrap="wrap" gap={1}>
-                            {preciosCompra.map((precio) => (
-                                <Chip
-                                    key={precio.id}
-                                    label={`${precio.moneda} ${precio.precio.toFixed(2)}`}
-                                    onDelete={() => eliminarPrecioCompra(precio.id)}
-                                    sx={{
-                                        backgroundColor: '#e3f2fd',
-                                        color: primaryColor,
-                                        '& .MuiChip-deleteIcon': {
-                                            color: primaryColor
-                                        }
-                                    }}
-                                />
+                            {preciosCompra.map(p => (
+                                <Chip key={p.id} label={`${p.moneda} ${p.precio.toFixed(2)}`} onDelete={() => eliminarPrecioCompra(p.id)} sx={{ backgroundColor: '#e3f2fd', color: primaryColor }} />
                             ))}
                         </Box>
                     </Box>
@@ -335,41 +251,18 @@ export default function AgregarProductoDialog({ open, onClose }) {
 
                 {preciosVenta.length > 0 && (
                     <Box mt={2}>
-                        <Typography variant="subtitle2" sx={{ mb: 1, color: primaryColor }}>
-                            Precios de Venta:
-                        </Typography>
+                        <Typography variant="subtitle2" sx={{ mb: 1, color: primaryColor }}>Precios de Venta:</Typography>
                         <Box display="flex" flexWrap="wrap" gap={1}>
-                            {preciosVenta.map((precio) => (
-                                <Chip
-                                    key={precio.id}
-                                    label={`${precio.moneda} ${precio.precio.toFixed(2)}`}
-                                    onDelete={() => eliminarPrecioVenta(precio.id)}
-                                    sx={{
-                                        backgroundColor: '#fff3e0',
-                                        color: '#e65100',
-                                        '& .MuiChip-deleteIcon': {
-                                            color: '#e65100'
-                                        }
-                                    }}
-                                />
+                            {preciosVenta.map(p => (
+                                <Chip key={p.id} label={`${p.moneda} ${p.precio.toFixed(2)}`} onDelete={() => eliminarPrecioVenta(p.id)} sx={{ backgroundColor: '#fff3e0', color: '#e65100' }} />
                             ))}
                         </Box>
                     </Box>
                 )}
 
-                {(preciosCompra.length > 0 || preciosVenta.length > 0) && (
-                    <Divider sx={{ mt: 2 }} />
-                )}
-
                 {getMensajeMonedasFaltantes() && (
-                    <Box mt={2} p={1.5} sx={{ 
-                        backgroundColor: '#fff3cd', 
-                        border: '1px solid #ffeaa7',
-                        borderRadius: 1 
-                    }}>
-                        <Typography variant="body2" sx={{ color: '#856404' }}>
-                            {getMensajeMonedasFaltantes()}
-                        </Typography>
+                    <Box mt={2} p={1.5} sx={{ backgroundColor: '#fff3cd', border: '1px solid #ffeaa7', borderRadius: 1 }}>
+                        <Typography variant="body2" sx={{ color: '#856404' }}>{getMensajeMonedasFaltantes()}</Typography>
                     </Box>
                 )}
             </DialogContent>

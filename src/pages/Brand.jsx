@@ -2,7 +2,7 @@ import React from "react";
 import TitleHeader from "../components/common/TitelHeader";
 import CommonTable from "../components/common/CommonTable";
 import Button from "@mui/material/Button";
-import AgregarMarca from "../components/Agregarmarca"; 
+import AgregarMarca from "../components/DialogMarca.jsx"; 
 
 
 export default function Brand() {

@@ -1,7 +1,6 @@
 ﻿import React, { useState } from 'react';
 import {
     Dialog,
-    DialogTitle,
     DialogContent,
     DialogActions,
     Button,
@@ -10,9 +9,14 @@ import {
     IconButton,
     FormControl,
     InputLabel,
-    Select
+    Select,
+    Box,
+    Typography
 } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
+
+const primaryColor = '#0B2240';  // Azul Brava Store
+const accentColor = '#F5C518';   // Amarillo Brava Store
 
 const tiposMovimiento = [
     { value: 'Entrada', label: 'Entrada' },
@@ -32,16 +36,33 @@ export default function DialogStockMovement({ open, onClose }) {
 
     return (
         <Dialog open={open} onClose={onClose} fullWidth maxWidth="sm">
-            <DialogTitle>
-                Nuevo Movimiento de Stock
+            {/* HEADER PERSONALIZADO */}
+            <Box
+                sx={{
+                    backgroundColor: primaryColor,
+                    color: 'white',
+                    fontWeight: 'bold',
+                    px: 2,
+                    py: 1,
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    position: 'relative',
+                    borderTopLeftRadius: '4px',
+                    borderTopRightRadius: '4px'
+                }}
+            >
+                <Typography variant="subtitle1" sx={{ fontWeight: 'bold', textTransform: 'uppercase' }}>
+                    Nuevo Movimiento de Stock
+                </Typography>
                 <IconButton
                     aria-label="close"
                     onClick={onClose}
-                    sx={{ position: 'absolute', right: 8, top: 8 }}
+                    sx={{ position: 'absolute', right: 8, top: 4, color: 'white' }}
                 >
                     <CloseIcon />
                 </IconButton>
-            </DialogTitle>
+            </Box>
 
             <DialogContent>
                 <TextField
@@ -97,11 +118,20 @@ export default function DialogStockMovement({ open, onClose }) {
             </DialogContent>
 
             <DialogActions sx={{ px: 3, pb: 3 }}>
-                <Button 
-                    variant="contained" 
-                    onClick={handleSubmit} 
+                <Button
+                    variant="contained"
                     fullWidth
+                    onClick={handleSubmit}
                     disabled={!producto || !deposito || !tipo || !cantidad}
+                    sx={{
+                        backgroundColor: accentColor,
+                        color: 'black',
+                        fontWeight: 'bold',
+                        '&:hover': {
+                            backgroundColor: primaryColor,
+                            color: 'white'
+                        }
+                    }}
                 >
                     AGREGAR MOVIMIENTO
                 </Button>
