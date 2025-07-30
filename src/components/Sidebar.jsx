@@ -40,7 +40,7 @@ const Sidebar = ({ onClose }) => {
         { text: 'Marcas', icon: <LocalOffer />, path: '/brands' },
         { text: 'Categorías', icon: <Category />, path: '/category' },
         { text: 'Depósitos', icon: <Warehouse />, path: '/warehouses' },
-        { text: 'Proveedores', icon: <Store />, path: '/suppliers' }
+        { text: 'Proveedores', icon: <Store />, path: '/providers' }
     ];
 
     const operationsItems = [
@@ -110,7 +110,8 @@ const Sidebar = ({ onClose }) => {
                 width: drawerWidth,
                 height: '100%',
                 display: 'flex',
-                flexDirection: 'column'
+                flexDirection: 'column',
+                overflowX: 'hidden' // 👈 evita scroll horizontal
             }}
         >
             <Divider variant="middle" />
@@ -127,22 +128,21 @@ const Sidebar = ({ onClose }) => {
                 }}
                 onClick={() => navigate('/')}
             >
-                    <img 
-                        src={logo} 
-                        alt="Brava Store Logo" 
-                        style={{ 
-                            width: 210, 
-                            height: 110,
-                            objectFit: 'cover',
-                            objectPosition: 'center'
-                        }} 
-                    />
-                
+                <img
+                    src={logo}
+                    alt="Brava Store Logo"
+                    style={{
+                        width: 210,
+                        height: 110,
+                        objectFit: 'cover',
+                        objectPosition: 'center'
+                    }}
+                />
             </Box>
 
             <Divider variant="middle" />
 
-            <Box sx={{ flex: 1, py: 2, overflow: 'auto' }}>
+            <Box sx={{ flex: 1, py: 2, overflowY: 'auto', overflowX: 'hidden' }}>
                 {renderMenuSection('Inventario', inventoryItems)}
                 {renderMenuSection('Operaciones', operationsItems)}
             </Box>
