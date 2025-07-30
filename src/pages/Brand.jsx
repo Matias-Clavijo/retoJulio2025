@@ -2,7 +2,7 @@ import React from "react";
 import TitleHeader from "../components/common/TitelHeader";
 import CommonTable from "../components/common/CommonTable";
 import Button from "@mui/material/Button";
-import AgregarMarca from "../components/DialogMarca.jsx"; 
+import DialogMarca from "../components/DialogMarca";
 
 
 export default function Brand() {
@@ -22,7 +22,7 @@ export default function Brand() {
 
   return (
     <>
-      <AgregarMarca
+      <DialogMarca
         open={openAgregarMarca}
         onClose={() => setOpenAgregarMarca(false)}
       />
