@@ -11,36 +11,28 @@ import {
 import CloseIcon from "@mui/icons-material/Close";
 
 const AgregarProveedorDialog = ({ open, onClose, onSave, proveedorEditar }) => {
-  const [codigo, setCodigo] = useState("");
   const [nombre, setNombre] = useState("");
   const [telefono, setTelefono] = useState("");
   const [email, setEmail] = useState("");
-  const [direccion, setDireccion] = useState("");
 
   useEffect(() => {
     if (proveedorEditar) {
-      setCodigo(proveedorEditar.codigo || "");
       setNombre(proveedorEditar.nombre || "");
       setTelefono(proveedorEditar.telefono || "");
       setEmail(proveedorEditar.email || "");
-      setDireccion(proveedorEditar.direccion || "");
     } else {
-      setCodigo("");
       setNombre("");
       setTelefono("");
       setEmail("");
-      setDireccion("");
     }
   }, [proveedorEditar]);
 
   const handleGuardar = () => {
     const nuevoProveedor = {
       id: proveedorEditar?.id, // solo lo usamos si es edición
-      codigo,
       nombre,
       telefono,
       email,
-      direccion,
     };
     onSave(nuevoProveedor);
   };
@@ -74,15 +66,6 @@ const AgregarProveedorDialog = ({ open, onClose, onSave, proveedorEditar }) => {
 
       <DialogContent dividers>
         <TextField
-          autoFocus
-          margin="dense"
-          label="Código"
-          fullWidth
-          variant="outlined"
-          value={codigo}
-          onChange={(e) => setCodigo(e.target.value)}
-        />
-        <TextField
           margin="dense"
           label="Nombre *"
           fullWidth
@@ -105,14 +88,6 @@ const AgregarProveedorDialog = ({ open, onClose, onSave, proveedorEditar }) => {
           variant="outlined"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
-        />
-        <TextField
-          margin="dense"
-          label="Dirección"
-          fullWidth
-          variant="outlined"
-          value={direccion}
-          onChange={(e) => setDireccion(e.target.value)}
         />
       </DialogContent>
 

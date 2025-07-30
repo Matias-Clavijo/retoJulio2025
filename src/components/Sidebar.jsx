@@ -40,7 +40,7 @@ const Sidebar = ({ onClose }) => {
         { text: 'Marcas', icon: <LocalOffer />, path: '/brands' },
         { text: 'Categorías', icon: <Category />, path: '/category' },
         { text: 'Depósitos', icon: <Warehouse />, path: '/warehouses' },
-        { text: 'Proveedores', icon: <Store />, path: '/suppliers' }
+        { text: 'Proveedores', icon: <Store />, path: '/providers' }
     ];
 
     const operationsItems = [

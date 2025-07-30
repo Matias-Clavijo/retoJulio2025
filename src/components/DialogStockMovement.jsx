@@ -1,111 +1,134 @@
 ﻿import React, { useState } from 'react';
 import {
-    Dialog,
-    DialogTitle,
-    DialogContent,
-    DialogActions,
-    Button,
-    TextField,
-    MenuItem,
-    IconButton,
-    FormControl,
-    InputLabel,
-    Select
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  Button,
+  TextField,
+  IconButton,
+  Select,
+  MenuItem,
+  InputLabel,
+  FormControl
 } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 
-const tiposMovimiento = [
-    { value: 'Entrada', label: 'Entrada' },
-    { value: 'Salida', label: 'Salida' },
-];
+const AgregarStock = ({ open, onClose }) => {
+  const [producto, setProducto] = useState('');
+  const [deposito, setDeposito] = useState('');
+  const [tipo, setTipo] = useState('');
+  const [cantidad, setCantidad] = useState('');
+  const [depositoDestino, setDepositoDestino] = useState('');
 
-export default function DialogStockMovement({ open, onClose }) {
-    const [producto, setProducto] = useState('');
-    const [deposito, setDeposito] = useState('');
-    const [tipo, setTipo] = useState('');
-    const [cantidad, setCantidad] = useState('');
-
-    const handleSubmit = () => {
-        console.log({ producto, deposito, tipo, cantidad });
-        onClose();
+  const handleSubmit = () => {
+    const nuevoStock = {
+      producto,
+      deposito,
+      tipo,
+      cantidad,
+      ...(tipo === 'Transferencia' && { depositoDestino })
     };
+    console.log('Stock agregado:', nuevoStock);
+    onClose(); // Cierra el modal
+  };
 
-    return (
-        <Dialog open={open} onClose={onClose} fullWidth maxWidth="sm">
-            <DialogTitle>
-                Nuevo Movimiento de Stock
-                <IconButton
-                    aria-label="close"
-                    onClick={onClose}
-                    sx={{ position: 'absolute', right: 8, top: 8 }}
-                >
-                    <CloseIcon />
-                </IconButton>
-            </DialogTitle>
+  return (
+    <Dialog
+      open={open}
+      onClose={onClose}
+      PaperProps={{
+        sx: {
+          width: 300,
+          borderRadius: 2,
+          p: 2
+        }
+      }}
+    >
+      <DialogTitle sx={{ m: 0, p: 2 }}>
+        Nuevo Movimiento de Stock
+        <IconButton
+          onClick={onClose}
+          sx={{ position: 'absolute', right: 8, top: 8, color: 'grey.500' }}
+        >
+          <CloseIcon />
+        </IconButton>
+      </DialogTitle>
 
-            <DialogContent>
-                <TextField
-                    select
-                    fullWidth
-                    label="Producto *"
-                    value={producto}
-                    onChange={(e) => setProducto(e.target.value)}
-                    margin="dense"
-                >
-                    <MenuItem value="Producto 1">Producto 1</MenuItem>
-                    <MenuItem value="Producto 2">Producto 2</MenuItem>
-                    <MenuItem value="Producto 3">Producto 3</MenuItem>
-                </TextField>
+      <DialogContent dividers>
+        <FormControl fullWidth margin="dense">
+          <InputLabel>Producto</InputLabel>
+          <Select
+            value={producto}
+            label="Producto"
+            onChange={(e) => setProducto(e.target.value)}
+          >
+            <MenuItem value="Producto A (BADA)">Producto A (BADA)</MenuItem>
+            <MenuItem value="Producto B">Producto B</MenuItem>
+          </Select>
+        </FormControl>
 
-                <TextField
-                    select
-                    fullWidth
-                    label="Depósito *"
-                    value={deposito}
-                    onChange={(e) => setDeposito(e.target.value)}
-                    margin="dense"
-                >
-                    <MenuItem value="Depósito 1">Depósito 1</MenuItem>
-                    <MenuItem value="Depósito 2">Depósito 2</MenuItem>
-                    <MenuItem value="Depósito 3">Depósito 3</MenuItem>
-                </TextField>
+        <FormControl fullWidth margin="dense">
+          <InputLabel>Depósito</InputLabel>
+          <Select
+            value={deposito}
+            label="Depósito"
+            onChange={(e) => setDeposito(e.target.value)}
+          >
+            <MenuItem value="Depósito 1">Depósito 1</MenuItem>
+            <MenuItem value="Depósito 2">Depósito 2</MenuItem>
+          </Select>
+        </FormControl>
 
-                <FormControl fullWidth margin="dense">
-                    <InputLabel>Tipo de Movimiento *</InputLabel>
-                    <Select
-                        value={tipo}
-                        label="Tipo de Movimiento *"
-                        onChange={(e) => setTipo(e.target.value)}
-                    >
-                        {tiposMovimiento.map((option) => (
-                            <MenuItem key={option.value} value={option.value}>
-                                {option.label}
-                            </MenuItem>
-                        ))}
-                    </Select>
-                </FormControl>
+        <FormControl fullWidth margin="dense">
+          <InputLabel>Tipo de Movimiento</InputLabel>
+          <Select
+            value={tipo}
+            label="Tipo de Movimiento"
+            onChange={(e) => setTipo(e.target.value)}
+          >
+            <MenuItem value="Entrada">Entrada</MenuItem>
+            <MenuItem value="Salida">Salida</MenuItem>
+            <MenuItem value="Transferencia">Transferencia</MenuItem>
+          </Select>
+        </FormControl>
 
-                <TextField
-                    fullWidth
-                    label="Cantidad *"
-                    type="number"
-                    value={cantidad}
-                    onChange={(e) => setCantidad(e.target.value)}
-                    margin="dense"
-                    InputProps={{ inputProps: { min: 1 } }}
-                />
-            </DialogContent>
+        {tipo === 'Transferencia' && (
+          <FormControl fullWidth margin="dense">
+            <InputLabel>Depósito destino</InputLabel>
+            <Select
+              value={depositoDestino}
+              label="Depósito destino"
+              onChange={(e) => setDepositoDestino(e.target.value)}
+            >
+              <MenuItem value="Depósito 1">Depósito 1</MenuItem>
+              <MenuItem value="Depósito 2">Depósito 2</MenuItem>
+            </Select>
+          </FormControl>
+        )}
 
-            <DialogActions sx={{ px: 3, pb: 3 }}>
-                <Button 
-                    variant="contained" 
-                    onClick={handleSubmit} 
-                    fullWidth
-                    disabled={!producto || !deposito || !tipo || !cantidad}
-                >
-                    AGREGAR MOVIMIENTO
-                </Button>
-            </DialogActions>
-        </Dialog>
-    );
-}
+        <TextField
+          fullWidth
+          margin="dense"
+          label="Cantidad de stock"
+          type="number"
+          value={cantidad}
+          onChange={(e) => setCantidad(e.target.value)}
+        />
+      </DialogContent>
+
+      <DialogActions>
+        <Button
+          variant="contained"
+          onClick={handleSubmit}
+          sx={{ bgcolor: '#1976d2' }}
+        >
+          AGREGAR MOVIMIENTO
+        </Button>
+      </DialogActions>
+    </Dialog>
+  );
+};
+
+export default AgregarStock;
+

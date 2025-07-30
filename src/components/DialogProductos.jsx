@@ -9,7 +9,6 @@ import {
     Box,
     Typography,
     IconButton,
-<<<<<<< Updated upstream
     FormControl,
     InputLabel,
     OutlinedInput,
@@ -17,8 +16,6 @@ import {
     Select,
     Chip,
     Divider
-=======
->>>>>>> Stashed changes
 } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 import AddIcon from '@mui/icons-material/Add';
@@ -147,10 +144,6 @@ export default function AgregarProductoDialog({ open, onClose }) {
                        validarMonedasIguales();
 
     return (
-<<<<<<< Updated upstream
-        <Dialog open={open} onClose={onClose} fullWidth maxWidth="md">
-            <DialogTitle>
-=======
         <Dialog open={open} onClose={onClose} fullWidth maxWidth="sm">
             <Box
                 sx={{
@@ -168,7 +161,6 @@ export default function AgregarProductoDialog({ open, onClose }) {
                     borderTopRightRadius: '4px'
                 }}
             >
->>>>>>> Stashed changes
                 Agregar producto
                 <IconButton
                     aria-label="close"
