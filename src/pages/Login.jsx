@@ -15,11 +15,12 @@ import { AccountCircle, Lock } from '@mui/icons-material';
 import logo from '../assets/logo.jpeg';
 
 function Login() {
-    const navigate = useNavigate(); // ← Hook para navegación
+    const navigate = useNavigate(); 
 
     const handleLogin = () => {
-        // Aquí podrías validar usuario/contraseña si querés
-        navigate('/'); // ← Navega a la página home ("/")
+        navigate('/');
+    const token = "123456abc";
+    localStorage.setItem("token", token);
     };
 
     return (
@@ -91,7 +92,7 @@ function Login() {
                             color: '#071d49'
                         }
                     }}
-                    onClick={handleLogin} // ← Acción al hacer click
+                    onClick={handleLogin}
                 >
                     Log in
                 </Button>
