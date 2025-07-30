@@ -10,7 +10,86 @@ import {
   TableHead,
   TablePagination,
   TableRow,
+  IconButton,
+  Tooltip,
+  Popover,
+  List,
+  ListItem,
+  ListItemText,
+  Chip
 } from '@mui/material';
+import { 
+  FormatListBulleted as ListIcon
+} from '@mui/icons-material';
+
+// Componente para manejar listas largas
+const ListFormatter = ({ items, options = {} }) => {
+  const [anchorEl, setAnchorEl] = React.useState(null);
+  const { listTitle = 'Ver todos los elementos' } = options;
+
+  const handleClick = (event) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
+
+  const open = Boolean(anchorEl);
+
+  return (
+    <Box display="flex" alignItems="center" justifyContent="center">
+      <Tooltip title={listTitle}>
+        <IconButton 
+          size="small" 
+          onClick={handleClick}
+          sx={{ 
+            color: 'primary.main',
+            '&:hover': { backgroundColor: 'primary.light', color: 'white' }
+          }}
+        >
+          <ListIcon fontSize="small" />
+          <Typography variant="caption" sx={{ ml: 0.5 }}>
+            {items.length}
+          </Typography>
+        </IconButton>
+      </Tooltip>
+      
+      <Popover
+        open={open}
+        anchorEl={anchorEl}
+        onClose={handleClose}
+        anchorOrigin={{
+          vertical: 'bottom',
+          horizontal: 'center',
+        }}
+        transformOrigin={{
+          vertical: 'top',
+          horizontal: 'center',
+        }}
+        PaperProps={{
+          sx: { maxHeight: 300, width: 250 }
+        }}
+      >
+        <Box p={1}>
+          <Typography variant="subtitle2" sx={{ mb: 1, fontWeight: 'bold' }}>
+            {listTitle} ({items.length})
+          </Typography>
+          <List dense>
+            {items.map((item, index) => (
+              <ListItem key={index} sx={{ py: 0.5 }}>
+                <ListItemText 
+                  primary={item}
+                  primaryTypographyProps={{ variant: 'body2' }}
+                />
+              </ListItem>
+            ))}
+          </List>
+        </Box>
+      </Popover>
+    </Box>
+  );
+};
 
 export default function CommonTable({
   title,

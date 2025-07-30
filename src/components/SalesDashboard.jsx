@@ -30,7 +30,7 @@ export default function SalesDashboard({ totalIncome = 278912, salesData = [] })
         {/* Gráfico */}
         <Grid item xs={12} md={9} style={{ width: '80%' }}>
           <Box sx={{ height: 200 }}>
-            <Typography variant="h6" gutterBottom sx={{ color: '#666', fontSize: '0.9rem' }}>
+            <Typography variant="h6" gutterBottom sx={{ color: '#0B2240', fontSize: '0.9rem' }}>
               Ventas por Fecha
             </Typography>
             <ResponsiveContainer width="100%" height="100%">
@@ -53,9 +53,9 @@ export default function SalesDashboard({ totalIncome = 278912, salesData = [] })
                 <Line 
                   type="monotone" 
                   dataKey="value" 
-                  stroke="#3b82f6" 
+                  stroke="#0B2240" 
                   strokeWidth={2}
-                  dot={{ fill: '#3b82f6', strokeWidth: 2, r: 4 }}
+                  dot={{ fill: '#0B2240', strokeWidth: 2, r: 4 }}
                 />
               </LineChart>
             </ResponsiveContainer>
@@ -66,20 +66,20 @@ export default function SalesDashboard({ totalIncome = 278912, salesData = [] })
         <Grid item xs={12} md={3} style={{ width: '15%' }}>
           <Box sx={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', height: '100%' }}>
             {/* Income Card */}
-            <Card sx={{ backgroundColor: '#e3f2fd', border: '1px solid #90caf9' }}>
+            <Card sx={{ backgroundColor: '#f8f9fa', border: '1px solid #0B2240' }}>
               <CardContent sx={{ p: 3, textAlign: 'center', '&:last-child': { pb: 3 } }}>
-                <Typography variant="caption" sx={{ color: '#666', fontWeight: 'bold', display: 'block', mb: 1 }}>
+                <Typography variant="caption" sx={{ color: '#0B2240', fontWeight: 'bold', display: 'block', mb: 1 }}>
                   INCOME
                 </Typography>
-                <Typography variant="caption" sx={{ color: '#666', display: 'block', mb: 2 }}>
+                <Typography variant="caption" sx={{ color: '#0B2240', display: 'block', mb: 2 }}>
                   You sold an extra $27.67
                 </Typography>
-                <Typography variant="h3" sx={{ fontWeight: 'bold', color: '#1976d2', mb: 2 }}>
+                <Typography variant="h3" sx={{ fontWeight: 'bold', color: '#0B2240', mb: 2 }}>
                   ${totalIncome.toLocaleString()}
                 </Typography>
                 <Box sx={{ display: 'flex', justifyContent: 'center' }}>
                   <Box sx={{ 
-                    backgroundColor: '#4caf50', 
+                    backgroundColor: '#0B2240', 
                     color: 'white', 
                     px: 2, 
                     py: 1, 

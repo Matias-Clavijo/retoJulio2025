@@ -14,7 +14,6 @@ import {
     IconButton
 } from '@mui/material';
 import {
-    Business,
     Inventory,
     Category,
     LocalOffer,
@@ -22,7 +21,6 @@ import {
     Store,
     TrendingUp,
     PointOfSale,
-    People,
     AccountCircle,
     Settings
 } from '@mui/icons-material';
@@ -84,13 +82,13 @@ const Sidebar = ({ onClose }) => {
                                     backgroundColor: 'action.hover',
                                 },
                                 '&.Mui-selected': {
-                                    backgroundColor: 'primary.main',
-                                    color: 'primary.contrastText',
+                                    backgroundColor: '#0B2240',
+                                    color: 'white',
                                     '&:hover': {
-                                        backgroundColor: 'primary.dark',
+                                        backgroundColor: '#08172e',
                                     },
                                     '& .MuiListItemIcon-root': {
-                                        color: 'primary.contrastText',
+                                        color: 'white',
                                     },
                                 },
                             }}
@@ -98,9 +96,7 @@ const Sidebar = ({ onClose }) => {
                             <ListItemIcon sx={{ minWidth: 40, color: location.pathname === item.path ? 'primary.contrastText' : 'text.secondary' }}>
                                 {item.icon}
                             </ListItemIcon>
-                            <ListItemText
-                                primary={item.text}
-                            />
+                            <ListItemText primary={item.text} />
                         </ListItemButton>
                     </ListItem>
                 ))}
@@ -109,23 +105,40 @@ const Sidebar = ({ onClose }) => {
     );
 
     const drawerContent = (
-        <Box sx={{
-            width: drawerWidth,
-            height: '100%',
-            display: 'flex',
-            flexDirection: 'column'
-        }}>
-            <Divider variant="middle" /><Box sx={{ p: 3 }}>
-            <Box sx={{ p: 3, display: 'flex', justifyContent: 'center' }}>
-                <img
-                    src={logo}
-                    alt="Logo Brava Store"
-                    style={{ width: 110, height: 'auto', objectFit: 'contain' }}
-                />
+        <Box
+            sx={{
+                width: drawerWidth,
+                height: '100%',
+                display: 'flex',
+                flexDirection: 'column'
+            }}
+        >
+            <Divider variant="middle" />
+            <Box
+                sx={{
+                    p: 2,
+                    display: 'flex',
+                    justifyContent: 'center',
+                    cursor: 'pointer',
+                    transition: 'transform 0.2s ease-in-out',
+                    '&:hover': {
+                        transform: 'scale(1.05)',
+                    }
+                }}
+                onClick={() => navigate('/')}
+            >
+                    <img 
+                        src={logo} 
+                        alt="Brava Store Logo" 
+                        style={{ 
+                            width: 210, 
+                            height: 110,
+                            objectFit: 'cover',
+                            objectPosition: 'center'
+                        }} 
+                    />
+                
             </Box>
-
-        </Box>
-
 
             <Divider variant="middle" />
 
@@ -148,7 +161,7 @@ const Sidebar = ({ onClose }) => {
                     onClick={() => setOpenInfoUsuario(true)}
                 >
                     <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-                        <Avatar sx={{ width: 40, height: 40, backgroundColor: 'primary.main' }}>
+                        <Avatar sx={{ width: 40, height: 40, backgroundColor: '#0B2240' }}>
                             <AccountCircle />
                         </Avatar>
                         <Box sx={{ flex: 1 }}>

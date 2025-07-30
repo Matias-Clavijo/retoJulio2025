@@ -135,6 +135,7 @@ const DataManagementPage = ({
           button={
             <Button
               variant="contained"
+              sx={{backgroundColor:"#F5C518", fontWeight: 600, color: "#0B2240"}}
               onClick={handleAdd}
               startIcon={addButtonIcon}
             >

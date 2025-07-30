@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Category as CategoryIcon } from "@mui/icons-material";
 import DataManagementPage from "../components/DataManagementPage";
-import AgregarCategoría from "../components/AgregarCategoría";
+import AgregarCategoría from "../components/DialogCategoría.jsx";
 import Eliminar from "../components/Eliminar";
 import { categoriesAPI } from "../services/api/stockBack";
 

@@ -1,7 +1,6 @@
 ﻿import React, { useState } from 'react';
 import {
     Dialog,
-    DialogTitle,
     DialogContent,
     DialogActions,
     Button,
@@ -9,9 +8,20 @@ import {
     MenuItem,
     Box,
     Typography,
-    IconButton
+    IconButton,
+    FormControl,
+    InputLabel,
+    OutlinedInput,
+    InputAdornment,
+    Select,
+    Chip,
+    Divider
 } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
+import AddIcon from '@mui/icons-material/Add';
+
+const primaryColor = '#0B2240';
+const accentColor = '#F5C518';
 
 const currencies = [
     { code: 'UY', label: 'UYU' },
@@ -26,91 +36,257 @@ export default function AgregarProductoDialog({ open, onClose }) {
     const [marca, setMarca] = useState('');
     const [categoria, setCategoria] = useState('');
     const [moneda, setMoneda] = useState('UY');
-    const [precio, setPrecio] = useState('');
+    const [precioCompra, setPrecioCompra] = useState('');
+    const [precioVenta, setPrecioVenta] = useState('');
+    const [preciosCompra, setPreciosCompra] = useState([]);
+    const [preciosVenta, setPreciosVenta] = useState([]);
 
     const handleAgregar = () => {
-        // Aquí podrías enviar los datos al backend
-        console.log({ nombre, descripcion, marca, categoria, moneda, precio });
+        console.log({ nombre, descripcion, marca, categoria, moneda, preciosCompra, preciosVenta });
         onClose();
     };
 
+    const agregarPrecioCompra = () => {
+        if (precioCompra.trim() !== '') {
+            const nuevoPrecio = {
+                id: Date.now(),
+                precio: parseFloat(precioCompra),
+                moneda: moneda
+            };
+            setPreciosCompra([...preciosCompra, nuevoPrecio]);
+            setPrecioCompra('');
+        }
+    };
+
+    const agregarPrecioVenta = () => {
+        if (precioVenta.trim() !== '') {
+            const nuevoPrecio = {
+                id: Date.now(),
+                precio: parseFloat(precioVenta),
+                moneda: moneda
+            };
+            setPreciosVenta([...preciosVenta, nuevoPrecio]);
+            setPrecioVenta('');
+        }
+    };
+
+    const eliminarPrecioCompra = (id) => {
+        setPreciosCompra(preciosCompra.filter(p => p.id !== id));
+    };
+
+    const eliminarPrecioVenta = (id) => {
+        setPreciosVenta(preciosVenta.filter(p => p.id !== id));
+    };
+
+    const validarMonedasIguales = () => {
+        if (preciosCompra.length === 0 || preciosVenta.length === 0) return false;
+        const monedasCompra = [...new Set(preciosCompra.map(p => p.moneda))];
+        const monedasVenta = [...new Set(preciosVenta.map(p => p.moneda))];
+        return monedasCompra.every(m => monedasVenta.includes(m)) &&
+            monedasVenta.every(m => monedasCompra.includes(m));
+    };
+
+    const getMensajeMonedasFaltantes = () => {
+        if (preciosCompra.length === 0 || preciosVenta.length === 0) return null;
+        const monedasCompra = [...new Set(preciosCompra.map(p => p.moneda))];
+        const monedasVenta = [...new Set(preciosVenta.map(p => p.moneda))];
+        const faltanEnVenta = monedasCompra.filter(m => !monedasVenta.includes(m));
+        const faltanEnCompra = monedasVenta.filter(m => !monedasCompra.includes(m));
+        if (faltanEnVenta.length > 0 || faltanEnCompra.length > 0) {
+            let msg = "⚠️ Monedas faltantes: ";
+            if (faltanEnVenta.length) msg += `Venta en ${faltanEnVenta.join(', ')}`;
+            if (faltanEnCompra.length) {
+                if (faltanEnVenta.length) msg += " | ";
+                msg += `Compra en ${faltanEnCompra.join(', ')}`;
+            }
+            return msg;
+        }
+        return null;
+    };
+
+    const isFormValid = nombre.trim() && descripcion.trim() &&
+        preciosCompra.length && preciosVenta.length &&
+        validarMonedasIguales();
+
     return (
-        <Dialog open={open} onClose={onClose} fullWidth maxWidth="sm">
-            <DialogTitle>
+        <Dialog open={open} onClose={onClose} fullWidth maxWidth="md">
+            <Box
+                sx={{
+                    backgroundColor: primaryColor,
+                    color: 'white',
+                    fontWeight: 'bold',
+                    px: 2,
+                    py: 1.5,
+                    textAlign: 'center',
+                    fontSize: '1rem',
+                    letterSpacing: 1,
+                    textTransform: 'uppercase',
+                    position: 'relative',
+                    borderTopLeftRadius: '4px',
+                    borderTopRightRadius: '4px'
+                }}
+            >
                 Agregar producto
                 <IconButton
                     aria-label="close"
                     onClick={onClose}
-                    sx={{ position: 'absolute', right: 8, top: 8 }}
+                    sx={{
+                        position: 'absolute',
+                        top: 8,
+                        right: 8,
+                        color: 'white'
+                    }}
                 >
                     <CloseIcon />
                 </IconButton>
-            </DialogTitle>
+            </Box>
 
             <DialogContent>
-                <TextField
-                    fullWidth
-                    label="Nombre *"
-                    value={nombre}
-                    onChange={(e) => setNombre(e.target.value)}
-                    margin="dense"
-                />
-                <TextField
-                    fullWidth
-                    label="Descripción *"
-                    value={descripcion}
-                    onChange={(e) => setDescripcion(e.target.value)}
-                    margin="dense"
-                />
-                <TextField
-                    fullWidth
-                    label="Marca"
-                    value={marca}
-                    onChange={(e) => setMarca(e.target.value)}
-                    margin="dense"
-                    select
-                >
-                    <MenuItem value="Marca 1">Marca 1</MenuItem>
-                    <MenuItem value="Marca 2">Marca 2</MenuItem>
-                </TextField>
-                <TextField
-                    fullWidth
-                    label="Categoría"
-                    value={categoria}
-                    onChange={(e) => setCategoria(e.target.value)}
-                    margin="dense"
-                    select
-                >
-                    <MenuItem value="Categoría A">Categoría A</MenuItem>
-                    <MenuItem value="Categoría B">Categoría B</MenuItem>
-                </TextField>
-                <Box display="flex" gap={2} mt={2}>
-                    <TextField
-                        select
-                        label="Moneda"
-                        value={moneda}
-                        onChange={(e) => setMoneda(e.target.value)}
-                        sx={{ width: '30%' }}
-                    >
-                        {currencies.map((option) => (
-                            <MenuItem key={option.code} value={option.code}>
-                                {option.code}
-                            </MenuItem>
-                        ))}
-                    </TextField>
-
-                    <TextField
-                        fullWidth
-                        label="Precio"
-                        value={precio}
-                        onChange={(e) => setPrecio(e.target.value)}
-                        InputProps={{ startAdornment: <Typography mr={1}>{moneda} </Typography> }}
+                {/* Campos básicos */}
+                <FormControl fullWidth margin="dense">
+                    <InputLabel>Nombre *</InputLabel>
+                    <OutlinedInput
+                        value={nombre}
+                        onChange={(e) => setNombre(e.target.value)}
+                        label="Nombre *"
                     />
+                </FormControl>
+
+                <FormControl fullWidth margin="dense">
+                    <InputLabel>Descripción *</InputLabel>
+                    <OutlinedInput
+                        value={descripcion}
+                        onChange={(e) => setDescripcion(e.target.value)}
+                        label="Descripción *"
+                    />
+                </FormControl>
+
+                <FormControl fullWidth margin="dense">
+                    <InputLabel>Marca</InputLabel>
+                    <Select
+                        value={marca}
+                        onChange={(e) => setMarca(e.target.value)}
+                        label="Marca"
+                    >
+                        <MenuItem value="Marca 1">Marca 1</MenuItem>
+                        <MenuItem value="Marca 2">Marca 2</MenuItem>
+                    </Select>
+                </FormControl>
+
+                <FormControl fullWidth margin="dense">
+                    <InputLabel>Categoría</InputLabel>
+                    <Select
+                        value={categoria}
+                        onChange={(e) => setCategoria(e.target.value)}
+                        label="Categoría"
+                    >
+                        <MenuItem value="Categoría A">Categoría A</MenuItem>
+                        <MenuItem value="Categoría B">Categoría B</MenuItem>
+                    </Select>
+                </FormControl>
+
+                {/* Precios */}
+                <Box display="flex" gap={2} mt={2}>
+                    <FormControl margin="dense" sx={{ width: '30%' }}>
+                        <InputLabel>Moneda</InputLabel>
+                        <Select
+                            value={moneda}
+                            onChange={(e) => setMoneda(e.target.value)}
+                            label="Moneda"
+                        >
+                            {currencies.map(opt => (
+                                <MenuItem key={opt.code} value={opt.code}>{opt.code}</MenuItem>
+                            ))}
+                        </Select>
+                    </FormControl>
+
+                    <FormControl fullWidth margin="dense">
+                        <InputLabel>Precio de Compra</InputLabel>
+                        <OutlinedInput
+                            value={precioCompra}
+                            onChange={(e) => setPrecioCompra(e.target.value)}
+                            startAdornment={<InputAdornment position="start">{moneda}</InputAdornment>}
+                            endAdornment={
+                                <InputAdornment position="end">
+                                    <IconButton onClick={agregarPrecioCompra} disabled={!precioCompra.trim()} size="small" sx={{ color: primaryColor }}>
+                                        <AddIcon />
+                                    </IconButton>
+                                </InputAdornment>
+                            }
+                            onKeyPress={(e) => e.key === 'Enter' && agregarPrecioCompra()}
+                            label="Precio de Compra"
+                        />
+                    </FormControl>
+
+                    <FormControl fullWidth margin="dense">
+                        <InputLabel>Precio de Venta</InputLabel>
+                        <OutlinedInput
+                            value={precioVenta}
+                            onChange={(e) => setPrecioVenta(e.target.value)}
+                            startAdornment={<InputAdornment position="start">{moneda}</InputAdornment>}
+                            endAdornment={
+                                <InputAdornment position="end">
+                                    <IconButton onClick={agregarPrecioVenta} disabled={!precioVenta.trim()} size="small" sx={{ color: primaryColor }}>
+                                        <AddIcon />
+                                    </IconButton>
+                                </InputAdornment>
+                            }
+                            onKeyPress={(e) => e.key === 'Enter' && agregarPrecioVenta()}
+                            label="Precio de Venta"
+                        />
+                    </FormControl>
                 </Box>
+
+                {/* Chips de precios */}
+                {preciosCompra.length > 0 && (
+                    <Box mt={2}>
+                        <Typography variant="subtitle2" sx={{ mb: 1, color: primaryColor }}>Precios de Compra:</Typography>
+                        <Box display="flex" flexWrap="wrap" gap={1}>
+                            {preciosCompra.map(p => (
+                                <Chip key={p.id} label={`${p.moneda} ${p.precio.toFixed(2)}`} onDelete={() => eliminarPrecioCompra(p.id)} sx={{ backgroundColor: '#e3f2fd', color: primaryColor }} />
+                            ))}
+                        </Box>
+                    </Box>
+                )}
+
+                {preciosVenta.length > 0 && (
+                    <Box mt={2}>
+                        <Typography variant="subtitle2" sx={{ mb: 1, color: primaryColor }}>Precios de Venta:</Typography>
+                        <Box display="flex" flexWrap="wrap" gap={1}>
+                            {preciosVenta.map(p => (
+                                <Chip key={p.id} label={`${p.moneda} ${p.precio.toFixed(2)}`} onDelete={() => eliminarPrecioVenta(p.id)} sx={{ backgroundColor: '#fff3e0', color: '#e65100' }} />
+                            ))}
+                        </Box>
+                    </Box>
+                )}
+
+                {getMensajeMonedasFaltantes() && (
+                    <Box mt={2} p={1.5} sx={{ backgroundColor: '#fff3cd', border: '1px solid #ffeaa7', borderRadius: 1 }}>
+                        <Typography variant="body2" sx={{ color: '#856404' }}>{getMensajeMonedasFaltantes()}</Typography>
+                    </Box>
+                )}
             </DialogContent>
 
             <DialogActions sx={{ px: 3, pb: 3 }}>
-                <Button variant="contained" onClick={handleAgregar} fullWidth>
+                <Button
+                    variant="contained"
+                    onClick={handleAgregar}
+                    fullWidth
+                    disabled={!isFormValid}
+                    sx={{
+                        backgroundColor: accentColor,
+                        color: 'black',
+                        fontWeight: 'bold',
+                        '&:hover': {
+                            backgroundColor: primaryColor,
+                            color: 'white'
+                        },
+                        '&:disabled': {
+                            backgroundColor: '#ccc',
+                            color: '#666'
+                        }
+                    }}
+                >
                     AGREGAR PRODUCTO
                 </Button>
             </DialogActions>
