@@ -5,7 +5,13 @@ import AgregarProductoDialog from "../components/DialogProductos";
 import Eliminar from "../components/Eliminar";
 import { productsAPI } from "../services/api/stockBack";
 
+// ✅ IMPORTAR EL CUSTOM HOOK
+import { useListFormatter } from "../hooks/useListFormatter";
+
 export default function Products() {
+    // 🔥 USAR EL CUSTOM HOOK
+    const { formatList } = useListFormatter();
+    
     const [products, setProducts] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
@@ -26,7 +32,7 @@ export default function Products() {
                         descripcion: product.description,
                         marca: product.brand.name,
                         categoria: product.category.name,
-                        depositos: product.depositsCount,
+                        depositos: product.deposits || [], // Cambiar a array de depósitos
                         total_stock: product.depositsCount * 10, // Ejemplo - ajustar según lógica real
                         // Mantener los datos originales para edición/visualización
                         original: product
@@ -60,7 +66,26 @@ export default function Products() {
         },
         { id: "marca", label: "Marca", align: "left" },
         { id: "categoria", label: "Categoría", align: "left" },
-        { id: "depositos", label: "Depósitos", align: "center" },
+        { id: "precios_compra", label: "Precios de compra", align: "left" },
+        { id: "precios_venta", label: "Precios de venta", align: "left" },
+        { 
+            id: "depositos", 
+            label: "Depósitos", 
+            align: "center",
+            // ✅ USAR formatList del custom hook
+            format: (value) => {
+                if (!Array.isArray(value) || value.length === 0) {
+                    return '-';
+                }
+                
+                return formatList(value, {
+                    maxVisible: 2,
+                    showChips: true,
+                    chipColor: 'info',
+                    listTitle: 'Ver todos los depósitos'
+                });
+            }
+        },
         { id: "total_stock", label: "Total de stock", align: "center" },
         { id: "acciones", label: "Acciones", align: "center" },
     ];
@@ -91,7 +116,7 @@ export default function Products() {
                         descripcion: product.description,
                         marca: product.brand.name,
                         categoria: product.category.name,
-                        depositos: product.depositsCount,
+                        depositos: product.deposits || [], // Cambiar a array de depósitos
                         total_stock: product.depositsCount * 10,
                         original: product
                     }));
