@@ -26,8 +26,17 @@ function Login() {
             }}
         >
             <Paper elevation={6} sx={{ padding: 4, width: 320, borderRadius: 3 }}>
-                <Box display="flex" justifyContent="center" mb={2}>
-                    <img src={logo} alt="Brava Store Logo" style={{ height: 100 }} />
+                <Box display="flex" justifyContent="center">
+                    <img 
+                        src={logo} 
+                        alt="Brava Store Logo" 
+                        style={{ 
+                            width: 210, 
+                            height: 110,
+                            objectFit: 'cover',
+                            objectPosition: 'center'
+                        }} 
+                    />
                 </Box>
 
                 <Typography variant="h5" gutterBottom align="center">

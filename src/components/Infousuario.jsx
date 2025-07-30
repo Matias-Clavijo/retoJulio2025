@@ -17,7 +17,7 @@ export default function InfoUsuario({ open, onClose, onLogout }) {
             <DialogTitle sx={{ textAlign: 'center' }}>Información del Usuario</DialogTitle>
 
             <DialogContent sx={{ textAlign: 'center' }}>
-                <Avatar sx={{ bgcolor: 'primary.main', width: 60, height: 60, mx: 'auto', mb: 2 }}>
+                <Avatar sx={{ bgcolor: '#0B2240', width: 60, height: 60, mx: 'auto', mb: 2 }}>
                     <AccountCircleIcon sx={{ fontSize: 40 }} />
                 </Avatar>
 
