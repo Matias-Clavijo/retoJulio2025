@@ -1,193 +1,144 @@
-import React, { useState } from "react";
-import CommonTable from "../components/common/Table";
-import TitleHeader from "../components/common/TitelHeader";
-import AgregarCategoriaDialog from "../components/AgregarCategoría.jsx";
-import Button from "@mui/material/Button";
-import VisibilityIcon from "@mui/icons-material/Visibility";
-import EditIcon from "@mui/icons-material/Edit";
-import DeleteIcon from "@mui/icons-material/Delete";
-import IconButton from "@mui/material/IconButton";
+import React, { useState, useEffect } from "react";
+import { Category as CategoryIcon } from "@mui/icons-material";
+import DataManagementPage from "../components/DataManagementPage";
+import AgregarCategoría from "../components/AgregarCategoría";
+import Eliminar from "../components/Eliminar";
+import { categoriesAPI } from "../services/api/stockBack";
 
 export default function Category() {
-  const estiloContenedor = {
-    height: "100vh",
-    display: "flex",
-    flexDirection: "column",
-    justifyContent: "center",
-    alignItems: "center",
-    backgroundColor: "white",
-    color: "black",
-    fontSize: "2rem",
-    fontWeight: "bold",
-    gap: "20px",
-    margin: 0,
-    padding: 0,
-  };
+  const [categories, setCategories] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [page, setPage] = useState(1);
+  const [rowsPerPage, setRowsPerPage] = useState(10);
+  const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
+  const [selectedCategory, setSelectedCategory] = useState(null);
 
-  const estiloTabla = {
-    borderCollapse: "collapse",
-    fontSize: "1rem",
-    width: "80%",
-  };
-
-  const estiloCelda = {
-    border: "1px solid black",
-    padding: "8px",
-    verticalAlign: "top",
-  };
-
-  const estiloBoton = {
-    margin: "0 4px",
-    padding: "4px 8px",
-    fontSize: "0.9rem",
-    cursor: "pointer",
-  };
-
-  const [personas, setPersonas] = useState([
-    { id: 1, nombre: "Juan", descripcion: "Estudiante", edad: 25 },
-    { id: 2, nombre: "Ana", descripcion: "Ingeniera", edad: 30 },
-    { id: 3, nombre: "Luis", descripcion: "Diseñador", edad: 28 },
-  ]);
-
-  const [editandoId, setEditandoId] = useState(null);
-  const [formEdit, setFormEdit] = useState({
-    nombre: "",
-    descripcion: "",
-    edad: "",
-  });
-  const [verId, setVerId] = useState(null);
-
-  const nombresDesplegable = ["Carlos", "María", "Sofía", "Pedro", "Lucía"];
-
-  const eliminarPersona = (id) => {
-    setPersonas((prev) => prev.filter((p) => p.id !== id));
-    if (editandoId === id) setEditandoId(null);
-    if (verId === id) setVerId(null);
-  };
-
-  const iniciarEdicion = (persona) => {
-    setEditandoId(persona.id);
-    setFormEdit({
-      nombre: persona.nombre,
-      descripcion: persona.descripcion,
-      edad: persona.edad,
-    });
-    setVerId(null);
-  };
-
-  const cancelarEdicion = () => {
-    const persona = personas.find((p) => p.id === editandoId);
-    if (persona?.nuevo) {
-      setPersonas(personas.filter((p) => p.id !== editandoId));
-    }
-    setEditandoId(null);
-  };
-
-  const guardarEdicion = (id) => {
-    setPersonas((prev) =>
-      prev.map((p) =>
-        p.id === id
-          ? {
-              ...p,
-              nombre: formEdit.nombre,
-              descripcion: formEdit.descripcion,
-              edad: Number(formEdit.edad),
-            }
-          : p
-      )
-    );
-    cancelarEdicion();
-  };
-
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormEdit((prev) => ({ ...prev, [name]: value }));
-  };
-
-  const toggleVer = (id) => {
-    setVerId(verId === id ? null : id);
-    setEditandoId(null);
-  };
-
-  const agregarPersona = () => {
-    const nuevoId =
-      personas.length > 0 ? Math.max(...personas.map((p) => p.id)) + 1 : 1;
-    const nuevaPersona = {
-      id: nuevoId,
-      nombre: "Nuevo",
-      descripcion: "Sin descripción",
-      edad: 0,
-      nuevo: true, // << indicador
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        setLoading(true);
+        const response = await categoriesAPI.getCategories(page, rowsPerPage);
+        if (response.success) {
+          // Transformar los datos al formato esperado por la tabla
+          const transformedCategories = response.data.map(category => ({
+            name: category.name,
+            description: "-", // No viene en el mock, pero mantenemos la estructura
+            parent_category: "-", // No viene en el mock, pero mantenemos la estructura
+            products_count: category.productsCount,
+            status: "Activo", // Valor por defecto
+            created_at: new Date().toLocaleDateString(), // Usamos fecha actual como ejemplo
+            // Mantener los datos originales para edición/visualización
+            original: category
+          }));
+          setCategories(transformedCategories);
+          setError(null);
+        } else {
+          setError(response.error || "Error al cargar las categorías");
+        }
+      } catch {
+        setError("Error al conectar con el servidor");
+      } finally {
+        setLoading(false);
+      }
     };
-    setPersonas([...personas, nuevaPersona]);
-    setEditandoId(nuevoId);
-    setFormEdit({
-      nombre: nuevaPersona.nombre,
-      descripcion: nuevaPersona.descripcion,
-      edad: nuevaPersona.edad,
-    });
-    setVerId(null);
-  };
+
+    fetchCategories();
+  }, [page, rowsPerPage]);
 
   const columns = [
-    { id: "codigo", label: "Código", minWidth: 100, align: "left" },
-    { id: "nombre", label: "Nombre", minWidth: 100, align: "left" },
-    {
-      id: "precio",
-      label: "Precio",
-      minWidth: 100,
-      align: "left",
-      format: (value) => `$${value.toFixed(2)}`,
-    },
-    { id: "acciones", label: "Acciones", minWidth: 120, align: "center" },
+    { id: "name", label: "Nombre", align: "left" },
+    { id: "description", label: "Descripción", align: "left" },
+    { id: "products_count", label: "Productos", align: "center" },
+    { id: "status", label: "Estado", align: "center" },
+    { id: "created_at", label: "Fecha de creación", align: "left" },
+    { id: "acciones", label: "Acciones", align: "center" },
   ];
 
-  const rows = [
-    { id: 1, codigo: "A001", nombre: "Producto 1", precio: 123.45 },
-    { id: 2, codigo: "A002", nombre: "Producto 2", precio: 67.89 },
-  ].map((row) => ({
-    ...row,
-    acciones: (
-      <>
-        <IconButton size="small" onClick={() => toggleVer(row.id)}>
-          <VisibilityIcon fontSize="small" />
-        </IconButton>
-        <IconButton size="small" onClick={() => iniciarEdicion(row)}>
-          <EditIcon fontSize="small" />
-        </IconButton>
-        <IconButton size="small" onClick={() => eliminarPersona(row.id)}>
-          <DeleteIcon fontSize="small" />
-        </IconButton>
-      </>
-    ),
-  }));
+  const handleEdit = (category) => {
+    console.log("Editing category:", category.original || category);
+  };
 
-  const [openDialogCategoria, setOpenAgregarCategoria] = useState(false);
+  const handleDelete = (category) => {
+    console.log("Deleting category:", category);
+    setSelectedCategory(category);
+    setOpenDeleteDialog(true);
+  };
+
+  const handleCloseDelete = () => {
+    setOpenDeleteDialog(false);
+  };
+
+  const handleConfirmDelete = async () => {
+    try {
+      setLoading(true);
+      const response = await categoriesAPI.deleteCategory(selectedCategory.original.id);
+      if (response.success) {
+        // Recargar la lista después de eliminar
+        const newResponse = await categoriesAPI.getCategories(page, rowsPerPage);
+        if (newResponse.sucstrategiescess) {
+          const transformedCategories = newResponse.data.map(category => ({
+            name: category.name,
+            description: "-",
+            parent_category: "-",
+            products_count: category.productsCount,
+            status: "Activo",
+            created_at: new Date().toLocaleDateString(),
+            original: category
+          }));
+          setCategories(transformedCategories);
+        }
+      } else {
+        setError(response.error || "Error al eliminar la categoría");
+      }
+    } catch {
+      setError("Error al conectar con el servidor");
+    } finally {
+      setLoading(false);
+      handleCloseDelete();
+    }
+  };
+
+  const handleView = (category) => {
+    console.log("Viewing category:", category.original || category);
+  };
+
+  const handlePageChange = (newPage) => {
+    setPage(newPage);
+  };
+
+  const handleRowsPerPageChange = (newRowsPerPage) => {
+    setRowsPerPage(newRowsPerPage);
+    setPage(1); // Reset to first page when changing rows per page
+  };
 
   return (
     <>
-      <AgregarCategoriaDialog
-        open={openDialogCategoria}
-        onClose={() => setOpenAgregarCategoria(false)}
-      />
-      <TitleHeader
-        title={"Gestión de Categorías"}
-        description={"Administra las categorías de los productos"}
-        button={
-          <Button
-            variant="contained"
-            onClick={() => setOpenAgregarCategoria(true)}
-          >
-            Agregar Categoría
-          </Button>
-        }
-      />
-      <CommonTable
-        title="Lista de catgorias"
+      <DataManagementPage
+        title="Gestión de Categorías"
+        description="Organiza y administra las categorías de productos"
+        addButtonText="Agregar Categoría"
+        addButtonIcon={<CategoryIcon />}
+        tableTitle="Lista de categorías"
         columns={columns}
-        rows={rows}
-        defaultRowsPerPage={5}
-        rowsPerPageOptions={[5, 10, 25]}
+        data={categories}
+        defaultRowsPerPage={rowsPerPage}
+        showViewAction={true}
+        rowsPerPageOptions={[5, 10, 25, 50]}
+        onEdit={handleEdit}
+        onDelete={handleDelete}
+        onView={handleView}
+        onPageChange={handlePageChange}
+        onRowsPerPageChange={handleRowsPerPageChange}
+        addDialog={<AgregarCategoría />}
+        loading={loading}
+        error={error}
+      />
+      <Eliminar
+        open={openDeleteDialog}
+        onClose={handleCloseDelete}
+        onConfirm={handleConfirmDelete}
+        title={`¿Estás seguro que deseas eliminar la categoría "${selectedCategory?.name}"?`}
       />
     </>
   );

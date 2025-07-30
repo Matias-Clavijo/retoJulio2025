@@ -1,131 +1,89 @@
-import React, { useState } from 'react';
-import { Button, Container, Box } from '@mui/material';
+import React from 'react';
+import { useNavigate } from 'react-router-dom';
+import {
+    Grid,
+    Paper,
+    Typography,
+    Box
+} from '@mui/material';
+import {
+    Inventory, LocalOffer, Category, Warehouse, Store,
+    TrendingUp, PointOfSale
+} from '@mui/icons-material';
+import logo from '../assets/logo.jpeg';
 
-import EditarDeposito from '../components/editarDeposito';
-import AgregarProductoDialog from '../components/DialogProductos';
-import AgregarMarca from '../components/Agregarmarca';
-import GestionStockDialog from '../components/DialogStock';
-import AgregarProveedorDialog from '../components/DialogProveedor';
-import AgregarCategoriaDialog from '../components/AgregarCategoría.jsx';
-import AgregarVentaDialog from '../components/DialogVenta.jsx';
-import Eliminar from "../components/Eliminar";
-import Category from './Category';
-import AgregarStock from '../components/AgregarStock';
+const primaryColor = '#0B2240'; // Azul logo
+const accentColor = '#F5C518';  // Amarillo logo
 
-export default function Home() {
-    const [openEditarDeposito, setOpenEditarDeposito] = useState(false);
-    const [openAgregarProducto, setOpenAgregarProducto] = useState(false);
-    const [openStockDialog, setOpenStockDialog] = useState(false);
-    const [openAgregarMarca, setOpenAgregarMarca] = useState(false);
-    const [openDialogProveedor, setOpenAgregarProveedor] = useState(false);
-    const [openDialogCategoria, setOpenAgregarCategoria] = useState(false);
-    const [openAgregarVenta, setOpenAgregarVenta] = useState(false);
-    const [openEliminar, setOpenEliminar] = useState(false);
-    const [openAgregarStock, setOpenAgregarStock] = useState(false);
+const options = [
+    { label: 'Productos', icon: Inventory, path: '/products' },
+    { label: 'Marcas', icon: LocalOffer, path: '/brands' },
+    { label: 'Categorías', icon: Category, path: '/category' },
+    { label: 'Depósitos', icon: Warehouse, path: '/warehouses' },
+    { label: 'Proveedores', icon: Store, path: '/suppliers' },
+    { label: 'Movimientos', icon: TrendingUp, path: '/movements' },
+    { label: 'Ventas', icon: PointOfSale, path: '/sales' },
+];
 
+const Home = () => {
+    const navigate = useNavigate();
 
     return (
-        <Container>
-            <h1>Inicio</h1>
-            <Box display="flex" flexWrap="wrap" gap={2} mb={4}>
-                <Button variant="contained" onClick={() => setOpenEditarDeposito(true)}>
-                    Agregar Depósito
-                </Button>
-
-                <Button variant="contained" onClick={() => setOpenAgregarProducto(true)}>
-                    Agregar Producto
-                </Button>
-
-                <Button variant="contained" onClick={() => setOpenStockDialog(true)}>
-                    Gestión de Stock
-                </Button>
-
-                <Button variant="contained" onClick={() => setOpenAgregarMarca(true)}>
-                    Agregar Marca
-                </Button>
-
-                <Button variant="contained" onClick={() => setOpenAgregarProveedor(true)}>
-                    Agregar Proveedor
-                </Button>
-
-                <Button variant="contained" onClick={() => setOpenAgregarCategoria(true)}>
-                    Agregar Categoría
-                </Button>
-
-                <Button variant="contained" onClick={() => setOpenAgregarVenta(true)}>
-                    Agregar Venta
-                </Button>
-
-                <Button
-                    variant="contained"
-                    color="error"
-                    onClick={() => setOpenEliminar(true)}
-                    sx={{ mt: 2 }}
-                >
-                    Eliminar
-                </Button>
-
-                <Button
-                    variant="contained"
-                    onClick={() => setOpenAgregarStock(true)}
-                    sx={{ mt: 2 }}
-                >
-                    Agregar Stock
-                </Button>
+        <Box sx={{ p: 4, textAlign: 'center', backgroundColor: '#f8f9fa' }}>
+            <Box sx={{ mb: 3 }}>
+                <img
+                    src={logo}
+                    alt="Logo Brava Store"
+                    style={{ width: 220, height: 'auto' }}
+                />
             </Box>
 
+            <Typography variant="h4" fontWeight="bold" gutterBottom>
+                Bienvenido a Brava Store
+            </Typography>
 
-            <EditarDeposito
-                open={openEditarDeposito}
-                onClose={() => setOpenEditarDeposito(false)}
-            />
+            <Typography variant="subtitle1" gutterBottom>
+                Accedé rápidamente a las secciones del sistema
+            </Typography>
 
-            <AgregarProductoDialog
-                open={openAgregarProducto}
-                onClose={() => setOpenAgregarProducto(false)}
-            />
-
-            <GestionStockDialog
-                open={openStockDialog}
-                onClose={() => setOpenStockDialog(false)}
-            />
-
-            <AgregarMarca
-                open={openAgregarMarca}
-                onClose={() => setOpenAgregarMarca(false)}
-            />
-
-            <AgregarProveedorDialog
-                open={openDialogProveedor}
-                onClose={() => setOpenAgregarProveedor(false)}
-            />
-
-            <AgregarCategoriaDialog
-                open={openDialogCategoria}
-                onClose={() => setOpenAgregarCategoria(false)}
-            />
-
-            <AgregarVentaDialog
-                open={openAgregarVenta}
-                onClose={() => setOpenAgregarVenta(false)}
-            />
-
-            <Eliminar
-                open={openEliminar}
-                onClose={() => setOpenEliminar(false)}
-                onConfirm={() => {
-                    console.log('Producto eliminado');
-                    setOpenEliminar(false);
-                }}
-            />
-
-            <AgregarStock
-                open={openAgregarStock}
-                onClose={() => setOpenAgregarStock(false)}
-            />
-
-
-
-        </Container>
+            <Grid container spacing={3} justifyContent="center" mt={2}>
+                {options.map((item, index) => (
+                    <Grid item xs={12} sm={6} md={3} lg={2} key={index}>
+                        <Paper
+                            elevation={4}
+                            sx={{
+                                p: 3,
+                                textAlign: 'center',
+                                borderRadius: 3,
+                                cursor: 'pointer',
+                                transition: '0.3s',
+                                '&:hover': {
+                                    backgroundColor: primaryColor,
+                                    '& .icon': {
+                                        color: 'white',
+                                    },
+                                    '& .label': {
+                                        color: 'white',
+                                    },
+                                },
+                            }}
+                            onClick={() => navigate(item.path)}
+                        >
+                            <item.icon className="icon" sx={{ fontSize: 40, color: primaryColor }} />
+                            <Typography
+                                variant="h6"
+                                fontWeight="600"
+                                className="label"
+                                sx={{ color: primaryColor, mt: 1 }}
+                            >
+                                {item.label}
+                            </Typography>
+                        </Paper>
+                    </Grid>
+                ))}
+            </Grid>
+        </Box>
     );
-}
+};
+
+export default Home;

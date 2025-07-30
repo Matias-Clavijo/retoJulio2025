@@ -13,6 +13,9 @@ import {
 } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 
+const primaryColor = '#0B2240';  // Azul del logo
+const accentColor = '#F5C518';   // Amarillo del logo
+
 const currencies = [
     { code: 'UY', label: 'UYU' },
     { code: 'USD', label: 'USD' },
@@ -29,7 +32,6 @@ export default function AgregarProductoDialog({ open, onClose }) {
     const [precio, setPrecio] = useState('');
 
     const handleAgregar = () => {
-        // Aquí podrías enviar los datos al backend
         console.log({ nombre, descripcion, marca, categoria, moneda, precio });
         onClose();
     };
@@ -110,7 +112,20 @@ export default function AgregarProductoDialog({ open, onClose }) {
             </DialogContent>
 
             <DialogActions sx={{ px: 3, pb: 3 }}>
-                <Button variant="contained" onClick={handleAgregar} fullWidth>
+                <Button
+                    variant="contained"
+                    onClick={handleAgregar}
+                    fullWidth
+                    sx={{
+                        backgroundColor: accentColor,
+                        color: 'black',
+                        fontWeight: 'bold',
+                        '&:hover': {
+                            backgroundColor: primaryColor,
+                            color: 'white'
+                        }
+                    }}
+                >
                     AGREGAR PRODUCTO
                 </Button>
             </DialogActions>

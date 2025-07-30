@@ -41,9 +41,18 @@ button {
     border-radius: 5px;
     cursor: pointer;
     text-align: left;
+    transition: background-color 0.3s, ease-in-out;
 }
 
+button:hover {
+    background-color: #ddd;
+}
 button.active {
+    transform: scale(0.98);
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+}
+
+button:active {
     background-color: #337ab7;
     color: #fff;
 }
@@ -69,5 +78,5 @@ button i {
 }
 
 .user-info span {
-    font-size: 14px;
+    font-size: 20px;
 }

@@ -39,7 +39,7 @@ export default function CommonTable({
   const filteredRows = rows
 
   return (
-    <Paper elevation={2} sx={{ width: '100%', p: 2 }}>
+    <Paper elevation={2} sx={{p: 2 }}>
       <Box
         sx={{
           display: 'flex',
@@ -53,7 +53,7 @@ export default function CommonTable({
         </Typography>
       </Box>
 
-      <TableContainer sx={{ maxHeight: 440 }}>
+      <TableContainer sx={{ maxHeight: 'calc(100vh - 200px)' }}>
         <Table stickyHeader aria-label="sticky table">
           <TableHead>
             <TableRow>
@@ -61,7 +61,7 @@ export default function CommonTable({
                 <TableCell
                   key={column.id}
                   align={column.align}
-                  style={{ minWidth: column.minWidth }}
+                  style={{ minWidth: column.minWidth, fontWeight: 'bold' }}
                 >
                   {column.label}
                 </TableCell>
@@ -77,8 +77,8 @@ export default function CommonTable({
                     const value = row[column.id];
                     return (
                       <TableCell key={column.id} align={column.align}>
-                        {column.format && typeof value === 'number'
-                          ? column.format(value)
+                        {column.format
+                          ? column.format(value, row)
                           : value}
                       </TableCell>
                     );
