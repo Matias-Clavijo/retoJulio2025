@@ -10,7 +10,8 @@ import {
     Link,
     Paper,
     TextField,
-    Typography
+    Typography,
+    useMediaQuery
 } from '@mui/material';
 import {
     Visibility,
@@ -18,7 +19,8 @@ import {
     MailOutline,
     LockOutlined
 } from '@mui/icons-material';
-import logo from '../assets/logo.jpeg'; // asegurate de que esté bien el path
+import { useTheme } from '@mui/material/styles';
+import logo from '../assets/logo.jpeg';
 
 function SignUp() {
     const [showPassword, setShowPassword] = useState(false);
@@ -26,6 +28,9 @@ function SignUp() {
     const [acceptedTerms, setAcceptedTerms] = useState(false);
     const [showError, setShowError] = useState(false);
     const navigate = useNavigate();
+
+    const theme = useTheme();
+    const isMobile = useMediaQuery(theme.breakpoints.down('sm')); // Detecta vista móvil
 
     const toggleShowPassword = () => setShowPassword((prev) => !prev);
     const toggleShowConfirm = () => setShowConfirm((prev) => !prev);
@@ -53,19 +58,28 @@ function SignUp() {
             minHeight="100vh"
             sx={{
                 background: 'linear-gradient(135deg, #071d49, #f9c525)',
+                px: 2
             }}
         >
-            <Paper elevation={6} sx={{ padding: 4, width: 370, borderRadius: 3 }}>
+            <Paper
+                elevation={6}
+                sx={{
+                    padding: 4,
+                    width: isMobile ? '100%' : 370,
+                    maxWidth: 370,
+                    borderRadius: 3
+                }}
+            >
                 <Box display="flex" justifyContent="center" mb={1}>
-                    <img 
-                        src={logo} 
-                        alt="Brava Store Logo" 
-                        style={{ 
-                            width: 210, 
+                    <img
+                        src={logo}
+                        alt="Brava Store Logo"
+                        style={{
+                            width: 210,
                             height: 110,
                             objectFit: 'cover',
                             objectPosition: 'center'
-                        }} 
+                        }}
                     />
                 </Box>
 
@@ -73,7 +87,7 @@ function SignUp() {
                     Sign Up
                 </Typography>
 
-                <Box display="flex" gap={1} mb={2}>
+                <Box display="flex" gap={1} mb={2} flexDirection={isMobile ? 'column' : 'row'}>
                     <TextField label="First Name" fullWidth />
                     <TextField label="Last Name" fullWidth />
                 </Box>

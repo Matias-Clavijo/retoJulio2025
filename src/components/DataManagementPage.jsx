@@ -1,13 +1,26 @@
 import React, { useState } from "react";
-import { Box, CircularProgress, Alert } from "@mui/material";
+import {
+    Box,
+    CircularProgress,
+    Alert,
+    IconButton,
+    Drawer,
+    useMediaQuery,
+    Typography,
+    Card,
+    CardContent,
+    CardActions,
+    Button
+} from "@mui/material";
+import MenuIcon from '@mui/icons-material/Menu';
 import CommonTable from "./common/CommonTable";
 import TitleHeader from "./common/TitelHeader";
-import Button from "@mui/material/Button";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
-import IconButton from "@mui/material/IconButton";
-import Sidebar from "./Sidebar";
 import VisibilityIcon from "@mui/icons-material/Visibility";
+import Sidebar from "./Sidebar";
+
+const drawerWidth = 340;
 
 const DataManagementPage = ({
                                 title,
@@ -36,45 +49,30 @@ const DataManagementPage = ({
     const [openAddDialog, setOpenAddDialog] = useState(false);
     const [openEditDialog, setOpenEditDialog] = useState(false);
     const [selectedItem, setSelectedItem] = useState(null);
+    const [mobileOpen, setMobileOpen] = useState(false);
+    const isMobile = useMediaQuery('(max-width: 768px)');
 
-    // Acciones por fila
+    const toggleDrawer = () => setMobileOpen(!mobileOpen);
+
     const rowsWithActions = data.map((row, index) => ({
         ...row,
         acciones: customActions ? customActions(row, index) : (
             <Box sx={{ display: 'flex', justifyContent: 'center', gap: 1 }}>
                 {showViewAction && (
-                    <IconButton
-                        size="small"
-                        sx={{ color: '#0B2240' }}
-                        onClick={() => {
-                            if (onView) onView(row);
-                        }}
-                    >
+                    <IconButton size="small" sx={{ color: '#0B2240' }} onClick={() => onView?.(row)}>
                         <VisibilityIcon fontSize="small" />
                     </IconButton>
                 )}
                 {showEditAction && (
-                    <IconButton
-                        size="small"
-                        sx={{ color: '#0B2240' }}
-                        onClick={() => {
-                            setSelectedItem(row);
-                            if (onEdit) onEdit(row);
-                            else setOpenEditDialog(true);
-                        }}
-                    >
+                    <IconButton size="small" sx={{ color: '#0B2240' }} onClick={() => {
+                        setSelectedItem(row);
+                        onEdit ? onEdit(row) : setOpenEditDialog(true);
+                    }}>
                         <EditIcon fontSize="small" />
                     </IconButton>
                 )}
                 {showDeleteAction && (
-                    <IconButton
-                        size="small"
-                        sx={{ color: 'error.main' }}
-                        onClick={() => {
-                            setSelectedItem(row);
-                            onDelete(row);
-                        }}
-                    >
+                    <IconButton size="small" sx={{ color: 'error.main' }} onClick={() => onDelete(row)}>
                         <DeleteIcon fontSize="small" />
                     </IconButton>
                 )}
@@ -82,99 +80,115 @@ const DataManagementPage = ({
         )
     }));
 
-    const handleAdd = () => {
-        if (onAdd) onAdd();
-        else setOpenAddDialog(true);
-    };
-
-    const handleCloseAddDialog = () => {
-        setOpenAddDialog(false);
-    };
-
+    const handleAdd = () => onAdd ? onAdd() : setOpenAddDialog(true);
+    const handleCloseAddDialog = () => setOpenAddDialog(false);
     const handleCloseEditDialog = () => {
         setOpenEditDialog(false);
         setSelectedItem(null);
     };
 
-    const renderContent = () => {
-        if (loading) {
-            return (
-                <Box sx={{
-                    display: 'flex',
-                    justifyContent: 'center',
-                    alignItems: 'center',
-                    height: 'calc(100vh - 100px)',
-                    width: '100%'
-                }}>
-                    <CircularProgress />
-                </Box>
-            );
-        }
+    const renderMobileCards = () => (
+        <Box>
+            {rowsWithActions.map((row, i) => (
+                <Card key={i} sx={{ mb: 2 }}>
+                    <CardContent>
+                        {columns
+                            .filter(col => col.id !== 'acciones')
+                            .map(col => (
+                                <Box key={col.id} sx={{ mb: 1 }}>
+                                    <Typography variant="body2" fontWeight={600}>{col.label}:</Typography>
+                                    <Typography variant="body2">
+                                        {col.format ? col.format(row[col.id], row) : row[col.id]}
+                                    </Typography>
+                                </Box>
+                            ))}
+                    </CardContent>
+                    <CardActions sx={{ justifyContent: 'end', px: 2 }}>
+                        {row.acciones}
+                    </CardActions>
+                </Card>
+            ))}
+        </Box>
+    );
 
-        if (error) {
-            return (
-                <Box sx={{ p: 2 }}>
-                    <Alert severity="error">{error}</Alert>
-                </Box>
-            );
-        }
+    const renderContent = () => {
+        if (loading) return <Box sx={{ display: 'flex', justifyContent: 'center', height: '80vh' }}><CircularProgress /></Box>;
+        if (error) return <Box sx={{ p: 2 }}><Alert severity="error">{error}</Alert></Box>;
+
+        const actionButton = (
+            <Button
+                variant="contained"
+                sx={{
+                    backgroundColor: "#F5C518",
+                    fontWeight: 600,
+                    color: "#0B2240",
+                    width: isMobile ? '100%' : 'auto',
+                    mt: isMobile ? 2 : 0
+                }}
+                onClick={handleAdd}
+                startIcon={addButtonIcon}
+            >
+                {addButtonText}
+            </Button>
+        );
 
         return (
-            <>
+            <Box sx={{margin: '0 auto', width: '100%' }}>
                 <TitleHeader
                     title={title}
                     description={description}
-                    button={
-                        <Button
-                            variant="contained"
-                            sx={{
-                                backgroundColor: "#F5C518",
-                                fontWeight: 600,
-                                color: "#0B2240"
-                            }}
-                            onClick={handleAdd}
-                            startIcon={addButtonIcon}
-                        >
-                            {addButtonText}
-                        </Button>
-                    }
+                    button={!isMobile ? (
+                        <Box sx={{ ml: 'auto' }}>{actionButton}</Box>
+                    ) : null}
                 />
-                <CommonTable
-                    title={tableTitle}
-                    columns={columns}
-                    rows={rowsWithActions}
-                    defaultRowsPerPage={defaultRowsPerPage}
-                    rowsPerPageOptions={rowsPerPageOptions}
-                />
+                {isMobile && (
+                    <Box sx={{ mb: 2 }}>{actionButton}</Box>
+                )}
+                {isMobile ? renderMobileCards() : (
+                    <CommonTable
+                        title={tableTitle}
+                        columns={columns}
+                        rows={rowsWithActions}
+                        defaultRowsPerPage={defaultRowsPerPage}
+                        rowsPerPageOptions={rowsPerPageOptions}
+                    />
+                )}
 
-                {/* Add Dialog */}
-                {addDialog && React.cloneElement(addDialog, {
-                    open: openAddDialog,
-                    onClose: handleCloseAddDialog
-                })}
-
-                {/* Edit Dialog */}
-                {editDialog && React.cloneElement(editDialog, {
-                    open: openEditDialog,
-                    onClose: handleCloseEditDialog,
-                    item: selectedItem
-                })}
-            </>
+                {addDialog && React.cloneElement(addDialog, { open: openAddDialog, onClose: handleCloseAddDialog })}
+                {editDialog && React.cloneElement(editDialog, { open: openEditDialog, onClose: handleCloseEditDialog, item: selectedItem })}
+            </Box>
         );
     };
 
     return (
-        <Box sx={{ display: 'flex', backgroundColor: '#EBEBEB', height: '100vh' }}>
-            <Sidebar />
+        <Box sx={{ display: 'flex', backgroundColor: backgroundColor, height: '100vh' }}>
+            {isMobile && (
+                <IconButton onClick={toggleDrawer} sx={{ position: 'fixed', top: 10, left: 10, zIndex: 1201, backgroundColor: 'white' }}>
+                    <MenuIcon />
+                </IconButton>
+            )}
+
+            <Box sx={{ display: { xs: 'none', md: 'block' }, width: drawerWidth, flexShrink: 0 }}>
+                <Sidebar />
+            </Box>
+            <Drawer
+                anchor="left"
+                open={mobileOpen}
+                onClose={toggleDrawer}
+                sx={{
+                    display: { xs: 'block', md: 'none' },
+                    '& .MuiDrawer-paper': { width: drawerWidth }
+                }}
+            >
+                <Sidebar onClose={toggleDrawer} />
+            </Drawer>
+
             <Box
                 component="main"
                 sx={{
                     flexGrow: 1,
-                    pl: 3,
-                    pr: 3,
-                    ml: `280px`,
-                    height: '100%',
-                    backgroundColor: backgroundColor
+                    p: 2,
+                    width: { xs: '100%', md: `calc(100% - ${drawerWidth}px)` },
                 }}
             >
                 {renderContent()}
