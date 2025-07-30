@@ -10,7 +10,9 @@ import {
   Select,
   MenuItem,
   InputLabel,
-  FormControl
+  FormControl,
+  Box,
+  Typography
 } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 
@@ -20,6 +22,8 @@ const AgregarStock = ({ open, onClose }) => {
   const [tipo, setTipo] = useState('');
   const [cantidad, setCantidad] = useState('');
   const [depositoDestino, setDepositoDestino] = useState('');
+  const primaryColor = '#0B2240';  // Azul Brava Store
+  const accentColor = '#F5C518';   // Amarillo Brava Store
 
   const handleSubmit = () => {
     const nuevoStock = {
@@ -33,27 +37,35 @@ const AgregarStock = ({ open, onClose }) => {
     onClose(); // Cierra el modal
   };
 
-  return (
-    <Dialog
-      open={open}
-      onClose={onClose}
-      PaperProps={{
-        sx: {
-          width: 300,
-          borderRadius: 2,
-          p: 2
-        }
-      }}
-    >
-      <DialogTitle sx={{ m: 0, p: 2 }}>
-        Nuevo Movimiento de Stock
-        <IconButton
-          onClick={onClose}
-          sx={{ position: 'absolute', right: 8, top: 8, color: 'grey.500' }}
-        >
-          <CloseIcon />
-        </IconButton>
-      </DialogTitle>
+    return (
+        <Dialog open={open} onClose={onClose} fullWidth maxWidth="sm">
+            {/* HEADER PERSONALIZADO */}
+            <Box
+                sx={{
+                    backgroundColor: primaryColor,
+                    color: 'white',
+                    fontWeight: 'bold',
+                    px: 2,
+                    py: 1,
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    position: 'relative',
+                    borderTopLeftRadius: '4px',
+                    borderTopRightRadius: '4px'
+                }}
+            >
+                <Typography variant="subtitle1" sx={{ fontWeight: 'bold', textTransform: 'uppercase' }}>
+                    Nuevo Movimiento de Stock
+                </Typography>
+                <IconButton
+                    aria-label="close"
+                    onClick={onClose}
+                    sx={{ position: 'absolute', right: 8, top: 4, color: 'white' }}
+                >
+                    <CloseIcon />
+                </IconButton>
+            </Box>
 
       <DialogContent dividers>
         <FormControl fullWidth margin="dense">

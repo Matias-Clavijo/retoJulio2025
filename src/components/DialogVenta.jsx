@@ -1,7 +1,6 @@
 ﻿import React, { useState } from 'react';
 import {
     Dialog,
-    DialogTitle,
     DialogContent,
     DialogActions,
     TextField,
@@ -10,9 +9,14 @@ import {
     MenuItem,
     Select,
     InputLabel,
-    FormControl
+    FormControl,
+    Box,
+    Typography
 } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
+
+const primaryColor = '#0B2240';  // Azul Brava Store
+const accentColor = '#F5C518';   // Amarillo Brava Store
 
 export default function AgregarVentaDialog({ open, onClose }) {
     const [producto, setProducto] = useState('');
@@ -30,20 +34,41 @@ export default function AgregarVentaDialog({ open, onClose }) {
 
     return (
         <Dialog open={open} onClose={onClose} maxWidth="xs" fullWidth>
-            <DialogTitle>
-                Agregar Venta
+            {/* Header personalizado */}
+            <Box
+                sx={{
+                    backgroundColor: primaryColor,
+                    color: 'white',
+                    fontWeight: 'bold',
+                    px: 2,
+                    py: 1.5,
+                    textAlign: 'center',
+                    fontSize: '1rem',
+                    letterSpacing: 1,
+                    textTransform: 'uppercase',
+                    position: 'relative',
+                    borderTopLeftRadius: '4px',
+                    borderTopRightRadius: '4px'
+                }}
+            >
+                Agregar venta
                 <IconButton
                     aria-label="close"
                     onClick={onClose}
-                    sx={{ position: 'absolute', right: 8, top: 8 }}
+                    sx={{
+                        position: 'absolute',
+                        top: 8,
+                        right: 8,
+                        color: 'white'
+                    }}
                 >
                     <CloseIcon />
                 </IconButton>
-            </DialogTitle>
+            </Box>
 
             <DialogContent dividers>
                 <TextField
-                    label="Producto"
+                    label="Producto *"
                     fullWidth
                     margin="dense"
                     value={producto}
@@ -51,7 +76,8 @@ export default function AgregarVentaDialog({ open, onClose }) {
                 />
 
                 <TextField
-                    label="Total"
+                    label="Total *"
+                    type="number"
                     fullWidth
                     margin="dense"
                     value={total}
@@ -100,7 +126,20 @@ export default function AgregarVentaDialog({ open, onClose }) {
             </DialogContent>
 
             <DialogActions sx={{ px: 3, pb: 3 }}>
-                <Button variant="contained" fullWidth onClick={handleGuardar}>
+                <Button
+                    variant="contained"
+                    fullWidth
+                    onClick={handleGuardar}
+                    sx={{
+                        backgroundColor: accentColor,
+                        color: 'black',
+                        fontWeight: 'bold',
+                        '&:hover': {
+                            backgroundColor: primaryColor,
+                            color: 'white'
+                        }
+                    }}
+                >
                     AGREGAR VENTA
                 </Button>
             </DialogActions>
