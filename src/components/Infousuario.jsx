@@ -33,7 +33,18 @@ export default function InfoUsuario({ open, onClose, onLogout }) {
                 <Button onClick={onClose} variant="contained" color="error">
                     CANCELAR
                 </Button>
-                <Button onClick={onLogout} variant="outlined" color="#0B2240">
+                <Button
+                    onClick={onLogout}
+                    variant="outlined"
+                    sx={{
+                        borderColor: '#0B2240',
+                        color: '#0B2240',
+                        '&:hover': {
+                            backgroundColor: '#0B2240',
+                            color: '#fff'
+                        }
+                    }}
+                >
                     CERRAR SESIÓN
                 </Button>
             </DialogActions>

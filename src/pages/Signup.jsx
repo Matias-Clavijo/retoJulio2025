@@ -1,5 +1,5 @@
 ﻿import React, { useState } from 'react';
-import { Link as RouterLink } from 'react-router-dom';
+import { Link as RouterLink, useNavigate } from 'react-router-dom';
 import {
     Box,
     Button,
@@ -18,14 +18,32 @@ import {
     MailOutline,
     LockOutlined
 } from '@mui/icons-material';
-import logo from '../assets/logo.jpeg'; // asegurate de que esté ahí
+import logo from '../assets/logo.jpeg'; // asegurate de que esté bien el path
 
 function SignUp() {
     const [showPassword, setShowPassword] = useState(false);
     const [showConfirm, setShowConfirm] = useState(false);
+    const [acceptedTerms, setAcceptedTerms] = useState(false);
+    const [showError, setShowError] = useState(false);
+    const navigate = useNavigate();
 
     const toggleShowPassword = () => setShowPassword((prev) => !prev);
     const toggleShowConfirm = () => setShowConfirm((prev) => !prev);
+
+    const handleCheckboxChange = (event) => {
+        setAcceptedTerms(event.target.checked);
+        if (event.target.checked) {
+            setShowError(false);
+        }
+    };
+
+    const handleSignUp = () => {
+        if (acceptedTerms) {
+            navigate('/');
+        } else {
+            setShowError(true);
+        }
+    };
 
     return (
         <Box
@@ -116,7 +134,9 @@ function SignUp() {
                 />
 
                 <FormControlLabel
-                    control={<Checkbox />}
+                    control={
+                        <Checkbox checked={acceptedTerms} onChange={handleCheckboxChange} />
+                    }
                     label={
                         <Typography variant="body2">
                             I Agree with{' '}
@@ -139,9 +159,16 @@ function SignUp() {
                             color: '#071d49'
                         }
                     }}
+                    onClick={handleSignUp}
                 >
                     Sign up
                 </Button>
+
+                {showError && (
+                    <Typography color="error" variant="body2" sx={{ mt: 1 }}>
+                        Debe aceptar los términos para poder ingresar
+                    </Typography>
+                )}
 
                 <Typography variant="body2" align="center" sx={{ mt: 2 }}>
                     Already have an account?{' '}
