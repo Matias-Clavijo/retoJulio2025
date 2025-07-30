@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { LocalOffer } from "@mui/icons-material";
 import DataManagementPage from "../components/DataManagementPage";
-import AgregarMarca from "../components/Agregarmarca";
+import AgregarMarca from "../components/DialogMarca.jsx";
 import Eliminar from "../components/Eliminar";
 import { brandsAPI } from "../services/api/stockBack";
 

@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { LocalShipping } from "@mui/icons-material";
 import { Box } from "@mui/material";
 import DataManagementPage from "../components/DataManagementPage";
-import DialogStock from "../components/DialogStock";
+import DialogStockMovement from "../components/DialogStockMovement.jsx";
 import { stockMovementsAPI } from "../services/api/stockBack";
 
 export default function StockMovements() {
@@ -115,7 +115,7 @@ export default function StockMovements() {
             onView={handleView}
             onPageChange={handlePageChange}
             onRowsPerPageChange={handleRowsPerPageChange}
-            addDialog={<DialogStock />}
+            addDialog={<DialogStockMovement/>}
             loading={loading}
             error={error}
         />
