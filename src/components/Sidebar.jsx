@@ -1,217 +1,193 @@
-import React, { useState } from "react";
+import React, { useState } from 'react';
 import {
-  Drawer,
-  List,
-  ListItem,
-  ListItemButton,
-  ListItemIcon,
-  ListItemText,
-  Typography,
-  Box,
-  Divider,
-  Avatar,
-  Paper,
-  IconButton,
-} from "@mui/material";
+    List,
+    ListItem,
+    ListItemButton,
+    ListItemIcon,
+    ListItemText,
+    Typography,
+    Box,
+    Divider,
+    Avatar,
+    Paper,
+    IconButton
+} from '@mui/material';
 import {
-  Inventory,
-  Category,
-  LocalOffer,
-  Warehouse,
-  Store,
-  TrendingUp,
-  PointOfSale,
-  AccountCircle,
-  Settings,
-} from "@mui/icons-material";
-import { useNavigate, useLocation } from "react-router-dom";
-import InfoUsuario from "./Infousuario";
-import logo from "../assets/logo.jpeg";
+    Inventory,
+    Category,
+    LocalOffer,
+    Warehouse,
+    Store,
+    TrendingUp,
+    PointOfSale,
+    AccountCircle,
+    Settings
+} from '@mui/icons-material';
+import { useNavigate, useLocation } from 'react-router-dom';
+import InfoUsuario from './Infousuario';
+import logo from '../assets/logo.jpeg';
 
-const drawerWidth = 280;
+const drawerWidth = 340;
 
 const Sidebar = ({ onClose }) => {
-  const navigate = useNavigate();
-  const location = useLocation();
-  const [openInfoUsuario, setOpenInfoUsuario] = useState(false);
+    const navigate = useNavigate();
+    const location = useLocation();
+    const [openInfoUsuario, setOpenInfoUsuario] = useState(false);
 
-  const inventoryItems = [
-    { text: "Productos", icon: <Inventory />, path: "/products" },
-    { text: "Marcas", icon: <LocalOffer />, path: "/brands" },
-    { text: "Categorías", icon: <Category />, path: "/category" },
-    { text: "Depósitos", icon: <Warehouse />, path: "/warehouses" },
-    { text: "Proveedores", icon: <Store />, path: "/providers" },
-  ];
+    const inventoryItems = [
+        { text: 'Productos', icon: <Inventory />, path: '/products' },
+        { text: 'Marcas', icon: <LocalOffer />, path: '/brands' },
+        { text: 'Categorías', icon: <Category />, path: '/category' },
+        { text: 'Depósitos', icon: <Warehouse />, path: '/warehouses' },
+        { text: 'Proveedores', icon: <Store />, path: '/providers' }
+    ];
 
-  const operationsItems = [
-    { text: "Movimientos", icon: <TrendingUp />, path: "/movements" },
-    { text: "Ventas", icon: <PointOfSale />, path: "/sales" },
-  ];
+    const operationsItems = [
+        { text: 'Movimientos', icon: <TrendingUp />, path: '/movements' },
+        { text: 'Ventas', icon: <PointOfSale />, path: '/sales' }
+    ];
 
-  const handleItemClick = (path) => {
-    navigate(path);
-    if (onClose) onClose();
-  };
+    const handleItemClick = (path) => {
+        navigate(path);
+        if (onClose) onClose();
+    };
 
-  const renderMenuSection = (title, items) => (
-    <Box sx={{ mb: 2 }}>
-      <Typography
-        variant="caption"
-        sx={{
-          px: 2,
-          py: 1,
-          color: "text.secondary",
-          fontWeight: 600,
-          fontSize: "0.75rem",
-          textTransform: "uppercase",
-          letterSpacing: "0.5px",
-        }}
-      >
-        {title}
-      </Typography>
-      <List sx={{ py: 0 }}>
-        {items.map((item, index) => (
-          <ListItem key={index} disablePadding>
-            <ListItemButton
-              selected={location.pathname === item.path}
-              onClick={() => handleItemClick(item.path)}
-              sx={{
-                mx: 1,
-                borderRadius: 1,
-                "&:hover": {
-                  backgroundColor: "action.hover",
-                },
-                "&.Mui-selected": {
-                  backgroundColor: "#0B2240",
-                  color: "white",
-                  "&:hover": {
-                    backgroundColor: "#08172e",
-                  },
-                  "& .MuiListItemIcon-root": {
-                    color: "white",
-                  },
-                },
-              }}
-            >
-              <ListItemIcon
+    const renderMenuSection = (title, items) => (
+        <Box sx={{ mb: 2 }}>
+            <Typography
+                variant="caption"
                 sx={{
-                  minWidth: 40,
-                  color:
-                    location.pathname === item.path
-                      ? "primary.contrastText"
-                      : "text.secondary",
+                    px: 2,
+                    py: 1,
+                    color: 'text.secondary',
+                    fontWeight: 600,
+                    fontSize: '0.75rem',
+                    textTransform: 'uppercase',
+                    letterSpacing: '0.5px'
                 }}
-              >
-                {item.icon}
-              </ListItemIcon>
-              <ListItemText primary={item.text} />
-            </ListItemButton>
-          </ListItem>
-        ))}
-      </List>
-    </Box>
-  );
+            >
+                {title}
+            </Typography>
+            <List sx={{ py: 0 }}>
+                {items.map((item, index) => (
+                    <ListItem key={index} disablePadding>
+                        <ListItemButton
+                            selected={location.pathname === item.path}
+                            onClick={() => handleItemClick(item.path)}
+                            sx={{
+                                mx: 1,
+                                borderRadius: 1,
+                                '&:hover': {
+                                    backgroundColor: 'action.hover',
+                                },
+                                '&.Mui-selected': {
+                                    backgroundColor: '#0B2240',
+                                    color: 'white',
+                                    '&:hover': {
+                                        backgroundColor: '#08172e',
+                                    },
+                                    '& .MuiListItemIcon-root': {
+                                        color: 'white',
+                                    },
+                                },
+                            }}
+                        >
+                            <ListItemIcon
+                                sx={{
+                                    minWidth: 40,
+                                    color: location.pathname === item.path ? 'primary.contrastText' : 'text.secondary'
+                                }}
+                            >
+                                {item.icon}
+                            </ListItemIcon>
+                            <ListItemText primary={item.text} />
+                        </ListItemButton>
+                    </ListItem>
+                ))}
+            </List>
+        </Box>
+    );
 
-  const drawerContent = (
-    <Box
-      sx={{
-        width: drawerWidth,
-        height: "100%",
-        display: "flex",
-        flexDirection: "column",
-        overflowX: "hidden", // 👈 evita scroll horizontal
-      }}
-    >
-      <Divider variant="middle" />
-      <Box
-        sx={{
-          p: 2,
-          display: "flex",
-          justifyContent: "center",
-          cursor: "pointer",
-          transition: "transform 0.2s ease-in-out",
-          "&:hover": {
-            transform: "scale(1.05)",
-          },
-        }}
-        onClick={() => navigate("/")}
-      >
-        <img
-          src={logo}
-          alt="Brava Store Logo"
-          style={{
-            width: 210,
-            height: 110,
-            objectFit: "cover",
-            objectPosition: "center",
-          }}
-        />
-      </Box>
-
-      <Divider variant="middle" />
-
-      <Box sx={{ flex: 1, py: 2, overflowY: "auto", overflowX: "hidden" }}>
-        {renderMenuSection("Inventario", inventoryItems)}
-        {renderMenuSection("Operaciones", operationsItems)}
-      </Box>
-
-      <Box sx={{ p: 2, position: "relative" }}>
-        <Paper
-          elevation={0}
-          sx={{
-            p: 2,
-            backgroundColor: "grey.50",
-            borderRadius: 2,
-            border: "1px solid",
-            borderColor: "grey.200",
-            cursor: "pointer",
-          }}
-          onClick={() => setOpenInfoUsuario(true)}
+    return (
+        <Box
+            sx={{
+                width: drawerWidth,
+                height: '100%',
+                backgroundColor: '#fff', // 🟨 fondo blanco para que no quede invisible
+                display: 'flex',
+                flexDirection: 'column',
+                overflowX: 'hidden'
+            }}
         >
-          <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
-            <Avatar sx={{ width: 40, height: 40, backgroundColor: "#0B2240" }}>
-              <AccountCircle />
-            </Avatar>
-            <Box sx={{ flex: 1 }}>
-              <Typography variant="body2" sx={{ fontWeight: 600 }}>
-                Nombre Apellido
-              </Typography>
-              <Typography variant="caption" color="text.secondary">
-                usuario@email.com
-              </Typography>
+            <Divider variant="middle" />
+
+            <Box
+                sx={{
+                    p: 2,
+                    display: 'flex',
+                    justifyContent: 'center',
+                    cursor: 'pointer',
+                    transition: 'transform 0.2s ease-in-out',
+                    '&:hover': {
+                        transform: 'scale(1.05)',
+                    }
+                }}
+                onClick={() => navigate('/')}
+            >
+                <img
+                    src={logo}
+                    alt="Brava Store Logo"
+                    style={{
+                        width: 210,
+                        height: 110,
+                        objectFit: 'cover',
+                        objectPosition: 'center'
+                    }}
+                />
             </Box>
-            <IconButton size="small">
-              <Settings fontSize="small" />
-            </IconButton>
-          </Box>
-        </Paper>
-      </Box>
 
-      <InfoUsuario
-        open={openInfoUsuario}
-        onClose={() => setOpenInfoUsuario(false)}
-        onLogout={() => navigate("/login")}
-      />
-    </Box>
-  );
+            <Divider variant="middle" />
 
-  return (
-    <Drawer
-      variant="permanent"
-      sx={{
-        display: { xs: "none", md: "block" },
-        "& .MuiDrawer-paper": {
-          boxSizing: "border-box",
-          width: drawerWidth,
-          border: "none",
-          boxShadow: "0 0 10px rgba(0,0,0,0.1)",
-        },
-      }}
-      open
-    >
-      {drawerContent}
-    </Drawer>
-  );
+            <Box sx={{ flex: 1, py: 2, overflowY: 'auto', overflowX: 'hidden' }}>
+                {renderMenuSection('Inventario', inventoryItems)}
+                {renderMenuSection('Operaciones', operationsItems)}
+            </Box>
+
+            <Box sx={{ p: 2 }}>
+                <Paper
+                    elevation={0}
+                    sx={{
+                        p: 2,
+                        backgroundColor: 'grey.50',
+                        borderRadius: 2,
+                        border: '1px solid',
+                        borderColor: 'grey.200',
+                        cursor: 'pointer'
+                    }}
+                    onClick={() => setOpenInfoUsuario(true)}
+                >
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                        <Avatar sx={{ width: 40, height: 40, backgroundColor: '#0B2240' }}>
+                            <AccountCircle />
+                        </Avatar>
+                        <Box sx={{ flex: 1 }}>
+                            <Typography variant="body2" sx={{ fontWeight: 600 }}>
+                                Nombre Apellido
+                            </Typography>
+                            <Typography variant="caption" color="text.secondary">
+                                usuario@email.com
+                            </Typography>
+                        </Box>
+                        <IconButton size="small">
+                            <Settings fontSize="small" />
+                        </IconButton>
+                    </Box>
+                </Paper>
+            </Box>
+
+            <InfoUsuario open={openInfoUsuario} onClose={() => setOpenInfoUsuario(false)} />
+        </Box>
+    );
 };
 
 export default Sidebar;
