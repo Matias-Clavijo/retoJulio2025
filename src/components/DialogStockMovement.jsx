@@ -19,7 +19,7 @@ const tiposMovimiento = [
     { value: 'Salida', label: 'Salida' },
 ];
 
-export default function DialogStock({ open, onClose }) {
+export default function DialogStockMovement({ open, onClose }) {
     const [producto, setProducto] = useState('');
     const [deposito, setDeposito] = useState('');
     const [tipo, setTipo] = useState('');

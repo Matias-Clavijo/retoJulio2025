@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Warehouse } from "@mui/icons-material";
 import DataManagementPage from "../components/DataManagementPage";
-import EditarDeposito from "../components/editarDeposito";
+import EditarDeposito from "../components/DialogDeposito.jsx";
 import { depositsAPI } from "../services/api/stockBack";
 import Eliminar from "../components/Eliminar";
 
