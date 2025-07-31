@@ -1,35 +1,49 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Business } from "@mui/icons-material";
 import DataManagementPage from "../components/DataManagementPage";
 import AgregarProveedorDialog from "../components/DialogProveedor";
 import Eliminar from '../components/Eliminar';
-
+import { providersAPI } from "../services/api/stockBack"; // 👈 Asegurate de tener esto
 
 export default function Proveedor() {
   const [openEliminar, setOpenEliminar] = useState(false);
   const [proveedorAEliminar, setProveedorAEliminar] = useState(null);
+  const [rows, setRows] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
-  const [rows, setRows] = useState([
-    {
-      id: 1,
-      codigo: "P001",
-      nombre: "Proveedor A",
-      telefono: "099123456",
-      email: "proveedorA@mail.com",
-      direccion: "Rivera 123",
-    },
-    {
-      id: 2,
-      codigo: "P002",
-      nombre: "Proveedor B",
-      telefono: "098654321",
-      email: "proveedorB@mail.com",
-      direccion: "Salto 456",
-    },
-  ]);
+  useEffect(() => {
+    const fetchProveedores = async () => {
+      try {
+        const response = await providersAPI.getProviders(); // 👈 Asegurate de tener esta función
+        if (response?.success) {
+          // Mapear datos para que tengan las keys esperadas por la tabla
+          const mappedData = response.data.map(p => ({
+            codigo: p.id,
+            nombre: p.name,
+            telefono: p.phone,
+            email: p.email,
+            direccion: p.address,
+            associatedDate: p.associatedDate // si lo necesitás para otra cosa
+          }));
+          setRows(mappedData);
+          setError(null);
+        } else {
+          setError(response.error || "Error al cargar los proveedores");
+        }
+      } catch (err) {
+        setError("Error al conectar con el servidor");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchProveedores();
+  }, []);
 
   const handleEdit = (proveedor) => {
     console.log("Editando proveedor:", proveedor);
+    // Si editás, asegurate que uses las propiedades código, nombre, telefono, etc.
   };
 
   const handleDelete = (proveedor) => {
@@ -42,22 +56,20 @@ export default function Proveedor() {
   };
 
   const handleConfirmEliminar = () => {
-    setRows(prev => prev.filter(p => p.id !== proveedorAEliminar.id));
+    setRows(prev => prev.filter(p => p.codigo !== proveedorAEliminar.codigo));
     setOpenEliminar(false);
     setProveedorAEliminar(null);
   };
 
   const handleGuardarProveedor = (proveedor) => {
-    if (proveedor.id) {
-      // Modo edición
+    if (proveedor.codigo) {
       const actualizados = rows.map((p) =>
-        p.id === proveedor.id ? proveedor : p
+        p.codigo === proveedor.codigo ? proveedor : p
       );
       setRows(actualizados);
     } else {
-      // Modo creación
-      const id = rows.length ? rows[rows.length - 1].id + 1 : 1;
-      const nuevoProveedor = { ...proveedor, id };
+      const nuevoCodigo = rows.length ? rows[rows.length - 1].codigo + 1 : 1;
+      const nuevoProveedor = { ...proveedor, codigo: nuevoCodigo };
       setRows([...rows, nuevoProveedor]);
     }
   };
@@ -88,8 +100,8 @@ export default function Proveedor() {
         onDelete={handleDelete}
         onView={handleView}
         addDialog={<AgregarProveedorDialog onSave={handleGuardarProveedor} />}
-        loading={false}
-        error={null}
+        loading={loading}
+        error={error}
       />
       
       <Eliminar
