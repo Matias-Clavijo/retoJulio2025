@@ -2,12 +2,21 @@ import React, { useState, useEffect } from "react";
 import { Business } from "@mui/icons-material";
 import DataManagementPage from "../components/DataManagementPage";
 import AgregarProveedorDialog from "../components/DialogProveedor";
-import Eliminar from '../components/Eliminar';
-import { providersAPI } from "../services/api/stockBack"; // 👈 Asegurate de tener esto
+import DialogEditProvider from "../components/DialogEditProvider";
+import DialogWatchProvider from "../components/DialogWatchProvider";
+import Eliminar from "../components/Eliminar";
+import { providersAPI } from "../services/api/stockBack";
 
 export default function Proveedor() {
   const [openEliminar, setOpenEliminar] = useState(false);
   const [proveedorAEliminar, setProveedorAEliminar] = useState(null);
+
+  const [openEditar, setOpenEditar] = useState(false);
+  const [proveedorAEditar, setProveedorAEditar] = useState(null);
+
+  const [openVer, setOpenVer] = useState(false);
+  const [proveedorAVer, setProveedorAVer] = useState(null); 
+
   const [rows, setRows] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -15,16 +24,15 @@ export default function Proveedor() {
   useEffect(() => {
     const fetchProveedores = async () => {
       try {
-        const response = await providersAPI.getProviders(); // 👈 Asegurate de tener esta función
+        const response = await providersAPI.getProviders();
         if (response?.success) {
-          // Mapear datos para que tengan las keys esperadas por la tabla
-          const mappedData = response.data.map(p => ({
+          const mappedData = response.data.map((p) => ({
             codigo: p.id,
             nombre: p.name,
             telefono: p.phone,
             email: p.email,
             direccion: p.address,
-            associatedDate: p.associatedDate // si lo necesitás para otra cosa
+            associatedDate: p.associatedDate,
           }));
           setRows(mappedData);
           setError(null);
@@ -42,8 +50,8 @@ export default function Proveedor() {
   }, []);
 
   const handleEdit = (proveedor) => {
-    console.log("Editando proveedor:", proveedor);
-    // Si editás, asegurate que uses las propiedades código, nombre, telefono, etc.
+    setProveedorAEditar(proveedor);
+    setOpenEditar(true);
   };
 
   const handleDelete = (proveedor) => {
@@ -52,11 +60,12 @@ export default function Proveedor() {
   };
 
   const handleView = (proveedor) => {
-    console.log("Viendo proveedor:", proveedor);
+    setProveedorAVer(proveedor); 
+    setOpenVer(true); 
   };
 
   const handleConfirmEliminar = () => {
-    setRows(prev => prev.filter(p => p.codigo !== proveedorAEliminar.codigo));
+    setRows((prev) => prev.filter((p) => p.codigo !== proveedorAEliminar.codigo));
     setOpenEliminar(false);
     setProveedorAEliminar(null);
   };
@@ -72,6 +81,8 @@ export default function Proveedor() {
       const nuevoProveedor = { ...proveedor, codigo: nuevoCodigo };
       setRows([...rows, nuevoProveedor]);
     }
+    setOpenEditar(false);
+    setProveedorAEditar(null);
   };
 
   const columns = [
@@ -103,7 +114,26 @@ export default function Proveedor() {
         loading={loading}
         error={error}
       />
-      
+
+      <DialogEditProvider
+        open={openEditar}
+        onClose={() => {
+          setOpenEditar(false);
+          setProveedorAEditar(null);
+        }}
+        provider={proveedorAEditar}
+        onSave={handleGuardarProveedor}
+      />
+
+      <DialogWatchProvider
+        open={openVer}
+        onClose={() => {
+          setOpenVer(false);
+          setProveedorAVer(null);
+        }}
+        proveedor={proveedorAVer}
+      />
+
       <Eliminar
         open={openEliminar}
         onClose={() => setOpenEliminar(false)}
@@ -113,4 +143,3 @@ export default function Proveedor() {
     </>
   );
 }
-

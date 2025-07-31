@@ -55,7 +55,7 @@ const EditarDeposito = ({ open, onClose }) => {
               borderTopRightRadius: '4px'
             }}
         >
-          Editar depósito
+          Agregar depósito
           <IconButton
               aria-label="close"
               onClick={onClose}
@@ -117,7 +117,7 @@ const EditarDeposito = ({ open, onClose }) => {
                 }
               }}
           >
-            EDITAR DEPÓSITO
+            AGREGAR DEPÓSITO
           </Button>
         </DialogActions>
       </Dialog>
