@@ -645,7 +645,7 @@ export const providersAPI = {
   // GET /providers
   getProviders: async (page = 1, items = 10) => {
     try {
-      return await apiClient.get('/provider').then(response => {
+      return await apiClient.get('/providers').then(response => {
         console.log(response);
         return response.data;
       })
