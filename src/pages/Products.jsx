@@ -21,6 +21,7 @@ export default function Products() {
     const [selectedProduct, setSelectedProduct] = useState(null);
     const [errorSnackbar, setErrorSnackbar] = useState(false);
     const [errorMessage, setErrorMessage] = useState('');
+    const [refetch, setRefetch] = useState(0);
 
 
     useEffect(() => {
@@ -87,7 +88,7 @@ export default function Products() {
                     listTitle: 'Ver todos precios'
                 });
             }            
-         },
+        },
         { id: "precios_venta", label: "Precios de venta", align: "left", 
             format: (value) => {
                 if (!Array.isArray(value) || value.length === 0) {
@@ -102,7 +103,7 @@ export default function Products() {
                     listTitle: 'Ver todos precios'
                 });
             }            
-         },
+        },
         { 
             id: "depositos", 
             label: "Depósitos", 

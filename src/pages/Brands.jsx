@@ -19,8 +19,8 @@ export default function Brands() {
   useEffect(() => {
     const fetchBrands = async () => {
       try {
-        setLoading(true);
-        const response = await brandsAPI.getBrands(page, rowsPerPage);
+        const response = await brandsAPI.getBrands();
+        setBrands(response.data);
         if (response.success) {
           // Transformar los datos al formato esperado por la tabla
           const transformedBrands = response.data.map(brand => ({
@@ -37,15 +37,15 @@ export default function Brands() {
         } else {
           setError(response.error || "Error al cargar las marcas");
         }
-      } catch (_err) {
-        setError("Error al conectar con el servidor");
+      } catch (error) {
+        console.error("Error al obtener marcas:", error);
       } finally {
         setLoading(false);
       }
     };
 
     fetchBrands();
-  }, [page, rowsPerPage]);
+  }, []);
 
   const columns = [
     { id: "nombre", label: "Nombre", align: "left" },
@@ -152,6 +152,14 @@ export default function Brands() {
     onClose={handleCloseEditDialog}
     brandToEdit={brandToEdit}
     />
+
+    <CommonTable
+      data={brands}
+      columns={columns}
+      onEdit={handleEdit}       // si tenés edición
+      onDelete={handleConfirmDelete}   // si tenés borrado
+    />
+
     </>
   );
 }
