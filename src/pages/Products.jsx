@@ -9,7 +9,7 @@ import { useListFormatter } from "../hooks/useListFormatter";
 
 export default function Products() {
     const { formatList } = useListFormatter();
-    
+
     const [products, setProducts] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
@@ -36,7 +36,6 @@ export default function Products() {
                         depositos: product.deposits || [],
                         precios_compra: product.purchasePrices,
                         precios_venta: product.salePrices,
-
                         original: product
                     }));
                     setProducts(transformedProducts);
@@ -74,7 +73,6 @@ export default function Products() {
                 if (!Array.isArray(value) || value.length === 0) {
                     return '-';
                 }
-                
                 const values = value.map(price => price.currency + ' ' + price.value);
                 return formatList(values, {
                     maxVisible: 1,
@@ -82,14 +80,13 @@ export default function Products() {
                     chipColor: 'info',
                     listTitle: 'Ver todos precios'
                 });
-            }            
-         },
-        { id: "precios_venta", label: "Precios de venta", align: "left", 
+            }
+        },
+        { id: "precios_venta", label: "Precios de venta", align: "left",
             format: (value) => {
                 if (!Array.isArray(value) || value.length === 0) {
                     return '-';
                 }
-                
                 const values = value.map(price => price.currency + ' ' + price.value);
                 return formatList(values, {
                     maxVisible: 1,
@@ -97,19 +94,19 @@ export default function Products() {
                     chipColor: 'info',
                     listTitle: 'Ver todos precios'
                 });
-            }            
-         },
+            }
+        },
         { 
             id: "depositos", 
             label: "Depósitos", 
             align: "center",
+            // ✅ USAR formatList del custom hook
             format: (value) => {
                 if (!Array.isArray(value) || value.length === 0) {
                     return '-';
                 }
                 
-                const values = value.map(deposit => deposit.name);
-                return formatList(values, {
+                return formatList(value, {
                     maxVisible: 2,
                     showChips: true,
                     chipColor: 'info',
@@ -117,6 +114,7 @@ export default function Products() {
                 });
             }
         },
+        { id: "total_stock", label: "Total de stock", align: "center" },
         { id: "acciones", label: "Acciones", align: "center" },
     ];
 
@@ -145,7 +143,7 @@ export default function Products() {
                         descripcion: product.description,
                         marca: product.brand.name,
                         categoria: product.category.name,
-                        depositos: product.deposits || [], // Cambiar a array de depósitos
+                        depositos: product.deposits || [],
                         total_stock: product.depositsCount * 10,
                         original: product
                     }));
@@ -172,7 +170,7 @@ export default function Products() {
 
     const handleRowsPerPageChange = (newRowsPerPage) => {
         setRowsPerPage(newRowsPerPage);
-        setPage(1); // Reset to first page when changing rows per page
+        setPage(1);
     };
 
     const handleAddButtonClick = async (productData) => {
@@ -215,4 +213,4 @@ export default function Products() {
             />
         </>
     );
-} 
+}
