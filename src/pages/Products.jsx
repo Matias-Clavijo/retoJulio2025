@@ -5,13 +5,11 @@ import AgregarProductoDialog from "../components/DialogProductos";
 import Eliminar from "../components/Eliminar";
 import { productsAPI } from "../services/api/stockBack";
 
-// ✅ IMPORTAR EL CUSTOM HOOK
 import { useListFormatter } from "../hooks/useListFormatter";
 
 export default function Products() {
-    // 🔥 USAR EL CUSTOM HOOK
     const { formatList } = useListFormatter();
-    
+
     const [products, setProducts] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
@@ -19,22 +17,25 @@ export default function Products() {
     const [rowsPerPage, setRowsPerPage] = useState(10);
     const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
     const [selectedProduct, setSelectedProduct] = useState(null);
+    const [refetch, setRefetch] = useState(1);
 
     useEffect(() => {
         const fetchProducts = async () => {
             try {
-                setLoading(true);
+                if (refetch === 1) {
+                    setLoading(true);
+                }
                 const response = await productsAPI.getProducts(page, rowsPerPage);
+                console.log(response);
                 if (response.success) {
-                    // Transformar los datos al formato esperado por la tabla
                     const transformedProducts = response.data.map(product => ({
                         producto: product.name,
                         descripcion: product.description,
-                        marca: product.brand.name,
-                        categoria: product.category.name,
-                        depositos: product.deposits || [], // Cambiar a array de depósitos
-                        total_stock: product.depositsCount * 10, // Ejemplo - ajustar según lógica real
-                        // Mantener los datos originales para edición/visualización
+                        marca: product.brand?.name || '-',
+                        categoria: product.category?.name || '-',
+                        depositos: product.deposits || [],
+                        precios_compra: product.purchasePrices,
+                        precios_venta: product.salePrices,
                         original: product
                     }));
                     setProducts(transformedProducts);
@@ -42,7 +43,8 @@ export default function Products() {
                 } else {
                     setError(response.error || "Error al cargar los productos");
                 }
-            } catch {
+            } catch (error ) {
+                console.log(error);
                 setError("Error al conectar con el servidor");
             } finally {
                 setLoading(false);
@@ -50,7 +52,7 @@ export default function Products() {
         };
 
         fetchProducts();
-    }, [page, rowsPerPage]);
+    }, [page, rowsPerPage, refetch]);
 
     const columns = [
         {
@@ -66,8 +68,34 @@ export default function Products() {
         },
         { id: "marca", label: "Marca", align: "left" },
         { id: "categoria", label: "Categoría", align: "left" },
-        { id: "precios_compra", label: "Precios de compra", align: "left" },
-        { id: "precios_venta", label: "Precios de venta", align: "left" },
+        { id: "precios_compra", label: "Precios de compra", align: "left",
+            format: (value) => {
+                if (!Array.isArray(value) || value.length === 0) {
+                    return '-';
+                }
+                const values = value.map(price => price.currency + ' ' + price.value);
+                return formatList(values, {
+                    maxVisible: 1,
+                    showChips: true,
+                    chipColor: 'info',
+                    listTitle: 'Ver todos precios'
+                });
+            }
+        },
+        { id: "precios_venta", label: "Precios de venta", align: "left",
+            format: (value) => {
+                if (!Array.isArray(value) || value.length === 0) {
+                    return '-';
+                }
+                const values = value.map(price => price.currency + ' ' + price.value);
+                return formatList(values, {
+                    maxVisible: 1,
+                    showChips: true,
+                    chipColor: 'info',
+                    listTitle: 'Ver todos precios'
+                });
+            }
+        },
         { 
             id: "depositos", 
             label: "Depósitos", 
@@ -108,7 +136,6 @@ export default function Products() {
             setLoading(true);
             const response = await productsAPI.deleteProduct(selectedProduct.original.id);
             if (response.success) {
-                // Recargar la lista después de eliminar
                 const newResponse = await productsAPI.getProducts(page, rowsPerPage);
                 if (newResponse.success) {
                     const transformedProducts = newResponse.data.map(product => ({
@@ -116,7 +143,7 @@ export default function Products() {
                         descripcion: product.description,
                         marca: product.brand.name,
                         categoria: product.category.name,
-                        depositos: product.deposits || [], // Cambiar a array de depósitos
+                        depositos: product.deposits || [],
                         total_stock: product.depositsCount * 10,
                         original: product
                     }));
@@ -143,7 +170,17 @@ export default function Products() {
 
     const handleRowsPerPageChange = (newRowsPerPage) => {
         setRowsPerPage(newRowsPerPage);
-        setPage(1); // Reset to first page when changing rows per page
+        setPage(1);
+    };
+
+    const handleAddButtonClick = async (productData) => {
+        console.log(productData);
+        const response = await productsAPI.createProduct(productData);
+        if (!response.success) {
+            setError(response.error);
+        } else {
+            setRefetch(refetch + 1);
+        }
     };
 
     return (
@@ -164,7 +201,7 @@ export default function Products() {
                 onView={handleView}
                 onPageChange={handlePageChange}
                 onRowsPerPageChange={handleRowsPerPageChange}
-                addDialog={<AgregarProductoDialog />}
+                addDialog={<AgregarProductoDialog onAddButtonClick={handleAddButtonClick} />}
                 loading={loading}
                 error={error}
             />
@@ -176,4 +213,4 @@ export default function Products() {
             />
         </>
     );
-} 
+}

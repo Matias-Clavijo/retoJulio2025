@@ -9,9 +9,11 @@ import {
     Typography,
     Link,
     Paper,
-    InputAdornment
+    InputAdornment,
+    useMediaQuery
 } from '@mui/material';
 import { AccountCircle, Lock } from '@mui/icons-material';
+import { useTheme } from '@mui/material/styles';
 import logo from '../assets/logo.jpeg';
 
 function Login() {
@@ -22,6 +24,9 @@ function Login() {
         navigate('/'); // ← Navega a la página home ("/")
     };
 
+    const theme = useTheme();
+    const isMobile = useMediaQuery(theme.breakpoints.down('sm')); // Detecta pantallas pequeñas
+
     return (
         <Box
             display="flex"
@@ -30,19 +35,28 @@ function Login() {
             minHeight="100vh"
             sx={{
                 background: 'linear-gradient(135deg, #071d49, #f9c525)',
+                px: 2
             }}
         >
-            <Paper elevation={6} sx={{ padding: 4, width: 320, borderRadius: 3 }}>
+            <Paper
+                elevation={6}
+                sx={{
+                    padding: 4,
+                    width: isMobile ? '100%' : 320, // 100% para móvil
+                    maxWidth: 320,
+                    borderRadius: 3
+                }}
+            >
                 <Box display="flex" justifyContent="center">
-                    <img 
-                        src={logo} 
-                        alt="Brava Store Logo" 
-                        style={{ 
-                            width: 210, 
+                    <img
+                        src={logo}
+                        alt="Brava Store Logo"
+                        style={{
+                            width: 210,
                             height: 110,
                             objectFit: 'cover',
                             objectPosition: 'center'
-                        }} 
+                        }}
                     />
                 </Box>
 

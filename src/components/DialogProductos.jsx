@@ -1,4 +1,4 @@
-﻿import React, { useState } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import {
     Dialog,
     DialogContent,
@@ -19,6 +19,7 @@ import {
 } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 import AddIcon from '@mui/icons-material/Add';
+import { brandsAPI, categoriesAPI } from '../services/api/stockBack';
 
 const primaryColor = '#0B2240';
 const accentColor = '#F5C518';
@@ -30,7 +31,7 @@ const currencies = [
     { code: 'ARG', label: 'ARS' },
 ];
 
-export default function AgregarProductoDialog({ open, onClose }) {
+export default function AgregarProductoDialog({ open, onClose, onAddButtonClick }) {
     const [nombre, setNombre] = useState('');
     const [descripcion, setDescripcion] = useState('');
     const [marca, setMarca] = useState('');
@@ -41,9 +42,12 @@ export default function AgregarProductoDialog({ open, onClose }) {
     const [preciosCompra, setPreciosCompra] = useState([]);
     const [preciosVenta, setPreciosVenta] = useState([]);
 
+    const [brands, setBrands] = useState([]);
+    const [categories, setCategories] = useState([]);
+
     const handleAgregar = () => {
-        console.log({ nombre, descripcion, marca, categoria, moneda, preciosCompra, preciosVenta });
-        onClose();
+        onAddButtonClick({ nombre, descripcion, marca, categoria, moneda, preciosCompra, preciosVenta })
+        if (onClose) onClose()
     };
 
     const agregarPrecioCompra = () => {
@@ -108,6 +112,21 @@ export default function AgregarProductoDialog({ open, onClose }) {
         preciosCompra.length && preciosVenta.length &&
         validarMonedasIguales();
 
+    useEffect(() => {
+        const fetchBrands = async () => {
+            const response = await brandsAPI.getBrands();
+            setBrands(response?.data);
+        }
+
+        const fetchCategories = async () => {
+            const response = await categoriesAPI.getCategories();
+            setCategories(response?.data);
+        }
+
+        fetchBrands();
+        fetchCategories();
+    }, []);
+
     return (
         <Dialog open={open} onClose={onClose} fullWidth maxWidth="md">
             <Box
@@ -168,8 +187,9 @@ export default function AgregarProductoDialog({ open, onClose }) {
                         onChange={(e) => setMarca(e.target.value)}
                         label="Marca"
                     >
-                        <MenuItem value="Marca 1">Marca 1</MenuItem>
-                        <MenuItem value="Marca 2">Marca 2</MenuItem>
+                        {brands.map(brand => (
+                            <MenuItem key={brand.id} value={brand.id}>{brand.name}</MenuItem>
+                        ))}
                     </Select>
                 </FormControl>
 
@@ -180,8 +200,9 @@ export default function AgregarProductoDialog({ open, onClose }) {
                         onChange={(e) => setCategoria(e.target.value)}
                         label="Categoría"
                     >
-                        <MenuItem value="Categoría A">Categoría A</MenuItem>
-                        <MenuItem value="Categoría B">Categoría B</MenuItem>
+                        {categories.map(category => (
+                            <MenuItem key={category.id} value={category.id}>{category.name}</MenuItem>
+                        ))}
                     </Select>
                 </FormControl>
 

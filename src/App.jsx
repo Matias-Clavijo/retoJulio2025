@@ -1,8 +1,9 @@
+import React from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import Home from './pages/Home';
 import About from './pages/About';
 import Login from './pages/Login';
-import Signup from "./pages/Signup";
+import Signup from './pages/Signup';
 import Category from './pages/Category';
 import Brands from './pages/Brands';
 import Products from './pages/Products';
@@ -10,7 +11,6 @@ import StockMovements from './pages/StockMovements';
 import Deposits from './pages/Deposits';
 import Sales from './pages/Sales';
 import ErrorPage404 from './components/common/errorPage';
-import Brand from './pages/Brand';
 import Proveedor from './pages/Proveedor';
 
 export default function App() {
@@ -27,9 +27,8 @@ export default function App() {
           <Route path="/movements" element={<StockMovements />} />
           <Route path="/warehouses" element={<Deposits />} />
           <Route path="/sales" element={<Sales />} />
-          <Route path='/providers' element={<Proveedor />} />
-          <Route path= "*" element={<ErrorPage404/>} />
-          <Route path='/brand' element={<Brand />} />
+          <Route path="/providers" element={<Proveedor />} />
+          <Route path="*" element={<ErrorPage404 />} />
         </Routes>
       </BrowserRouter>
   );
