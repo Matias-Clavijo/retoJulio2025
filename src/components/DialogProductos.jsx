@@ -31,16 +31,25 @@ const currencies = [
     { code: 'ARG', label: 'ARS' },
 ];
 
-export default function AgregarProductoDialog({ open, onClose, onAddButtonClick }) {
-    const [nombre, setNombre] = useState('');
-    const [descripcion, setDescripcion] = useState('');
-    const [marca, setMarca] = useState('');
-    const [categoria, setCategoria] = useState('');
-    const [moneda, setMoneda] = useState('UY');
+export default function AgregarProductoDialog({ open, onClose, onAddButtonClick, product }) {
+    console.log(product);
+    const [nombre, setNombre] = useState(product?.nombre || '');
+    const [descripcion, setDescripcion] = useState(product?.descripcion || '');
+    const [marca, setMarca] = useState(product?.marca || '');
+    const [categoria, setCategoria] = useState(product?.categoria || '');
+    const [moneda, setMoneda] = useState(product?.moneda || 'UY');
     const [precioCompra, setPrecioCompra] = useState('');
     const [precioVenta, setPrecioVenta] = useState('');
-    const [preciosCompra, setPreciosCompra] = useState([]);
-    const [preciosVenta, setPreciosVenta] = useState([]);
+    const [preciosCompra, setPreciosCompra] = useState(product?.preciosCompra?.map(price => ({
+        id: price.id,
+        precio: price.value,
+        moneda: price.currency
+    })) || []);
+    const [preciosVenta, setPreciosVenta] = useState(product?.preciosVenta?.map(price => ({
+        id: price.id,
+        precio: price.value,
+        moneda: price.currency
+    })) || []);
 
     const [brands, setBrands] = useState([]);
     const [categories, setCategories] = useState([]);
