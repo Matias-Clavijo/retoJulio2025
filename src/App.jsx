@@ -11,7 +11,6 @@ import StockMovements from './pages/StockMovements';
 import Deposits from './pages/Deposits';
 import Sales from './pages/Sales';
 import ErrorPage404 from './components/common/errorPage';
-import Brand from './pages/Brand';
 import Proveedor from './pages/Proveedor';
 
 export default function App() {
@@ -29,7 +28,6 @@ export default function App() {
           <Route path="/warehouses" element={<Deposits />} />
           <Route path="/sales" element={<Sales />} />
           <Route path="/providers" element={<Proveedor />} />
-          <Route path="/brand" element={<Brand />} />
           <Route path="*" element={<ErrorPage404 />} />
         </Routes>
       </BrowserRouter>

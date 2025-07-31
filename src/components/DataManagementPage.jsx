@@ -90,21 +90,44 @@ const DataManagementPage = ({
     const renderMobileCards = () => (
         <Box>
             {rowsWithActions.map((row, i) => (
-                <Card key={i} sx={{ mb: 2 }}>
-                    <CardContent>
+                <Card key={i} sx={{ mb: 2, borderRadius: 2, boxShadow: 3 }}>
+                    {/* Barra amarilla superior */}
+                    <Box height={"0.7rem"} sx={{ backgroundColor: '#F5C518', borderTopLeftRadius: 8, borderTopRightRadius: 8 }} />
+
+                    <CardContent sx={{ px: 2, pt: 2 }}>
                         {columns
                             .filter(col => col.id !== 'acciones')
                             .map(col => (
-                                <Box key={col.id} sx={{ mb: 1 }}>
-                                    <Typography variant="body2" fontWeight={600}>{col.label}:</Typography>
-                                    <Typography variant="body2">
+                                <Box key={col.id} sx={{ mb: 2 }}>
+                                    <Typography
+                                        variant="subtitle2"
+                                        fontWeight="bold"
+                                        sx={{ fontSize: '1rem', color: '#0B2240' }}
+                                    >
+                                        {col.label}:
+                                    </Typography>
+                                    <Typography
+                                        variant="body1"
+                                        sx={{
+                                            fontSize: '1rem',
+                                            textAlign: 'left',
+                                            display: 'flex',
+                                            flexDirection: 'column',
+                                            alignItems: 'flex-start',
+                                            gap: 1,
+                                            maxWidth: '100%'
+                                        }}
+                                    >
                                         {col.format ? col.format(row[col.id], row) : row[col.id]}
                                     </Typography>
                                 </Box>
                             ))}
                     </CardContent>
-                    <CardActions sx={{ justifyContent: 'end', px: 2 }}>
-                        {row.acciones}
+
+                    <CardActions sx={{ justifyContent: 'flex-end', px: 2, pb: 2 }}>
+                        <Box display="flex" gap={1}>
+                            {row.acciones}
+                        </Box>
                     </CardActions>
                 </Card>
             ))}
@@ -112,7 +135,7 @@ const DataManagementPage = ({
     );
 
     const renderContent = () => {
-        if (loading) return <Box sx={{ display: 'flex', justifyContent: 'center', height: '80vh' }}><CircularProgress /></Box>;
+        if (loading) return <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh', width: '100%'}} ><CircularProgress size={60} /></Box>;
         if (error) return <Box sx={{ p: 2 }}><Alert severity="error">{error}</Alert></Box>;
 
         const actionButton = (
@@ -133,7 +156,7 @@ const DataManagementPage = ({
         );
 
         return (
-            <Box sx={{margin: '0 auto', width: '100%' }}>
+            <Box sx={{ margin: '0 auto', width: '100%' }}>
                 <TitleHeader
                     title={title}
                     description={description}
