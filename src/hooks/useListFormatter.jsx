@@ -106,5 +106,5 @@ export const useListFormatter = () => {
 
     return {
         formatList
-        };
+    };
 }; 

@@ -1,23 +1,15 @@
 import React, { useState, useEffect } from "react";
 import { PointOfSale } from "@mui/icons-material";
-import EditIcon from "@mui/icons-material/Edit";
-import DeleteIcon from "@mui/icons-material/Delete";
-import VisibilityIcon from "@mui/icons-material/Visibility";
-import { Box, CircularProgress, Alert, IconButton } from "@mui/material";
 import DataManagementPage from "../components/DataManagementPage";
 import SalesDashboard from "../components/SalesDashboard";
 import AgregarVentaDialog from "../components/DialogVenta";
-import CommonTable from "../components/common/CommonTable";
-import TitleHeader from "../components/common/TitelHeader";
-import Button from "@mui/material/Button";
-import Sidebar from "../components/Sidebar";
 import { salesAPI } from "../services/api/stockBack";
 import DialogWatchVenta from "../components/DialogWatchVenta";
 
 
 export default function Sales() {
     const [sales, setSales] = useState([]);
-        const [loading, setLoading] = useState(true);
+    const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [totalIncome, setTotalIncome] = useState(0);
     const [openAddDialog, setOpenAddDialog] = useState(false);
@@ -84,37 +76,7 @@ export default function Sales() {
         { id: "metodoPago", label: "Método de pago", align: "left" },
         { id: "fecha", label: "Fecha", align: "center" },
         { id: "revendedor", label: "Revendedor", align: "left" },
-        { 
-            id: "acciones", 
-            label: "Acciones", 
-            align: "center",
-            format: (_, row) => (
-                <Box sx={{ display: 'flex', justifyContent: 'center', gap: 1 }}>
-                    <IconButton
-                        size="small"
-                        onClick={() => handleView(row)}
-                        sx={{ color: '#0B2240' }}
-                    >
-                        <VisibilityIcon fontSize="small" />
-                    </IconButton>
-                    <IconButton 
-                        size="small" 
-                        onClick={() => handleEdit(row)}
-                        sx={{ color: '#0B2240' }}
-                    >
-                        <EditIcon fontSize="small" />
-                    </IconButton>
-                    <IconButton 
-                        size="small" 
-                        onClick={() => handleDelete(row)}
-                        sx={{ color: 'error.main' }}
-                    >
-                        <DeleteIcon fontSize="small" />
-                    </IconButton>
-                   
-                </Box>
-            )
-        }
+        { id: "acciones", label: "Acciones", align: "center" }
     ];
 
 
@@ -182,12 +144,6 @@ export default function Sales() {
                 <AgregarVentaDialog 
                     open={openAddDialog}
                     onClose={handleCloseAddDialog}
-                />
-
-                <DialogWatchVenta
-                    open={openWatchDialog}
-                    onClose={() => setOpenWatchDialog(false)}
-                    venta={selectedSale}
                 />
             </>
         );

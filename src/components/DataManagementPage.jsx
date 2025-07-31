@@ -37,14 +37,14 @@ const DataManagementPage = ({
                                 onDelete,
                                 onView,
                                 addDialog,
-                                editDialog,
                                 customActions,
                                 showEditAction = true,
                                 showDeleteAction = true,
                                 showViewAction = false,
                                 backgroundColor = '#f5f5f5',
                                 loading = false,
-                                error = null
+                                error = null,
+                                extraInfoComponent
                             }) => {
     const [openAddDialog, setOpenAddDialog] = useState(false);
     const [openEditDialog, setOpenEditDialog] = useState(false);
@@ -144,6 +144,7 @@ const DataManagementPage = ({
                 {isMobile && (
                     <Box sx={{ mb: 2 }}>{actionButton}</Box>
                 )}
+                {extraInfoComponent}
                 {isMobile ? renderMobileCards() : (
                     <CommonTable
                         title={tableTitle}
@@ -155,7 +156,6 @@ const DataManagementPage = ({
                 )}
 
                 {addDialog && React.cloneElement(addDialog, { open: openAddDialog, onClose: handleCloseAddDialog })}
-                {editDialog && React.cloneElement(editDialog, { open: openEditDialog, onClose: handleCloseEditDialog, item: selectedItem })}
             </Box>
         );
     };
