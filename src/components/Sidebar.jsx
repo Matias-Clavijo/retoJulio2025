@@ -112,8 +112,8 @@ const Sidebar = ({ onClose }) => {
         <Box
             sx={{
                 width: drawerWidth,
-                height: '100%',
-                backgroundColor: '#fff', // 🟨 fondo blanco para que no quede invisible
+                height: '100vh',
+                backgroundColor: '#fff',
                 display: 'flex',
                 flexDirection: 'column',
                 overflowX: 'hidden'
@@ -121,6 +121,7 @@ const Sidebar = ({ onClose }) => {
         >
             <Divider variant="middle" />
 
+            {/* Logo */}
             <Box
                 sx={{
                     p: 2,
@@ -148,12 +149,23 @@ const Sidebar = ({ onClose }) => {
 
             <Divider variant="middle" />
 
-            <Box sx={{ flex: 1, py: 2, overflowY: 'auto', overflowX: 'hidden' }}>
-                {renderMenuSection('Inventario', inventoryItems)}
-                {renderMenuSection('Operaciones', operationsItems)}
+            {/* Menu principal */}
+            <Box sx={{ flex: 1, pt: 2, pb: 1, overflowY: 'auto', overflowX: 'hidden' }}>
+                <Box sx={{ mb: 0, mt: 1 }}>
+                    {renderMenuSection('Inventario', inventoryItems)}
+                </Box>
+
+                <Divider variant="middle" sx={{ mx: 2, my: 2, mb: 2.5}} />
+
+                <Box>
+                    {renderMenuSection('Operaciones', operationsItems)}
+                </Box>
             </Box>
 
-            <Box sx={{ p: 2 }}>
+            <Divider variant="middle" sx={{ mx: 2, my: 2 }} />
+
+            {/* Info usuario */}
+            <Box sx={{ px: 2, mb: 3, mt: 1 }}>
                 <Paper
                     elevation={0}
                     sx={{
