@@ -624,9 +624,12 @@ export const providersAPI = {
   // GET /providers
   getProviders: async (page = 1, items = 10) => {
     try {
-      await new Promise(resolve => setTimeout(resolve, 500));
-      return createPaginatedResponse(mockProviders, page, items);
+      return await apiClient.get('/provider').then(response => {
+        console.log(response);
+        return response.data;
+      })
     } catch (error) {
+      console.log(error);
       return { success: false, error: "Error fetching providers" };
     }
   },

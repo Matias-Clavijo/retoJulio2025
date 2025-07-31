@@ -5,6 +5,8 @@ import DataManagementPage from "../components/DataManagementPage";
 import DialogStockMovement from "../components/DialogStockMovement.jsx";
 import { stockMovementsAPI } from "../services/api/stockBack";
 import DialogWatchMovements from "../components/DialogWatchMovements.jsx";
+import DialogEditMovement from "../components/DialogEditMovement.jsx";
+
 
 
 export default function StockMovements() {
@@ -15,6 +17,8 @@ export default function StockMovements() {
     const [rowsPerPage, setRowsPerPage] = useState(10);
     const [openVer, setOpenVer] = useState(false);
     const [movimientoSeleccionado, setMovimientoSeleccionado] = useState(null);
+    const [openEditar, setOpenEditar] = useState(false);
+
 
 
     useEffect(() => {
@@ -83,7 +87,8 @@ export default function StockMovements() {
     ];
 
     const handleEdit = (movement) => {
-        console.log("Editing movement:", movement.original || movement);
+        setMovimientoSeleccionado(movement.original);
+        setOpenEditar(true);
     };
 
     const handleDelete = (movement) => {
@@ -130,6 +135,15 @@ export default function StockMovements() {
             open={openVer}
             onClose={() => setOpenVer(false)}
             movimiento={movimientoSeleccionado}
+        />
+        <DialogEditMovement
+            open={openEditar}
+            onClose={() => setOpenEditar(false)}
+            movimiento={movimientoSeleccionado}
+            onSubmit={(movimientoEditado) => {
+                console.log("Movimiento actualizado:", movimientoEditado);
+                // Acá llamás a la API y recargás la tabla si querés
+            }}
         />
         </>
 
