@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import {
   Dialog,
   DialogContent,
@@ -17,14 +17,28 @@ import CloseIcon from '@mui/icons-material/Close';
 const primaryColor = '#0B2240';  // Azul del logo
 const accentColor = '#F5C518';   // Amarillo del logo
 
-const AgregarMarca = ({ open, onClose }) => {
+const AgregarMarca = ({ open, onClose, brandToEdit }) => {
+  const isEditing = Boolean(brandToEdit);
+
   const [nombre, setNombre] = React.useState('');
   const [descripcion, setDescripcion] = React.useState('');
   const [pais, setPais] = React.useState('UY');
 
+    useEffect(() => {
+    if (brandToEdit) {
+      setNombre(brandToEdit.nombre);
+      setDescripcion(brandToEdit.description);
+      setPais(brandToEdit.country);
+    } else {
+      setNombre('');
+      setDescripcion('');
+      setPais('UY');
+    }
+  }, [brandToEdit, open]);
+
   const handleSubmit = () => {
     const nuevaMarca = { nombre, descripcion, pais };
-    console.log('Marca enviada:', nuevaMarca);
+    console.log(isEditing ? 'Marca editada:' : 'Marca enviada:', nuevaMarca);
     onClose();
   };
 

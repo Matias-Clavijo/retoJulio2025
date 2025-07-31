@@ -13,6 +13,8 @@ export default function Brands() {
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
   const [selectedBrand, setSelectedBrand] = useState(null);
+  const [openEditDialog, setOpenEditDialog] = useState(false);
+  const [brandToEdit, setBrandToEdit] = useState(null);
 
   useEffect(() => {
     const fetchBrands = async () => {
@@ -60,7 +62,8 @@ export default function Brands() {
   ];
 
   const handleEdit = (brand) => {
-    console.log("Editing brand:", brand.original || brand);
+    setBrandToEdit(brand);
+    setOpenEditDialog(true);
   };
 
   const handleDelete = (brand) => {
@@ -112,6 +115,12 @@ export default function Brands() {
     setPage(1); // Reset to first page when changing rows per page
   };
 
+  const handleCloseEditDialog = () => {
+    setOpenEditDialog(false);
+    setBrandToEdit(null);
+  };
+
+
   return (
     <>
     <DataManagementPage
@@ -137,6 +146,11 @@ export default function Brands() {
       onClose={handleCloseDelete}
       onConfirm={handleConfirmDelete}
       title={`¿Estás seguro que deseas eliminar la marca "${selectedBrand?.nombre}"?`}
+    />
+    <AgregarMarca
+    open={openEditDialog}
+    onClose={handleCloseEditDialog}
+    brandToEdit={brandToEdit}
     />
     </>
   );
