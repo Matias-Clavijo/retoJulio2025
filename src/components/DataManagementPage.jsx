@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import {
     Box,
-    CircularProgress,
     Alert,
     IconButton,
     Drawer,
@@ -10,7 +9,8 @@ import {
     Card,
     CardContent,
     CardActions,
-    Button
+    Button,
+    Skeleton
 } from "@mui/material";
 import MenuIcon from '@mui/icons-material/Menu';
 import CommonTable from "./common/CommonTable";
@@ -47,6 +47,7 @@ const DataManagementPage = ({
                                 extraInfoComponent
                             }) => {
     const [openAddDialog, setOpenAddDialog] = useState(false);
+    const [openEditDialog, setOpenEditDialog] = useState(false);
     const [selectedItem, setSelectedItem] = useState(null);
     const [mobileOpen, setMobileOpen] = useState(false);
     const isMobile = useMediaQuery('(max-width: 768px)');
@@ -65,7 +66,7 @@ const DataManagementPage = ({
                 {showEditAction && (
                     <IconButton size="small" sx={{ color: '#0B2240' }} onClick={() => {
                         setSelectedItem(row);
-                        onEdit ? onEdit(row) : undefined
+                        onEdit ? onEdit(row) : setOpenEditDialog(true);
                     }}>
                         <EditIcon fontSize="small" />
                     </IconButton>
@@ -82,6 +83,7 @@ const DataManagementPage = ({
     const handleAdd = () => onAdd ? onAdd() : setOpenAddDialog(true);
     const handleCloseAddDialog = () => setOpenAddDialog(false);
     const handleCloseEditDialog = () => {
+        setOpenEditDialog(false);
         setSelectedItem(null);
     };
 
@@ -89,9 +91,7 @@ const DataManagementPage = ({
         <Box>
             {rowsWithActions.map((row, i) => (
                 <Card key={i} sx={{ mb: 2, borderRadius: 2, boxShadow: 3 }}>
-                    {/* Barra amarilla superior */}
                     <Box height={"0.7rem"} sx={{ backgroundColor: '#F5C518', borderTopLeftRadius: 8, borderTopRightRadius: 8 }} />
-
                     <CardContent sx={{ px: 2, pt: 2 }}>
                         {columns
                             .filter(col => col.id !== 'acciones')
@@ -121,7 +121,6 @@ const DataManagementPage = ({
                                 </Box>
                             ))}
                     </CardContent>
-
                     <CardActions sx={{ justifyContent: 'flex-end', px: 2, pb: 2 }}>
                         <Box display="flex" gap={1}>
                             {row.acciones}
@@ -133,8 +132,26 @@ const DataManagementPage = ({
     );
 
     const renderContent = () => {
-        if (loading) return <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh', width: '100%'}} ><CircularProgress size={60} /></Box>;
-        if (error) return <Box sx={{ p: 2 }}><Alert severity="error">{error}</Alert></Box>;
+        if (loading) {
+            return (
+                <Box sx={{ p: 2 }}>
+                    <Skeleton height={50} width="60%" sx={{ mb: 2 }} />
+                    <Skeleton height={20} width="40%" sx={{ mb: 4 }} />
+                    {[...Array(1)].map((_, i) => (
+                        <Skeleton
+                            key={i}
+                            variant="rounded"
+                            height={"45rem"}
+                            sx={{ mb: 2 }}
+                        />
+                    ))}
+                </Box>
+            );
+        }
+
+        if (error) {
+            return <Box sx={{ p: 2 }}><Alert severity="error">{error}</Alert></Box>;
+        }
 
         const actionButton = (
             <Button
@@ -175,7 +192,6 @@ const DataManagementPage = ({
                         rowsPerPageOptions={rowsPerPageOptions}
                     />
                 )}
-
                 {addDialog && React.cloneElement(addDialog, { open: openAddDialog, onClose: handleCloseAddDialog })}
             </Box>
         );
@@ -188,7 +204,6 @@ const DataManagementPage = ({
                     <MenuIcon />
                 </IconButton>
             )}
-
             <Box sx={{ display: { xs: 'none', md: 'block' }, width: drawerWidth, flexShrink: 0 }}>
                 <Sidebar />
             </Box>
