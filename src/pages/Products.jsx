@@ -114,7 +114,6 @@ export default function Products() {
                 });
             }
         },
-        { id: "total_stock", label: "Total de stock", align: "center" },
         { id: "acciones", label: "Acciones", align: "center" },
     ];
 

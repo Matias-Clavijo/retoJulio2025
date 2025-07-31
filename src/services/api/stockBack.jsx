@@ -546,10 +546,12 @@ export const categoriesAPI = {
 // DEPÓSITOS
 export const depositsAPI = {
   // GET /deposits
-  getDeposits: async (page = 1, items = 10) => {
+  getDeposits: async () => {
     try {
-      await new Promise(resolve => setTimeout(resolve, 500));
-      return createPaginatedResponse(mockDeposits, page, items);
+      return await apiClient.get('/deposit').then(response => {
+        console.log(response);
+        return response.data;
+      });
     } catch (error) {
       return { success: false, error: "Error fetching deposits" };
     }
