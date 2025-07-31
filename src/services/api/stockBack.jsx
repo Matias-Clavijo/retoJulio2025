@@ -1,34 +1,115 @@
-/* eslint-disable no-unused-vars */
-// Mock API services for the stock management system
-// eslint-disable-next-line no-unused-vars
-const mockProducts = [
-  {
-    id: 1,
-    name: "HP Notebook",
-    description: "15'' i5 Notebook",
-    prices: [
-      { currency: "USD", value: 700 },
-      { currency: "UY", value: 28000 }
-    ],
-    brand: { id: 1, name: "HP" },
-    category: { id: 1, name: "Computing" },
-    depositsCount: 3,
-    deposits: [ "Depósito 1", "Depósito 2", "Depósito 3", "Depósito 4", "Depósito 5", "Depósito 6", "Depósito 7", "Depósito 8", "Depósito 9", "Depósito 10" ]
+import axios from "axios";
+
+// En desarrollo usa el proxy de Vite (/api), en producción usa la URL completa
+const API_BASE_URL = import.meta.env.DEV 
+  ? "/api" 
+  : "https://back-2025-gestion-stock-ventas.onrender.com/api"
+
+const apiClient = axios.create({
+  baseURL: API_BASE_URL,
+  headers: {
+    'Content-Type': 'application/json',
   },
-  {
-    id: 2,
-    name: "Dell Laptop",
-    description: "17'' i7 Gaming Laptop",
-    prices: [
-      { currency: "USD", value: 1200 },
-      { currency: "UY", value: 48000 }
-    ],
-    brand: { id: 2, name: "Dell" },
-    category: { id: 1, name: "Computing" },
-    depositsCount: 2,
-    deposits: [ "Depósito 1", "Depósito 2", "Depósito 3" ]
-  }
-];
+  withCredentials: false,
+});
+
+const mockProducts = {
+  data: [
+    {
+      id: 1,
+      name: "HP Notebook",
+      description: "15'' i5 Notebook",
+      purchasePrices: [
+        { currency: "USD", value: 700 },
+        { currency: "UY", value: 28000 }
+      ],
+      sealPrices: [
+        { currency: "USD", value: 700 },
+        { currency: "UY", value: 28000 }
+      ],
+      brand: { id: 1, name: "HP" },
+      category: { id: 1, name: "Computing" },
+      deposits: [ 
+        {
+          id: 1,
+          name: "Depósito 1",
+          description: "Depósito 1",
+          location: "Montevideo, Uruguay",
+          productCount: 3,
+          associatedDate: "2002-09-30"
+        },
+        {
+          id: 2,
+          name: "Depósito 2",
+          description: "Depósito 2",
+          location: "Montevideo, Uruguay",
+          productCount: 3,
+          associatedDate: "2002-09-30"
+        },
+        {
+          id: 3,
+          name: "Depósito 3",
+          description: "Depósito 3",
+          location: "Montevideo, Uruguay",
+          productCount: 3,
+          associatedDate: "2002-09-30"
+        },
+        {
+          id: 4,
+          name: "Depósito 4",
+          description: "Depósito 4",
+          location: "Montevideo, Uruguay",
+          productCount: 3,
+          associatedDate: "2002-09-30"
+        },
+        {
+          id: 5,
+          name: "Depósito 5",
+          description: "Depósito 5",
+          location: "Montevideo, Uruguay",
+          productCount: 3,
+          associatedDate: "2002-09-30"
+        }
+      ]
+    },
+    {
+      id: 2,
+      name: "Dell Laptop",
+      description: "17'' i7 Gaming Laptop",
+      purchasePrices: [
+        { currency: "USD", value: 700 },
+        { currency: "UY", value: 28000 }
+      ],
+      sealPrices: [
+        { currency: "USD", value: 700 },
+        { currency: "UY", value: 28000 }
+      ],
+      brand: { id: 2, name: "Dell" },
+      category: { id: 1, name: "Computing" },
+      depositsCount: 2,
+      deposits: [
+        {
+          id: 1,
+          name: "Depósito 1",
+          description: "Depósito 1",
+          location: "Montevideo, Uruguay",
+          productCount: 3,
+          associatedDate: "2002-09-30"
+        },
+        {
+          id: 2,
+          name: "Depósito 2",
+          description: "Depósito 2",
+          location: "Montevideo, Uruguay",
+          productCount: 3,
+          associatedDate: "2002-09-30"
+        }
+      ]
+    }
+  ]
+ }
+  
+  ;
 
 const mockBrands = [
   {
@@ -270,15 +351,15 @@ const createPaginatedResponse = (data, page = 1, items = 10) => {
   };
 };
 
-// PRODUCTOS
 export const productsAPI = {
-  // GET /products
-  getProducts: async (page = 1, items = 10) => {
+  getProducts: async () => {
     try {
-      await new Promise(resolve => setTimeout(resolve, 500)); // Simulate network delay
-      return createPaginatedResponse(mockProducts, page, items);
-    // eslint-disable-next-line no-unused-vars
+      return await apiClient.get('/product').then(response => {
+        console.log(response);
+        return response.data;
+      });
     } catch (error) {
+      console.log(error);
       return { success: false, error: "Error fetching products" };
     }
   },
@@ -286,17 +367,24 @@ export const productsAPI = {
   // POST /products
   createProduct: async (productData) => {
     try {
-      await new Promise(resolve => setTimeout(resolve, 500));
-      const newProduct = {
-        id: mockProducts.length + 1,
-        ...productData,
-        depositsCount: 0
+      const apiData = {
+        name: productData.nombre,
+        description: productData.descripcion,
+        purchasePrices: productData.preciosCompra,
+        sealPrices: productData.preciosVenta,
+        brand: {
+          id: productData.marca
+        },
+        category: {
+          id: productData.categoria
+        }
       };
-      mockProducts.push(newProduct);
-      return { success: true, data: newProduct };
-    // eslint-disable-next-line no-unused-vars
+
+      const response = await apiClient.post('/product', apiData);
+      return { success: true, data: response.data };
     } catch (error) {
-      return { success: false, error: "Error creating product" };
+      console.log("Error creating product:", error);
+      return { success: false, error: "Error creating products" };
     }
   },
 
@@ -333,14 +421,16 @@ export const productsAPI = {
   }
 };
 
-// MARCAS
 export const brandsAPI = {
   // GET /brands
-  getBrands: async (page = 1, items = 10) => {
+  getBrands: async () => {
     try {
-      await new Promise(resolve => setTimeout(resolve, 500));
-      return createPaginatedResponse(mockBrands, page, items);
+      return await apiClient.get('/brand').then(response => {
+        console.log(response);
+        return response.data;
+      });
     } catch (error) {
+      console.log(error);
       return { success: false, error: "Error fetching brands" };
     }
   },
@@ -358,6 +448,7 @@ export const brandsAPI = {
       mockBrands.push(newBrand);
       return { success: true, data: newBrand };
     } catch (error) {
+      console.log(error);
       return { success: false, error: "Error creating brand" };
     }
   },
@@ -393,19 +484,19 @@ export const brandsAPI = {
   }
 };
 
-// CATEGORÍAS
 export const categoriesAPI = {
-  // GET /categories
-  getCategories: async (page = 1, items = 10) => {
+  getCategories: async () => {
     try {
-      await new Promise(resolve => setTimeout(resolve, 500));
-      return createPaginatedResponse(mockCategories, page, items);
+      return await apiClient.get('/category').then(response => {
+        console.log(response);
+        return response.data;
+      });
     } catch (error) {
+      console.log(error);
       return { success: false, error: "Error fetching categories" };
     }
   },
 
-  // POST /categories
   createCategory: async (categoryData) => {
     try {
       await new Promise(resolve => setTimeout(resolve, 500));
