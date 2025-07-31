@@ -13,6 +13,8 @@ import {
   Box
 } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
+import { brandsAPI } from '../services/api/stockBack';
+
 
 const primaryColor = '#0B2240';  // Azul del logo
 const accentColor = '#F5C518';   // Amarillo del logo
@@ -36,10 +38,17 @@ const AgregarMarca = ({ open, onClose, brandToEdit }) => {
     }
   }, [brandToEdit, open]);
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     const nuevaMarca = { nombre, descripcion, pais };
     console.log(isEditing ? 'Marca editada:' : 'Marca enviada:', nuevaMarca);
     onClose();
+
+      try {
+          await brandsAPI.createBrand(nuevaMarca);
+          onClose(true);
+        } catch (error) {
+          console.error("Error al guardar la marca:", error);
+        }
   };
 
   return (
