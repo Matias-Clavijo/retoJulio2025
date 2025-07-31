@@ -1,32 +1,15 @@
 import React, { useState } from "react";
-import TitleHeader from "../components/common/TitelHeader";
-import CommonTable from "../components/common/CommonTable";
-import Button from "@mui/material/Button";
-import IconButton from "@mui/material/IconButton";
-import EditIcon from "@mui/icons-material/Edit";
-import DeleteIcon from "@mui/icons-material/Delete";
+import { Business } from "@mui/icons-material";
+import DataManagementPage from "../components/DataManagementPage";
 import AgregarProveedorDialog from "../components/DialogProveedor";
 import Eliminar from '../components/Eliminar';
 
 
 export default function Proveedor() {
-  const [openAgregarProveedor, setOpenAgregarProveedor] = useState(false);
-  const [proveedorEditar, setProveedorEditar] = useState(null);
   const [openEliminar, setOpenEliminar] = useState(false);
   const [proveedorAEliminar, setProveedorAEliminar] = useState(null);
 
-  const handleEliminarClick = (proveedor) => {
-    setProveedorAEliminar(proveedor);
-    setOpenEliminar(true);
-};
-
-  const handleConfirmEliminar = () => {
-    setRows(prev => prev.filter(p => p.codigo !== proveedorAEliminar.codigo));
-    setOpenEliminar(false);
-    setProveedorAEliminar(null);
-};
-
-    const [rows, setRows] = useState([
+  const [rows, setRows] = useState([
     {
       id: 1,
       codigo: "P001",
@@ -45,9 +28,23 @@ export default function Proveedor() {
     },
   ]);
 
-  const handleEditarProveedor = (proveedor) => {
-    setProveedorEditar(proveedor);
-    setOpenAgregarProveedor(true);
+  const handleEdit = (proveedor) => {
+    console.log("Editando proveedor:", proveedor);
+  };
+
+  const handleDelete = (proveedor) => {
+    setProveedorAEliminar(proveedor);
+    setOpenEliminar(true);
+  };
+
+  const handleView = (proveedor) => {
+    console.log("Viendo proveedor:", proveedor);
+  };
+
+  const handleConfirmEliminar = () => {
+    setRows(prev => prev.filter(p => p.id !== proveedorAEliminar.id));
+    setOpenEliminar(false);
+    setProveedorAEliminar(null);
   };
 
   const handleGuardarProveedor = (proveedor) => {
@@ -63,78 +60,44 @@ export default function Proveedor() {
       const nuevoProveedor = { ...proveedor, id };
       setRows([...rows, nuevoProveedor]);
     }
-
-    setOpenAgregarProveedor(false);
-    setProveedorEditar(null);
   };
 
-  const generarAcciones = (proveedor) => (
-    <>
-      <IconButton size="small" onClick={() => handleEditarProveedor(proveedor)}>
-        <EditIcon fontSize="small" />
-      </IconButton>
-      <IconButton
-        size="small"
-        onClick={() => handleEliminarClick(proveedor)}
-      >
-        <DeleteIcon fontSize="small" />
-      </IconButton>
-    </>
-  );
-
   const columns = [
-    { id: "nombre", label: "Nombre", minWidth: 150 },
-    { id: "telefono", label: "Teléfono", minWidth: 100 },
-    { id: "email", label: "Email", minWidth: 180 },
-    { id: "acciones", label: "Acciones", minWidth: 100, align: "center" },
+    { id: "codigo", label: "Código", align: "left" },
+    { id: "nombre", label: "Nombre", align: "left" },
+    { id: "telefono", label: "Teléfono", align: "left" },
+    { id: "email", label: "Email", align: "left" },
+    { id: "direccion", label: "Dirección", align: "left" },
+    { id: "acciones", label: "Acciones", align: "center" },
   ];
 
   return (
     <>
-
-    <Eliminar
-    open={openEliminar}
-    onClose={() => setOpenEliminar(false)}
-    onConfirm={handleConfirmEliminar}
-    title="¿Quieres eliminar este proveedor?"
-    />
-
-    <AgregarProveedorDialog
-        open={openAgregarProveedor}
-        onClose={() => {
-          setOpenAgregarProveedor(false);
-          setProveedorEditar(null);
-        }}
-        onSave={handleGuardarProveedor}
-        proveedorEditar={proveedorEditar}
-    />
-
-    <TitleHeader
+      <DataManagementPage
         title="Gestión de Proveedores"
         description="Administrá los datos de contacto de los proveedores"
-        button={
-          <Button
-            variant="contained"
-            onClick={() => {
-              setProveedorEditar(null); // Limpia el formulario
-              setOpenAgregarProveedor(true);
-            }}
-          >
-            + NUEVO PROVEEDOR
-          </Button>
-        }
-    />
-
-    <CommonTable
-        title="Lista de Proveedores"
+        addButtonText="NUEVO PROVEEDOR"
+        addButtonIcon={<Business />}
+        tableTitle="Lista de Proveedores"
         columns={columns}
-        rows={rows.map((row) => ({
-          ...row,
-          acciones: generarAcciones(row),
-        }))}
+        data={rows}
         defaultRowsPerPage={5}
         rowsPerPageOptions={[5, 10, 25]}
-    />
+        showViewAction={true}
+        onEdit={handleEdit}
+        onDelete={handleDelete}
+        onView={handleView}
+        addDialog={<AgregarProveedorDialog onSave={handleGuardarProveedor} />}
+        loading={false}
+        error={null}
+      />
+      
+      <Eliminar
+        open={openEliminar}
+        onClose={() => setOpenEliminar(false)}
+        onConfirm={handleConfirmEliminar}
+        title={`¿Estás seguro que deseas eliminar el proveedor "${proveedorAEliminar?.nombre}"?`}
+      />
     </>
   );
 }
