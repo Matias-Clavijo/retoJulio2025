@@ -118,7 +118,7 @@ export default function CommonTable({
   const filteredRows = rows
 
   return (
-    <Paper elevation={2} sx={{p: 2 }}>
+    <Paper elevation={2} sx={{p: 2}}>
       <Box
         sx={{
           display: 'flex',
@@ -132,7 +132,7 @@ export default function CommonTable({
         </Typography>
       </Box>
 
-      <TableContainer sx={{ maxHeight: 'calc(100vh - 200px)' }}>
+      <TableContainer sx={{ maxHeight: 'calc(100vh - 300px)', overflow: 'auto' }}>
         <Table stickyHeader aria-label="sticky table">
           <TableHead>
             <TableRow>
