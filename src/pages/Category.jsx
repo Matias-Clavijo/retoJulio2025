@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Category as CategoryIcon } from "@mui/icons-material";
 import DataManagementPage from "../components/DataManagementPage";
 import AgregarCategoría from "../components/DialogCategoría.jsx";
+import DialogEditCategory from "../components/DialogEditCategory.jsx"; // <-- Importa el nuevo diálogo
 import Eliminar from "../components/Eliminar";
 import { categoriesAPI } from "../services/api/stockBack";
 
@@ -14,21 +15,23 @@ export default function Category() {
   const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState(null);
 
+  // Estado para editar
+  const [openEditDialog, setOpenEditDialog] = useState(false);
+  const [categoryToEdit, setCategoryToEdit] = useState(null);
+
   useEffect(() => {
     const fetchCategories = async () => {
       try {
         setLoading(true);
         const response = await categoriesAPI.getCategories(page, rowsPerPage);
         if (response.success) {
-          // Transformar los datos al formato esperado por la tabla
           const transformedCategories = response.data.map(category => ({
             name: category.name,
             description: "-", // No viene en el mock, pero mantenemos la estructura
-            parent_category: "-", // No viene en el mock, pero mantenemos la estructura
+            parent_category: "-", 
             products_count: category.productsCount,
-            status: "Activo", // Valor por defecto
-            created_at: new Date().toLocaleDateString(), // Usamos fecha actual como ejemplo
-            // Mantener los datos originales para edición/visualización
+            status: "Activo",
+            created_at: new Date().toLocaleDateString(),
             original: category
           }));
           setCategories(transformedCategories);
@@ -55,12 +58,46 @@ export default function Category() {
     { id: "acciones", label: "Acciones", align: "center" },
   ];
 
+  // Abrir diálogo de edición con categoría seleccionada
   const handleEdit = (category) => {
-    console.log("Editing category:", category.original || category);
+    setCategoryToEdit(category.original || category);
+    setOpenEditDialog(true);
+  };
+
+  // Guardar cambios luego de editar
+  const handleSaveEdit = async (editedCategory) => {
+    try {
+      setLoading(true);
+      const response = await categoriesAPI.updateCategory(editedCategory.id, {
+        name: editedCategory.name,
+        description: editedCategory.description,
+      });
+      if (response.success) {
+        const newResponse = await categoriesAPI.getCategories(page, rowsPerPage);
+        if (newResponse.success) {
+          const transformedCategories = newResponse.data.map(category => ({
+            name: category.name,
+            description: "-",
+            parent_category: "-",
+            products_count: category.productsCount,
+            status: "Activo",
+            created_at: new Date().toLocaleDateString(),
+            original: category
+          }));
+          setCategories(transformedCategories);
+          setOpenEditDialog(false);
+        }
+      } else {
+        setError(response.error || "Error al actualizar la categoría");
+      }
+    } catch {
+      setError("Error al conectar con el servidor");
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleDelete = (category) => {
-    console.log("Deleting category:", category);
     setSelectedCategory(category);
     setOpenDeleteDialog(true);
   };
@@ -74,9 +111,8 @@ export default function Category() {
       setLoading(true);
       const response = await categoriesAPI.deleteCategory(selectedCategory.original.id);
       if (response.success) {
-        // Recargar la lista después de eliminar
         const newResponse = await categoriesAPI.getCategories(page, rowsPerPage);
-        if (newResponse.sucstrategiescess) {
+        if (newResponse.success) {
           const transformedCategories = newResponse.data.map(category => ({
             name: category.name,
             description: "-",
@@ -109,7 +145,7 @@ export default function Category() {
 
   const handleRowsPerPageChange = (newRowsPerPage) => {
     setRowsPerPage(newRowsPerPage);
-    setPage(1); // Reset to first page when changing rows per page
+    setPage(1);
   };
 
   return (
@@ -133,12 +169,21 @@ export default function Category() {
         loading={loading}
         error={error}
       />
+
       <Eliminar
         open={openDeleteDialog}
         onClose={handleCloseDelete}
         onConfirm={handleConfirmDelete}
         title={`¿Estás seguro que deseas eliminar la categoría "${selectedCategory?.name}"?`}
       />
+
+      <DialogEditCategory
+        open={openEditDialog}
+        onClose={() => setOpenEditDialog(false)}
+        category={categoryToEdit}
+        onSave={handleSaveEdit}
+      />
     </>
   );
 }
+

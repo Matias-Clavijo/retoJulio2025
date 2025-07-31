@@ -1,14 +1,15 @@
 import React, { useState, useEffect } from "react";
 import { Warehouse } from "@mui/icons-material";
 import DataManagementPage from "../components/DataManagementPage";
-import EditarDeposito from "../components/DialogDeposito.jsx";
+import EditarDeposito from "../components/DialogDeposito.jsx"; // para agregar depósitos
+import DialogEditDeposit from "../components/DialogEditDeposit.jsx"; // para editar depósitos
 import { depositsAPI } from "../services/api/stockBack";
 import Eliminar from "../components/Eliminar";
 import DialogWatchDeposit from "../components/DialogWatchDeposit.jsx";
 
 export default function Deposits() {
   const [deposits, setDeposits] = useState([]);
-  const [allDeposits, setAllDeposits] = useState([]); // NUEVO: todos los depósitos sin paginar
+  const [allDeposits, setAllDeposits] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [page, setPage] = useState(1);
@@ -18,7 +19,10 @@ export default function Deposits() {
   const [depositoSeleccionado, setDepositoSeleccionado] = useState(null);
   const [openVer, setOpenVer] = useState(false);
 
-  // Carga paginada para la tabla
+  // Estados nuevos para editar
+  const [openEditar, setOpenEditar] = useState(false);
+  const [depositoEditar, setDepositoEditar] = useState(null);
+
   useEffect(() => {
     const fetchDeposits = async () => {
       try {
@@ -49,11 +53,10 @@ export default function Deposits() {
     fetchDeposits();
   }, [page, rowsPerPage]);
 
-  // NUEVO: carga completa de depósitos (sin paginación)
   useEffect(() => {
     const fetchAllDeposits = async () => {
       try {
-        const response = await depositsAPI.getAllDeposits(); // asumimos que existe este método sin paginación
+        const response = await depositsAPI.getAllDeposits();
         if (response.success) {
           setAllDeposits(response.data);
         }
@@ -80,7 +83,41 @@ export default function Deposits() {
   ];
 
   const handleEdit = (deposit) => {
-    console.log("Editing deposit:", deposit.original || deposit);
+    setDepositoEditar(deposit.original || deposit);
+    setOpenEditar(true);
+  };
+
+  const handleGuardarEdicion = async (depositoEditado) => {
+    try {
+      setLoading(true);
+      const response = await depositsAPI.updateDeposit(depositoEditado.id, {
+        name: depositoEditado.nombre,
+        description: depositoEditado.descripcion,
+        location: depositoEditado.ubicacion,
+      });
+      if (response.success) {
+        const newResponse = await depositsAPI.getDeposits(page, rowsPerPage);
+        if (newResponse.success) {
+          const transformedDeposits = newResponse.data.map((deposit) => ({
+            nombre: deposit.name,
+            description: deposit.description,
+            location: deposit.location,
+            products_associated: deposit.productCount,
+            associated: deposit.associatedDate,
+            products: deposit.products || [],
+            original: { ...deposit, products: deposit.products || [] },
+          }));
+          setDeposits(transformedDeposits);
+          setOpenEditar(false);
+        }
+      } else {
+        setError(response.error || "Error al actualizar el depósito");
+      }
+    } catch (e) {
+      setError("Error al conectar con el servidor");
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleDelete = (deposit) => {
@@ -169,6 +206,14 @@ export default function Deposits() {
         onClose={() => setOpenVer(false)}
         deposito={depositoSeleccionado}
       />
+
+      <DialogEditDeposit
+        open={openEditar}
+        onClose={() => setOpenEditar(false)}
+        deposito={depositoEditar}
+        onSave={handleGuardarEdicion}
+      />
     </>
   );
 }
+
