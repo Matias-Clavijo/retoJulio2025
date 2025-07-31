@@ -354,7 +354,7 @@ const createPaginatedResponse = (data, page = 1, items = 10) => {
 export const productsAPI = {
   getProducts: async () => {
     try {
-      return await apiClient.get('/product').then(response => {
+      return await apiClient.get('/products').then(response => {
         console.log(response);
         return response.data;
       });
@@ -370,8 +370,14 @@ export const productsAPI = {
       const apiData = {
         name: productData.nombre,
         description: productData.descripcion,
-        purchasePrices: productData.preciosCompra,
-        sealPrices: productData.preciosVenta,
+        purchasePrices: productData.preciosCompra.map(price => ({
+          currency: price.moneda,
+          value: price.precio
+        })),
+        sealPrices: productData.preciosVenta.map(price => ({
+          currency: price.moneda,
+          value: price.precio
+        })),
         brand: {
           id: productData.marca
         },
@@ -379,8 +385,9 @@ export const productsAPI = {
           id: productData.categoria
         }
       };
+      console.log(apiData);
 
-      const response = await apiClient.post('/product', apiData);
+      const response = await apiClient.post('/products', apiData);
       return { success: true, data: response.data };
     } catch (error) {
       console.log("Error creating product:", error);
@@ -391,15 +398,29 @@ export const productsAPI = {
   // PUT /products/{id}
   updateProduct: async (id, productData) => {
     try {
-      await new Promise(resolve => setTimeout(resolve, 500));
-      const index = mockProducts.findIndex(p => p.id === id);
-      if (index === -1) {
-        return { success: false, error: "Product not found" };
-      }
-      mockProducts[index] = { ...mockProducts[index], ...productData };
-      return { success: true, data: mockProducts[index] };
-    // eslint-disable-next-line no-unused-vars
+      const apiData = {
+        name: productData.nombre,
+        description: productData.descripcion,
+        purchasePrices: productData.preciosCompra.map(price => ({
+          currency: price.moneda,
+          value: price.precio
+        })),
+        sealPrices: productData.preciosVenta.map(price => ({
+          currency: price.moneda,
+          value: price.precio
+        })),
+        brand: {
+          id: productData.marca
+        },
+        category: {
+          id: productData.categoria
+        }
+      };
+
+      const response = await apiClient.put(`/products/${id}`, apiData);
+      return { success: true, data: response.data };
     } catch (error) {
+      console.log("Error updating product:", error);
       return { success: false, error: "Error updating product" };
     }
   },
@@ -425,7 +446,7 @@ export const brandsAPI = {
   // GET /brands
   getBrands: async () => {
     try {
-      return await apiClient.get('/brand').then(response => {
+      return await apiClient.get('/brands').then(response => {
         console.log(response);
         return response.data;
       });
@@ -487,7 +508,7 @@ export const brandsAPI = {
 export const categoriesAPI = {
   getCategories: async () => {
     try {
-      return await apiClient.get('/category').then(response => {
+      return await apiClient.get('/categories').then(response => {
         console.log(response);
         return response.data;
       });
@@ -548,7 +569,7 @@ export const depositsAPI = {
   // GET /deposits
   getDeposits: async () => {
     try {
-      return await apiClient.get('/deposit').then(response => {
+      return await apiClient.get('/deposits').then(response => {
         console.log(response);
         return response.data;
       });

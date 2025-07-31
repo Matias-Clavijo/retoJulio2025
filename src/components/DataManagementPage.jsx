@@ -47,7 +47,6 @@ const DataManagementPage = ({
                                 extraInfoComponent
                             }) => {
     const [openAddDialog, setOpenAddDialog] = useState(false);
-    const [openEditDialog, setOpenEditDialog] = useState(false);
     const [selectedItem, setSelectedItem] = useState(null);
     const [mobileOpen, setMobileOpen] = useState(false);
     const isMobile = useMediaQuery('(max-width: 768px)');
@@ -66,7 +65,7 @@ const DataManagementPage = ({
                 {showEditAction && (
                     <IconButton size="small" sx={{ color: '#0B2240' }} onClick={() => {
                         setSelectedItem(row);
-                        onEdit ? onEdit(row) : setOpenEditDialog(true);
+                        onEdit ? onEdit(row) : undefined
                     }}>
                         <EditIcon fontSize="small" />
                     </IconButton>
@@ -83,7 +82,6 @@ const DataManagementPage = ({
     const handleAdd = () => onAdd ? onAdd() : setOpenAddDialog(true);
     const handleCloseAddDialog = () => setOpenAddDialog(false);
     const handleCloseEditDialog = () => {
-        setOpenEditDialog(false);
         setSelectedItem(null);
     };
 

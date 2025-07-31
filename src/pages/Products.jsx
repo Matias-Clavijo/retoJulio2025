@@ -18,6 +18,7 @@ export default function Products() {
     const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
     const [selectedProduct, setSelectedProduct] = useState(null);
     const [refetch, setRefetch] = useState(1);
+    const [openEditDialog, setOpenEditDialog] = useState(false);
 
     useEffect(() => {
         const fetchProducts = async () => {
@@ -118,7 +119,8 @@ export default function Products() {
     ];
 
     const handleEdit = (product) => {
-        console.log("Editing product:", product.original || product);
+        setSelectedProduct(product);
+        setOpenEditDialog(true);
     };
 
     const handleDelete = (product) => {
@@ -173,8 +175,16 @@ export default function Products() {
     };
 
     const handleAddButtonClick = async (productData) => {
-        console.log(productData);
         const response = await productsAPI.createProduct(productData);
+        if (!response.success) {
+            setError(response.error);
+        } else {
+            setRefetch(refetch + 1);
+        }
+    };
+
+    const handleEditButtonClick = async (product) => {
+        const response = await productsAPI.updateProduct(product.original.id, product);
         if (!response.success) {
             setError(response.error);
         } else {
@@ -200,7 +210,7 @@ export default function Products() {
                 onView={handleView}
                 onPageChange={handlePageChange}
                 onRowsPerPageChange={handleRowsPerPageChange}
-                addDialog={<AgregarProductoDialog onAddButtonClick={handleAddButtonClick} />}
+                addDialog={<AgregarProductoDialog onAddButtonClick={handleAddButtonClick} product={selectedProduct} />}
                 loading={loading}
                 error={error}
             />
@@ -209,6 +219,12 @@ export default function Products() {
                 onClose={handleCloseDelete}
                 onConfirm={handleConfirmDelete}
                 title={`¿Estás seguro que deseas eliminar el producto "${selectedProduct?.producto}"?`}
+            />
+            <AgregarProductoDialog
+                open={openEditDialog}
+                onClose={() => setOpenEditDialog(false)}
+                onAddButtonClick={handleEditButtonClick}
+                product={selectedProduct}
             />
         </>
     );
