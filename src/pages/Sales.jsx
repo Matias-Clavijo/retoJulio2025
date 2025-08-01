@@ -1,43 +1,43 @@
 import React, { useState, useEffect } from "react";
 import { PointOfSale } from "@mui/icons-material";
-import EditIcon from "@mui/icons-material/Edit";
-import DeleteIcon from "@mui/icons-material/Delete";
-import VisibilityIcon from "@mui/icons-material/Visibility";
-import { Box, CircularProgress, Alert, IconButton } from "@mui/material";
 import DataManagementPage from "../components/DataManagementPage";
 import SalesDashboard from "../components/SalesDashboard";
 import AgregarVentaDialog from "../components/DialogVenta";
-import CommonTable from "../components/common/CommonTable";
-import TitleHeader from "../components/common/TitelHeader";
-import Button from "@mui/material/Button";
-import Sidebar from "../components/Sidebar";
+import Eliminar from "../components/Eliminar";
 import { salesAPI } from "../services/api/stockBack";
 
 export default function Sales() {
     const [sales, setSales] = useState([]);
-        const [loading, setLoading] = useState(true);
+    const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [totalIncome, setTotalIncome] = useState(0);
-    const [openAddDialog, setOpenAddDialog] = useState(false);
+    const [refetch, setRefetch] = useState(0);
     
-    // Valores fijos para la paginación inicial
+    // Estados para editar venta
+    const [openEditar, setOpenEditar] = useState(false);
+    const [ventaEditar, setVentaEditar] = useState(null);
+    
+    // Estados para eliminar venta
+    const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
+    const [selectedSale, setSelectedSale] = useState(null);
+    
     const page = 1;
     const rowsPerPage = 10;
 
     useEffect(() => {
         const fetchSales = async () => {
             try {
-                setLoading(true);
+                if (refetch === 0) {
+                    setLoading(true);
+                }
                 const response = await salesAPI.getSales(page, rowsPerPage);
                 if (response.success) {
-                    // Transformar los datos al formato esperado por la tabla
                     const transformedSales = response.data.map(sale => ({
-                        producto: `Producto ${sale.product.id}`,
-                        total: sale.price.value,
+                        producto: `${sale.product.id}`,
                         metodoPago: sale.paymentMethod,
                         fecha: new Date(sale.date).toLocaleDateString(),
                         revendedor: sale.reseller,
-                        // Mantener los datos originales para edición/visualización
+
                         original: sale
                     }));
                     setSales(transformedSales);
@@ -46,7 +46,8 @@ export default function Sales() {
                 } else {
                     setError(response.error || "Error al cargar las ventas");
                 }
-            } catch {
+            } catch (error) {
+                console.log(error);
                 setError("Error al conectar con el servidor");
             } finally {
                 setLoading(false);
@@ -54,150 +55,121 @@ export default function Sales() {
         };
 
         fetchSales();
-    }, [page, rowsPerPage]);
+    }, [page, rowsPerPage, refetch]);
 
     const handleEdit = (sale) => {
-        console.log("Editando venta:", sale);
+        setVentaEditar(sale.original || sale);
+        setOpenEditar(true);
     };
 
     const handleDelete = (sale) => {
-        console.log("Eliminando venta:", sale);
+        setSelectedSale(sale);
+        setOpenDeleteDialog(true);
     };
 
     const handleView = (sale) => {
         console.log("Viendo detalles de venta:", sale);
     };
 
+    const handleGuardarEdicion = async (ventaEditada) => {
+        try {
+            setLoading(true);
+            const response = await salesAPI.updateSale(ventaEditada.id, {
+                date: ventaEditada.date,
+                paymentMethod: ventaEditada.paymentMethod,
+                reseller: ventaEditada.reseller,
+                price: ventaEditada.price
+            });
+            if (response.success) {
+                setRefetch(prev => prev + 1);
+                setOpenEditar(false);
+                setVentaEditar(null);
+            } else {
+                setError(response.error || "Error al actualizar la venta");
+            }
+        } catch {
+            setError("Error al conectar con el servidor");
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const handleCloseDelete = () => {
+        setOpenDeleteDialog(false);
+        setSelectedSale(null);
+    };
+
+    const handleConfirmDelete = async () => {
+        try {
+            setLoading(true);
+            const response = await salesAPI.deleteSale(selectedSale.original.id);
+            if (response.success) {
+                setRefetch(prev => prev + 1);
+            } else {
+                setError(response.error || "Error al eliminar la venta");
+            }
+        } catch {
+            setError("Error al conectar con el servidor");
+        } finally {
+            setLoading(false);
+            handleCloseDelete();
+        }
+    };
+
+    const handleAddButtonClick = async (saleData) => {
+        const response = await salesAPI.createSale(saleData);
+        if (!response.success) {
+            setError(response.error);
+        } else {
+            setRefetch(prev => prev + 1);
+        }
+    };
+
     const columns = [
         { id: "producto", label: "Producto", align: "left" },
-        { 
-            id: "total", 
-            label: "Total", 
-            align: "right",
-            format: (value) => `$${value.toLocaleString()}`
-        },
         { id: "metodoPago", label: "Método de pago", align: "left" },
         { id: "fecha", label: "Fecha", align: "center" },
         { id: "revendedor", label: "Revendedor", align: "left" },
-        { 
-            id: "acciones", 
-            label: "Acciones", 
-            align: "center",
-            format: (_, row) => (
-                <Box sx={{ display: 'flex', justifyContent: 'center', gap: 1 }}>
-                    <IconButton
-                        size="small"
-                        onClick={() => handleView(row)}
-                        sx={{ color: '#0B2240' }}
-                    >
-                        <VisibilityIcon fontSize="small" />
-                    </IconButton>
-                    <IconButton 
-                        size="small" 
-                        onClick={() => handleEdit(row)}
-                        sx={{ color: '#0B2240' }}
-                    >
-                        <EditIcon fontSize="small" />
-                    </IconButton>
-                    <IconButton 
-                        size="small" 
-                        onClick={() => handleDelete(row)}
-                        sx={{ color: 'error.main' }}
-                    >
-                        <DeleteIcon fontSize="small" />
-                    </IconButton>
-                   
-                </Box>
-            )
-        }
+        { id: "acciones", label: "Acciones", align: "center" }
     ];
 
-
-
-
-
-    const handleAdd = () => {
-        setOpenAddDialog(true);
-    };
-
-    const handleCloseAddDialog = () => {
-        setOpenAddDialog(false);
-    };
-
-    const renderContent = () => {
-        if (loading) {
-            return (
-                <Box sx={{ 
-                    display: 'flex', 
-                    justifyContent: 'center', 
-                    alignItems: 'center',
-                    height: 'calc(100vh - 100px)',
-                    width: '100%'
-                }}>
-                    <CircularProgress />
-                </Box>
-            );
-        }
-
-        if (error) {
-            return (
-                <Box sx={{ p: 2 }}>
-                    <Alert severity="error">{error}</Alert>
-                </Box>
-            );
-        }
-
-        return (
-            <>
-                <TitleHeader
-                    title="Gestión de Ventas"
-                    description="Administra el catálogo de ventas del sistema"
-                    button={
-                        <Button
-                            variant="contained"
-                            sx={{backgroundColor:"#F5C518", fontWeight: 600, color: "#0B2240"}}
-                            onClick={handleAdd}
-                            startIcon={<PointOfSale />}
-                        >
-                            AGREGAR VENTA
-                        </Button>
-                    }
-                />
-                
-                <SalesDashboard totalIncome={totalIncome} salesData={sales} />
-                
-                <CommonTable
-                    title="Lista de Ventas"
-                    columns={columns}
-                    rows={sales}
-                    defaultRowsPerPage={rowsPerPage}
-                    rowsPerPageOptions={[5, 10, 25, 50]}
-                />
-                
-                <AgregarVentaDialog 
-                    open={openAddDialog}
-                    onClose={handleCloseAddDialog}
-                />
-            </>
-        );
-    };
-
     return (
-        <Box sx={{ display: 'flex', backgroundColor: '#EBEBEB', height: '100vh' }}>
-            <Sidebar />
-            <Box
-                component="main"
-                sx={{
-                    flexGrow: 1,
-                    pl: 3,
-                    pr: 3,
-                    ml: `280px`,
-                    height: '100%',
-                    backgroundColor: '#f5f5f5'
-                }}
-            >
-                {renderContent()}
-            </Box>
-        </Box>
+        <>
+            <DataManagementPage
+                title="Gestión de Ventas"
+                description="Administra el catálogo de ventas del sistema"
+                addButtonText="AGREGAR VENTA"
+                addButtonIcon={<PointOfSale />}
+                tableTitle="Lista de Ventas"
+                columns={columns}
+                data={sales}
+                defaultRowsPerPage={rowsPerPage}
+                rowsPerPageOptions={[5, 10, 25, 50]}
+                showViewAction={true}
+                onEdit={handleEdit}
+                onDelete={handleDelete}
+                onView={handleView}
+                addDialog={<AgregarVentaDialog onAddButtonClick={handleAddButtonClick} />}
+                loading={loading}
+                error={error}
+                extraInfoComponent={<SalesDashboard totalIncome={totalIncome} salesData={sales} />}
+                backgroundColor="#EBEBEB"
+            />
+
+            <Eliminar
+                open={openDeleteDialog}
+                onClose={handleCloseDelete}
+                onConfirm={handleConfirmDelete}
+                title={`¿Estás seguro que deseas eliminar la venta del producto "${selectedSale?.producto}"?`}
+            />
+
+            <AgregarVentaDialog
+                open={openEditar}
+                onClose={() => setOpenEditar(false)}
+                sale={ventaEditar}
+                onSave={handleGuardarEdicion}
+                products={sales?.map(sale => sale.original)}
+            />
+        </>
     );
 } 

@@ -3,6 +3,7 @@ import { LocalOffer } from "@mui/icons-material";
 import DataManagementPage from "../components/DataManagementPage";
 import AgregarMarca from "../components/DialogMarca.jsx";
 import Eliminar from "../components/Eliminar";
+import DialogEditBrand from "../components/DialogEditBrand.jsx";  // <-- Importa el nuevo componente
 import { brandsAPI } from "../services/api/stockBack";
 
 export default function Brands() {
@@ -13,6 +14,8 @@ export default function Brands() {
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
   const [selectedBrand, setSelectedBrand] = useState(null);
+  const [openEditDialog, setOpenEditDialog] = useState(false);
+  const [brandToEdit, setBrandToEdit] = useState(null);
 
   useEffect(() => {
     const fetchBrands = async () => {
@@ -20,14 +23,12 @@ export default function Brands() {
         setLoading(true);
         const response = await brandsAPI.getBrands(page, rowsPerPage);
         if (response.success) {
-          // Transformar los datos al formato esperado por la tabla
           const transformedBrands = response.data.map(brand => ({
             nombre: brand.name,
             description: brand.description,
             country: brand.country,
             products_associated: brand.associatedProductCount,
             created_at: new Date(brand.createdAt).toLocaleDateString(),
-            // Mantener los datos originales para edición/visualización
             original: brand
           }));
           setBrands(transformedBrands);
@@ -35,7 +36,7 @@ export default function Brands() {
         } else {
           setError(response.error || "Error al cargar las marcas");
         }
-      } catch (_err) {
+      } catch {
         setError("Error al conectar con el servidor");
       } finally {
         setLoading(false);
@@ -60,11 +61,11 @@ export default function Brands() {
   ];
 
   const handleEdit = (brand) => {
-    console.log("Editing brand:", brand.original || brand);
+    setBrandToEdit(brand.original || brand);
+    setOpenEditDialog(true);
   };
 
   const handleDelete = (brand) => {
-    console.log("Deleting brand:", brand);
     setSelectedBrand(brand);
     setOpenDeleteDialog(true);
   };
@@ -79,7 +80,6 @@ export default function Brands() {
       setLoading(true);
       const response = await brandsAPI.deleteBrand(selectedBrand.original.id);
       if (response.success) {
-        // Recargar la lista después de eliminar
         const newResponse = await brandsAPI.getBrands(page, rowsPerPage);
         if (newResponse.success) {
           const transformedBrands = newResponse.data.map(brand => ({
@@ -109,35 +109,85 @@ export default function Brands() {
 
   const handleRowsPerPageChange = (newRowsPerPage) => {
     setRowsPerPage(newRowsPerPage);
-    setPage(1); // Reset to first page when changing rows per page
+    setPage(1);
+  };
+
+  // Maneja guardar cambios después de editar
+  const handleSaveEdit = async (updatedBrand) => {
+    try {
+      setLoading(true);
+      // Asumo que existe este método en tu API para actualizar marca
+      const response = await brandsAPI.updateBrand(updatedBrand.id, {
+        name: updatedBrand.nombre,
+        description: updatedBrand.description,
+        country: updatedBrand.country,
+      });
+      if (response.success) {
+        // Actualizar la lista localmente para reflejar el cambio sin recargar todo
+        setBrands((prevBrands) =>
+          prevBrands.map((b) =>
+            b.original.id === updatedBrand.id
+              ? {
+                  ...b,
+                  nombre: updatedBrand.nombre,
+                  description: updatedBrand.description,
+                  country: updatedBrand.country,
+                  original: { ...b.original, ...updatedBrand },
+                }
+              : b
+          )
+        );
+        setOpenEditDialog(false);
+        setBrandToEdit(null);
+        setError(null);
+      } else {
+        setError(response.error || "Error al actualizar la marca");
+      }
+    } catch {
+      setError("Error al conectar con el servidor");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleCloseEdit = () => {
+    setOpenEditDialog(false);
+    setBrandToEdit(null);
   };
 
   return (
     <>
-    <DataManagementPage
-      title="Gestión de Marcas"
-      description="Administra las marcas de los productos"
-      addButtonText="Agregar Marca"
-      addButtonIcon={<LocalOffer />}
-      tableTitle="Lista de marcas"
-      columns={columns}
-      data={brands}
-      defaultRowsPerPage={rowsPerPage}
-      rowsPerPageOptions={[5, 10, 25, 50]}
-      onEdit={handleEdit}
-      onDelete={handleDelete}
-      onPageChange={handlePageChange}
-      onRowsPerPageChange={handleRowsPerPageChange}
-      addDialog={<AgregarMarca />}
-      loading={loading}
-      error={error}
-    />
-    <Eliminar
-      open={openDeleteDialog}
-      onClose={handleCloseDelete}
-      onConfirm={handleConfirmDelete}
-      title={`¿Estás seguro que deseas eliminar la marca "${selectedBrand?.nombre}"?`}
-    />
+      <DataManagementPage
+        title="Gestión de Marcas"
+        description="Administra las marcas de los productos"
+        addButtonText="Agregar Marca"
+        addButtonIcon={<LocalOffer />}
+        tableTitle="Lista de marcas"
+        columns={columns}
+        data={brands}
+        defaultRowsPerPage={rowsPerPage}
+        rowsPerPageOptions={[5, 10, 25, 50]}
+        onEdit={handleEdit}
+        onDelete={handleDelete}
+        onPageChange={handlePageChange}
+        onRowsPerPageChange={handleRowsPerPageChange}
+        addDialog={<AgregarMarca />}
+        loading={loading}
+        error={error}
+      />
+      <Eliminar
+        open={openDeleteDialog}
+        onClose={handleCloseDelete}
+        onConfirm={handleConfirmDelete}
+        title={`¿Estás seguro que deseas eliminar la marca "${selectedBrand?.nombre}"?`}
+      />
+      <DialogEditBrand
+        open={openEditDialog}
+        onClose={handleCloseEdit}
+        brand={brandToEdit}
+        onSave={handleSaveEdit}
+      />
     </>
   );
 }
+

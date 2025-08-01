@@ -1,18 +1,43 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 
+
 const ErrorPage404 = ({ title, subtitle, message }) => {
     return (
-        <div className="flex flex-col items-center justify-center h-screen bg-neutral-100 text-center p-4">
-            <h1 className="text-6xl font-bold text-neutral-900 mb-4">{title}</h1>
-            <h2 className="text-2xl font-semibold text-neutral-800 mb-2">{subtitle}</h2>
-            <p className="text-neutral-600 mb-6">{message}</p>
-            <Link
-                to="/home"
-                className="bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700 transition"
-            >
-                Go back home
-            </Link>
+        <div
+            style={{
+                display: 'flex',
+                justifyContent: 'center',
+                alignItems: 'center',
+                height: '100vh',
+                backgroundColor: '#faf6f0',
+                fontFamily: 'sans-serif',
+            }}
+        >
+            <div style={{ textAlign: 'center' }}>
+                <h1 style={{ fontSize: '80px', fontWeight: 'bold', color: '#111' }}>404</h1>
+                <h2 style={{ fontSize: '24px', color: '#333' }}>Page not found</h2>
+                <p style={{ color: '#666', marginBottom: '30px' }}>
+                    The page you are looking for does not exist.
+                </p>
+                <Link to="/">
+                    <button
+                        style={{
+                            backgroundColor: '#0B2240',
+                            color: '#fff',
+                            padding: '12px 24px',
+                            borderRadius: '30px',
+                            fontSize: '16px',
+                            border: 'none',
+                            cursor: 'pointer',
+                        }}
+                        onMouseOver={(e) => (e.target.style.backgroundColor = '#1e40af')}
+                        onMouseOut={(e) => (e.target.style.backgroundColor = '#2563eb')}
+                    >
+                        Go back home
+                    </button>
+                </Link>
+            </div>
         </div>
     );
 };
