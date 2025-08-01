@@ -25,8 +25,6 @@ const mobileDrawerWidth = "19.5rem";
 const primaryColor = '#0B2240';
 const accentColor = '#F5C518';
 
-const mobileDrawerWidth = "19.5rem";
-
 const DataManagementPage = ({
                                 title,
                                 description,
