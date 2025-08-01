@@ -21,6 +21,7 @@ import VisibilityIcon from "@mui/icons-material/Visibility";
 import Sidebar from "./Sidebar";
 
 const drawerWidth = 340;
+const mobileDrawerWidth = "19.5rem";
 const primaryColor = '#0B2240';
 const accentColor = '#F5C518';
 
@@ -222,7 +223,7 @@ const DataManagementPage = ({
                 onClose={toggleDrawer}
                 sx={{
                     display: { xs: 'block', md: 'none' },
-                    '& .MuiDrawer-paper': { width: drawerWidth }
+                    '& .MuiDrawer-paper': { width: mobileDrawerWidth }
                 }}
             >
                 <Sidebar onClose={toggleDrawer} />
