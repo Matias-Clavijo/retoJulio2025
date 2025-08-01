@@ -9,6 +9,7 @@ const apiClient = axios.create({
   baseURL: API_BASE_URL,
   headers: {
     'Content-Type': 'application/json',
+    'Authorization': 'Bearer eyJhbGciOiJSUzI1NiJ9.eyJzdWIiOiIxIiwiZXhwIjoxNzU0MDY1NDgzLCJpYXQiOjE3NTQwNTEwODN9.BhlJBRDRlUPr1zkMEi6jEwV9bPY1Y45ODueaaHBG399oQnNVkbBw3HpK0JOuwTEKrbeRCBSMtaF6xr0o69rthUhi7xJUYJPuhyGfMrnkRxrKFgFoLZDQfcptzz-0nVdrWp9pmP0vnH4y3Lx6JHzmAmZGhb8TO_jlrTltF0WvfnpJ2n7okzizgNSY5pgZjgR1-1o4udhrCSVrdVFbzbkvPgjP9bM9QWCFyRcq4-OuLPrcPmviEDxrdw_Y5U2Ay7XrSlCTiq8zWJvLV-iJn4WNuVCGMx15ETlAUpt3-2X4SVKiEu5-6v07Bnfr0cpPd6fSreJuNYj2Br3tCvOmbMCbdg',
   },
   withCredentials: false,
 });
@@ -370,6 +371,7 @@ export const productsAPI = {
   // PUT /products/{id}
   updateProduct: async (id, productData) => {
     try {
+      console.log(productData);
       const apiData = {
         name: productData.nombre,
         description: productData.descripcion,
@@ -389,6 +391,8 @@ export const productsAPI = {
         }
       };
 
+      console.log(apiData);
+
       const response = await apiClient.put(`/products/${id}`, apiData);
       return { success: true, data: response.data };
     } catch (error) {
@@ -400,14 +404,8 @@ export const productsAPI = {
   // DELETE /products/{id}
   deleteProduct: async (id) => {
     try {
-      await new Promise(resolve => setTimeout(resolve, 500));
-      const index = mockProducts.findIndex(p => p.id === id);
-      if (index === -1) {
-        return { success: false, error: "Product not found" };
-      }
-      mockProducts.splice(index, 1);
-      return { success: true };
-    // eslint-disable-next-line no-unused-vars
+      const response = await apiClient.delete(`/products/${id}`);
+      return { success: true, data: response.data };
     } catch (error) {
       return { success: false, error: "Error deleting product" };
     }
