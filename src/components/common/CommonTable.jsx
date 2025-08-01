@@ -1,0 +1,182 @@
+import * as React from 'react';
+import {
+  Box,
+  Paper,
+  Typography,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TablePagination,
+  TableRow,
+  IconButton,
+  Tooltip,
+  Popover,
+  List,
+  ListItem,
+  ListItemText,
+  Chip
+} from '@mui/material';
+import { 
+  FormatListBulleted as ListIcon
+} from '@mui/icons-material';
+
+// Componente para manejar listas largas
+const ListFormatter = ({ items, options = {} }) => {
+  const [anchorEl, setAnchorEl] = React.useState(null);
+  const { listTitle = 'Ver todos los elementos' } = options;
+
+  const handleClick = (event) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
+
+  const open = Boolean(anchorEl);
+
+  return (
+    <Box display="flex" alignItems="center" justifyContent="center">
+      <Tooltip title={listTitle}>
+        <IconButton 
+          size="small" 
+          onClick={handleClick}
+          sx={{ 
+            color: 'primary.main',
+            '&:hover': { backgroundColor: 'primary.light', color: 'white' }
+          }}
+        >
+          <ListIcon fontSize="small" />
+          <Typography variant="caption" sx={{ ml: 0.5 }}>
+            {items.length}
+          </Typography>
+        </IconButton>
+      </Tooltip>
+      
+      <Popover
+        open={open}
+        anchorEl={anchorEl}
+        onClose={handleClose}
+        anchorOrigin={{
+          vertical: 'bottom',
+          horizontal: 'center',
+        }}
+        transformOrigin={{
+          vertical: 'top',
+          horizontal: 'center',
+        }}
+        PaperProps={{
+          sx: { maxHeight: 300, width: 250 }
+        }}
+      >
+        <Box p={1}>
+          <Typography variant="subtitle2" sx={{ mb: 1, fontWeight: 'bold' }}>
+            {listTitle} ({items.length})
+          </Typography>
+          <List dense>
+            {items.map((item, index) => (
+              <ListItem key={index} sx={{ py: 0.5 }}>
+                <ListItemText 
+                  primary={item}
+                  primaryTypographyProps={{ variant: 'body2' }}
+                />
+              </ListItem>
+            ))}
+          </List>
+        </Box>
+      </Popover>
+    </Box>
+  );
+};
+
+export default function CommonTable({
+  title,
+  columns,
+  rows,
+  defaultRowsPerPage = 10,
+  rowsPerPageOptions = [10, 25, 100],
+  searchSignal
+}) {
+  const [page, setPage] = React.useState(0);
+  const [rowsPerPage, setRowsPerPage] = React.useState(defaultRowsPerPage);
+
+  const handleChangePage = (event, newPage) => {
+    setPage(newPage);
+  };
+
+  const handleChangeRowsPerPage = (event) => {
+    setRowsPerPage(+event.target.value);
+    setPage(0);
+
+    if (searchSignal) {
+      searchSignal(event.target.value);
+    }
+  };
+
+  const filteredRows = rows
+
+  return (
+    <Paper elevation={2} sx={{p: 2}}>
+      <Box
+        sx={{
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          mb: 2,
+        }}
+      >
+        <Typography variant="h6" fontWeight="bold">
+          {title}
+        </Typography>
+      </Box>
+
+      <TableContainer sx={{ maxHeight: 'calc(100vh - 300px)', overflow: 'auto' }}>
+        <Table stickyHeader aria-label="sticky table">
+          <TableHead>
+            <TableRow>
+              {columns.map((column) => (
+                <TableCell
+                  key={column.id}
+                  align={column.align}
+                  style={{ minWidth: column.minWidth, fontWeight: 'bold' }}
+                >
+                  {column.label}
+                </TableCell>
+              ))}
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {filteredRows
+              .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+              .map((row, index) => (
+                <TableRow hover tabIndex={-1} key={`${row.id}-${index}`}>
+                  {columns.map((column) => {
+                    const value = row[column.id];
+                    return (
+                      <TableCell key={column.id} align={column.align}>
+                        {column.format
+                          ? column.format(value, row)
+                          : value}
+                      </TableCell>
+                    );
+                  })}
+                </TableRow>
+              ))}
+          </TableBody>
+        </Table>
+      </TableContainer>
+
+      <TablePagination
+        rowsPerPageOptions={rowsPerPageOptions}
+        component="div"
+        count={filteredRows.length}
+        rowsPerPage={rowsPerPage}
+        page={page}
+        onPageChange={handleChangePage}
+        onRowsPerPageChange={handleChangeRowsPerPage}
+      />
+    </Paper>
+  );
+}
