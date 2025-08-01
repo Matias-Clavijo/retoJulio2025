@@ -74,35 +74,12 @@ export default function Products() {
   };
 
   const handleEdit = (product) => {
-    setProductoEditar(product.original || product);
+    setProductoEditar(product.original);
     setOpenEditar(true);
   };
 
-  const handleGuardarEdicion = async (productoEditado) => {
-    try {
-      setLoading(true);
-      // Ajustá los campos según lo que tu API espera para actualizar un producto
-      const response = await productsAPI.updateProduct(productoEditado.id, {
-        name: productoEditado.name,
-        description: productoEditado.description,
-        brandName: productoEditado.brand?.name || '',
-        categoryName: productoEditado.category?.name || '',
-      });
-      if (response.success) {
-        setRefetch(prev => prev + 1);
-        setOpenEditar(false);
-      } else {
-        setError(response.error || "Error al actualizar el producto");
-      }
-    } catch {
-      setError("Error al conectar con el servidor");
-    } finally {
-      setLoading(false);
-    }
-  };
-
   const handleDelete = (product) => {
-    setSelectedProduct(product);
+    setSelectedProduct(product.original);
     setOpenDeleteDialog(true);
   };
 
@@ -113,7 +90,7 @@ export default function Products() {
   const handleConfirmDelete = async () => {
     try {
       setLoading(true);
-      const response = await productsAPI.deleteProduct(selectedProduct.original.id);
+      const response = await productsAPI.deleteProduct(selectedProduct.id);
       if (response.success) {
         setRefetch(prev => prev + 1);
       } else {
@@ -138,6 +115,15 @@ export default function Products() {
 
   const handleAddButtonClick = async (productData) => {
     const response = await productsAPI.createProduct(productData);
+    if (!response.success) {
+      setError(response.error);
+    } else {
+      setRefetch(prev => prev + 1);
+    }
+  };
+
+  const handleSaveEdit = async (productData) => {
+    const response = await productsAPI.updateProduct(productoEditar.id, productData);
     if (!response.success) {
       setError(response.error);
     } else {
@@ -286,11 +272,11 @@ export default function Products() {
         product={productoSeleccionado}
       />
 
-      <DialogEditProduct
+      <AgregarProductoDialog
+        onAddButtonClick={handleSaveEdit}
         open={openEditar}
         onClose={() => setOpenEditar(false)}
         product={productoEditar}
-        onSave={handleGuardarEdicion}
       />
     </>
   );

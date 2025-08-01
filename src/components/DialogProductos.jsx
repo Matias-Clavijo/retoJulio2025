@@ -32,15 +32,14 @@ const currencies = [
 ];
 
 export default function AgregarProductoDialog({ open, onClose, onAddButtonClick, product }) {
-    console.log(product);
-    const [nombre, setNombre] = useState(product?.nombre || '');
-    const [descripcion, setDescripcion] = useState(product?.descripcion || '');
-    const [marca, setMarca] = useState(product?.marca || '');
-    const [categoria, setCategoria] = useState(product?.categoria || '');
-    const [moneda, setMoneda] = useState(product?.moneda || 'UY');
+    const [nombre, setNombre] = useState(product?.name || '');
+    const [descripcion, setDescripcion] = useState(product?.description || '');
+    const [marca, setMarca] = useState(product?.brand?.id || '');
+    const [categoria, setCategoria] = useState(product?.category?.id || '');
+    const [moneda, setMoneda] = useState(product?.purchasePrices[0]?.currency || 'UY');
     const [precioCompra, setPrecioCompra] = useState('');
     const [precioVenta, setPrecioVenta] = useState('');
-    const [preciosCompra, setPreciosCompra] = useState(product?.preciosCompra?.map(price => ({
+    const [preciosCompra, setPreciosCompra] = useState(product?.purchasePrices?.map(price => ({
         id: price.id,
         precio: price.value,
         moneda: price.currency
@@ -53,6 +52,26 @@ export default function AgregarProductoDialog({ open, onClose, onAddButtonClick,
 
     const [brands, setBrands] = useState([]);
     const [categories, setCategories] = useState([]);
+
+    useEffect(() => {
+        if (product) {
+            setNombre(product?.name || '');
+            setDescripcion(product?.description || '');
+            setMarca(product?.brand?.id || '');
+            setCategoria(product?.category?.id || '');
+            setMoneda(product?.purchasePrices[0]?.currency || 'UY');
+            setPreciosCompra(product?.purchasePrices?.map(price => ({
+                id: price.id,
+                precio: price.value,
+                moneda: price.currency
+            })) || []);
+            setPreciosVenta(product?.salePrices?.map(price => ({
+                id: price.id,
+                precio: price.value,
+                moneda: price.currency
+            })) || []);
+        }
+    }, [product]);  
 
     const handleAgregar = () => {
         onAddButtonClick({ nombre, descripcion, marca, categoria, moneda, preciosCompra, preciosVenta })
