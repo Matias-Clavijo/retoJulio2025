@@ -5,6 +5,8 @@ import SalesDashboard from "../components/SalesDashboard";
 import AgregarVentaDialog from "../components/DialogVenta";
 import Eliminar from "../components/Eliminar";
 import { salesAPI } from "../services/api/stockBack";
+import DialogWatchVentas from "../components/DialogWatchVentas";
+
 
 export default function Sales() {
     const [sales, setSales] = useState([]);
@@ -12,6 +14,11 @@ export default function Sales() {
     const [error, setError] = useState(null);
     const [totalIncome, setTotalIncome] = useState(0);
     const [refetch, setRefetch] = useState(0);
+    const [openWatchDialog, setOpenWatchDialog] = useState(false);
+    //Para ver detalles de venta
+    const [openVentaDialog, setOpenVentaDialog] = useState(false);
+    const [ventaSeleccionada, setVentaSeleccionada] = useState(null);
+
     
     // Estados para editar venta
     const [openEditar, setOpenEditar] = useState(false);
@@ -68,7 +75,13 @@ export default function Sales() {
     };
 
     const handleView = (sale) => {
-        console.log("Viendo detalles de venta:", sale);
+        setVentaSeleccionada(sale.original);
+        setOpenWatchDialog(true);
+    };
+
+    const handleCloseVentaDialog = () => {
+        setOpenVentaDialog(false);
+        setVentaSeleccionada(null);
     };
 
     const handleGuardarEdicion = async (ventaEditada) => {
@@ -134,27 +147,27 @@ export default function Sales() {
     ];
 
     return (
-        <>
-            <DataManagementPage
-                title="Gestión de Ventas"
-                description="Administra el catálogo de ventas del sistema"
-                addButtonText="AGREGAR VENTA"
-                addButtonIcon={<PointOfSale />}
-                tableTitle="Lista de Ventas"
-                columns={columns}
-                data={sales}
-                defaultRowsPerPage={rowsPerPage}
-                rowsPerPageOptions={[5, 10, 25, 50]}
-                showViewAction={true}
-                onEdit={handleEdit}
-                onDelete={handleDelete}
-                onView={handleView}
-                addDialog={<AgregarVentaDialog onAddButtonClick={handleAddButtonClick} />}
-                loading={loading}
-                error={error}
-                extraInfoComponent={<SalesDashboard totalIncome={totalIncome} salesData={sales} />}
-                backgroundColor="#EBEBEB"
-            />
+    <>
+    <DataManagementPage
+        title="Gestión de Ventas"
+        description="Administra el catálogo de ventas del sistema"
+        addButtonText="AGREGAR VENTA"
+        addButtonIcon={<PointOfSale />}
+        tableTitle="Lista de Ventas"
+        columns={columns}
+        data={sales}
+        defaultRowsPerPage={rowsPerPage}
+        rowsPerPageOptions={[5, 10, 25, 50]}
+        showViewAction={true}
+        onEdit={handleEdit}
+        onDelete={handleDelete}
+        onView={handleView}
+        addDialog={<AgregarVentaDialog onAddButtonClick={handleAddButtonClick} />}
+        loading={loading}
+        error={error}
+        extraInfoComponent={<SalesDashboard totalIncome={totalIncome} salesData={sales} />}
+        backgroundColor="#EBEBEB"
+    />
 
             <Eliminar
                 open={openDeleteDialog}
@@ -169,6 +182,12 @@ export default function Sales() {
                 sale={ventaEditar}
                 onSave={handleGuardarEdicion}
                 products={sales?.map(sale => sale.original)}
+            />
+
+            <DialogWatchVentas
+                open={openWatchDialog}
+                onClose={() => setOpenWatchDialog(false)}
+                venta={ventaSeleccionada}
             />
         </>
     );
