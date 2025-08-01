@@ -189,10 +189,6 @@ const mockSales = [
   {
     id: 1,
     date: "2025-07-22",
-    price: {
-      value: 1234,
-      currency: "USD"
-    },
     product: {
       id: 1,
       count: 1
@@ -203,10 +199,6 @@ const mockSales = [
   {
     id: 2,
     date: "2025-07-23",
-    price: {
-      value: 2150,
-      currency: "USD"
-    },
     product: {
       id: 2,
       count: 1
@@ -217,10 +209,6 @@ const mockSales = [
   {
     id: 3,
     date: "2025-07-22",
-    price: {
-      value: 850,
-      currency: "USD"
-    },
     product: {
       id: 1,
       count: 1
@@ -231,10 +219,6 @@ const mockSales = [
   {
     id: 4,
     date: "2025-07-21",
-    price: {
-      value: 3200,
-      currency: "USD"
-    },
     product: {
       id: 2,
       count: 2
@@ -245,10 +229,6 @@ const mockSales = [
   {
     id: 5,
     date: "2025-07-20",
-    price: {
-      value: 1800,
-      currency: "USD"
-    },
     product: {
       id: 1,
       count: 1
@@ -259,10 +239,6 @@ const mockSales = [
   {
     id: 6,
     date: "2025-07-19",
-    price: {
-      value: 950,
-      currency: "USD"
-    },
     product: {
       id: 2,
       count: 1
@@ -273,10 +249,6 @@ const mockSales = [
   {
     id: 7,
     date: "2025-07-18",
-    price: {
-      value: 2700,
-      currency: "USD"
-    },
     product: {
       id: 1,
       count: 2
@@ -758,12 +730,12 @@ export const salesAPI = {
   getSales: async (page = 1, items = 10) => {
     try {
       await new Promise(resolve => setTimeout(resolve, 500));
-      const total = mockSales.reduce((sum, sale) => sum + sale.price.value, 0);
       const response = createPaginatedResponse(mockSales, page, items);
-      response.total = total;
+      response.total = 278912;
       response.currency = "USD";
       return response;
     } catch (error) {
+      console.log(error);
       return { success: false, error: "Error fetching sales" };
     }
   },
