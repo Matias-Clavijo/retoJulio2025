@@ -225,6 +225,7 @@ const DataManagementPage = ({
                     flexGrow: 1,
                     p: 2,
                     width: { xs: '100%', md: `calc(100% - ${drawerWidth}px)` },
+                    overflow: 'auto'
                 }}
             >
                 {renderContent()}
