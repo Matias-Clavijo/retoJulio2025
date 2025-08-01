@@ -21,6 +21,7 @@ import VisibilityIcon from "@mui/icons-material/Visibility";
 import Sidebar from "./Sidebar";
 
 const drawerWidth = 340;
+const mobileDrawerWidth = 280;
 
 const DataManagementPage = ({
                                 title,
@@ -213,7 +214,7 @@ const DataManagementPage = ({
                 onClose={toggleDrawer}
                 sx={{
                     display: { xs: 'block', md: 'none' },
-                    '& .MuiDrawer-paper': { width: drawerWidth }
+                    '& .MuiDrawer-paper': { width: mobileDrawerWidth }
                 }}
             >
                 <Sidebar onClose={toggleDrawer} />
@@ -225,6 +226,7 @@ const DataManagementPage = ({
                     flexGrow: 1,
                     p: 2,
                     width: { xs: '100%', md: `calc(100% - ${drawerWidth}px)` },
+                    overflow: 'auto'
                 }}
             >
                 {renderContent()}
