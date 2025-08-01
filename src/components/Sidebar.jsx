@@ -10,7 +10,8 @@ import {
     Divider,
     Avatar,
     Paper,
-    IconButton
+    IconButton,
+    useMediaQuery
 } from '@mui/material';
 import {
     Inventory,
@@ -27,12 +28,13 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import InfoUsuario from './Infousuario';
 import logo from '../assets/logo.jpeg';
 
-const drawerWidth = 340;
-
 const Sidebar = ({ onClose }) => {
     const navigate = useNavigate();
     const location = useLocation();
     const [openInfoUsuario, setOpenInfoUsuario] = useState(false);
+    const isMobile = useMediaQuery('(max-width:768px)');
+
+    const drawerWidth = isMobile ? 280 : 340;
 
     const inventoryItems = [
         { text: 'Productos', icon: <Inventory />, path: '/products' },
@@ -124,7 +126,7 @@ const Sidebar = ({ onClose }) => {
             {/* Logo */}
             <Box
                 sx={{
-                    p: 2,
+                    p: isMobile ? 1 : 2,
                     display: 'flex',
                     justifyContent: 'center',
                     cursor: 'pointer',
@@ -139,8 +141,8 @@ const Sidebar = ({ onClose }) => {
                     src={logo}
                     alt="Brava Store Logo"
                     style={{
-                        width: 210,
-                        height: 110,
+                        width: isMobile ? 190 : 210,
+                        height: isMobile ? 120 : 110,
                         objectFit: 'cover',
                         objectPosition: 'center'
                     }}
@@ -150,12 +152,12 @@ const Sidebar = ({ onClose }) => {
             <Divider variant="middle" />
 
             {/* Menu principal */}
-            <Box sx={{ flex: 1, pt: 2, pb: 1, overflowY: 'auto', overflowX: 'hidden' }}>
+            <Box sx={{ flex: 1, pt: isMobile ? 1 : 2, pb: 1, overflowY: isMobile ? 'auto' : 'visible', overflowX: 'hidden' }}>
                 <Box sx={{ mb: 0, mt: 1 }}>
                     {renderMenuSection('Inventario', inventoryItems)}
                 </Box>
 
-                <Divider variant="middle" sx={{ mx: 2, my: 2, mb: 2.5}} />
+                <Divider variant="middle" sx={{ mx: 2, my: 2, mb: 2.5 }} />
 
                 <Box>
                     {renderMenuSection('Operaciones', operationsItems)}
@@ -165,7 +167,7 @@ const Sidebar = ({ onClose }) => {
             <Divider variant="middle" sx={{ mx: 2, my: 2 }} />
 
             {/* Info usuario */}
-            <Box sx={{ px: 2, mb: 3, mt: 1 }}>
+            <Box sx={{ px: 2, mb: isMobile ? 2 : 3, mt: 1 }}>
                 <Paper
                     elevation={0}
                     sx={{
