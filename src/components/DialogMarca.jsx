@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import {
   Dialog,
   DialogContent,
@@ -17,16 +17,24 @@ import CloseIcon from '@mui/icons-material/Close';
 const primaryColor = '#0B2240';  // Azul del logo
 const accentColor = '#F5C518';   // Amarillo del logo
 
-const AgregarMarca = ({ open, onClose }) => {
+const AgregarMarca = ({ open, onClose, onAddButtonClick, brand }) => {
   const [nombre, setNombre] = React.useState('');
   const [descripcion, setDescripcion] = React.useState('');
   const [pais, setPais] = React.useState('UY');
 
   const handleSubmit = () => {
     const nuevaMarca = { nombre, descripcion, pais };
-    console.log('Marca enviada:', nuevaMarca);
+    onAddButtonClick(nuevaMarca);
     onClose();
   };
+
+  useEffect(() => {
+    if (brand) {
+      setNombre(brand?.name || '');
+      setDescripcion(brand?.description || '');
+      setPais(brand?.country || 'UY');
+    }
+  }, [brand]);
 
   return (
       <Dialog
