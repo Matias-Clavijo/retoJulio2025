@@ -34,7 +34,7 @@ const Sidebar = ({ onClose }) => {
     const [openInfoUsuario, setOpenInfoUsuario] = useState(false);
     const isMobile = useMediaQuery('(max-width:768px)');
 
-    const drawerWidth = isMobile ? 280 : 340;
+    const drawerWidth = isMobile ? 300 : 340;
 
     const inventoryItems = [
         { text: 'Productos', icon: <Inventory />, path: '/products' },
@@ -70,13 +70,14 @@ const Sidebar = ({ onClose }) => {
             >
                 {title}
             </Typography>
-            <List sx={{ py: 0 }}>
+            <List sx={{ py: 0, mt: "0.5rem"}}>
                 {items.map((item, index) => (
                     <ListItem key={index} disablePadding>
                         <ListItemButton
                             selected={location.pathname === item.path}
                             onClick={() => handleItemClick(item.path)}
                             sx={{
+                                px: 1,
                                 mx: 1,
                                 borderRadius: 1,
                                 '&:hover': {
@@ -96,7 +97,7 @@ const Sidebar = ({ onClose }) => {
                         >
                             <ListItemIcon
                                 sx={{
-                                    minWidth: 40,
+                                    minWidth: "2.5rem",
                                     color: location.pathname === item.path ? 'primary.contrastText' : 'text.secondary'
                                 }}
                             >
@@ -118,7 +119,8 @@ const Sidebar = ({ onClose }) => {
                 backgroundColor: '#fff',
                 display: 'flex',
                 flexDirection: 'column',
-                overflowX: 'hidden'
+                overflowX: 'hidden',
+                overflowY: isMobile ? 'auto' : 'hidden'
             }}
         >
             <Divider variant="middle" />
@@ -141,8 +143,8 @@ const Sidebar = ({ onClose }) => {
                     src={logo}
                     alt="Brava Store Logo"
                     style={{
-                        width: isMobile ? 190 : 210,
-                        height: isMobile ? 120 : 110,
+                        width: isMobile ? 170 : 210,
+                        height: isMobile ? 90 : 110,
                         objectFit: 'cover',
                         objectPosition: 'center'
                     }}
@@ -152,7 +154,7 @@ const Sidebar = ({ onClose }) => {
             <Divider variant="middle" />
 
             {/* Menu principal */}
-            <Box sx={{ flex: 1, pt: isMobile ? 1 : 2, pb: 1, overflowY: isMobile ? 'auto' : 'visible', overflowX: 'hidden' }}>
+            <Box sx={{ flex: 1, pt: isMobile ? 1 : 2, pb: 1 }}>
                 <Box sx={{ mb: 0, mt: 1 }}>
                     {renderMenuSection('Inventario', inventoryItems)}
                 </Box>

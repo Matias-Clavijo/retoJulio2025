@@ -21,7 +21,7 @@ import VisibilityIcon from "@mui/icons-material/Visibility";
 import Sidebar from "./Sidebar";
 
 const drawerWidth = 340;
-const mobileDrawerWidth = 280;
+const mobileDrawerWidth = "19.5rem";
 
 const DataManagementPage = ({
                                 title,
