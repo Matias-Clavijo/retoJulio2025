@@ -489,15 +489,14 @@ export const categoriesAPI = {
 
   createCategory: async (categoryData) => {
     try {
-      await new Promise(resolve => setTimeout(resolve, 500));
-      const newCategory = {
-        id: mockCategories.length + 1,
-        ...categoryData,
-        productsCount: 0
+      const apiData = {
+        name: categoryData.nombre,
       };
-      mockCategories.push(newCategory);
-      return { success: true, data: newCategory };
+
+      const response = await apiClient.post('/categories', apiData);
+      return { success: true, data: response.data };
     } catch (error) {
+      console.log(error);
       return { success: false, error: "Error creating category" };
     }
   },
@@ -519,16 +518,11 @@ export const categoriesAPI = {
 
   // DELETE /categories/{id}
   deleteCategory: async (id) => {
-    try {
-      await new Promise(resolve => setTimeout(resolve, 500));
-      const index = mockCategories.findIndex(c => c.id === id);
-      if (index === -1) {
-        return { success: false, error: "Category not found" };
-      }
-      mockCategories.splice(index, 1);
-      return { success: true };
+    try {const response = await apiClient.delete(`/categories/${id}`);
+      return { success: true, data: response.data };
     } catch (error) {
-      return { success: false, error: "Error deleting category" };
+      console.log(error)
+      return { success: false, error: "Error deleting brand" };
     }
   }
 };

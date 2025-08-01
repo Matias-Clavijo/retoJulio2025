@@ -9,19 +9,19 @@ import {
     Box
 } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
+import AddIcon from '@mui/icons-material/Add';
+import { brandsAPI, categoriesAPI } from '../services/api/stockBack';
 
 const primaryColor = '#0B2240';  // Azul del logo
 const accentColor = '#F5C518';   // Amarillo del logo
 
-export default function AgregarCategoriaDialog({ open, onClose }) {
+export default function AgregarCategoriaDialog({ open, onClose, onAddButtonClick}) {
     const [nombre, setNombre] = useState('');
 
     const handleGuardar = () => {
-        if (nombre.trim()) {
-            console.log('Categoría guardada:', nombre);
-            onClose();
-            setNombre('');
-        }
+        onAddButtonClick({nombre});
+        onClose();
+        
     };
 
     return (
