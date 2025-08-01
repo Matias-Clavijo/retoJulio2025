@@ -16,11 +16,14 @@ export default function Brands() {
   const [selectedBrand, setSelectedBrand] = useState(null);
   const [openEditDialog, setOpenEditDialog] = useState(false);
   const [brandToEdit, setBrandToEdit] = useState(null);
+  const [refetch, setRefetch] = useState(0);
 
   useEffect(() => {
     const fetchBrands = async () => {
       try {
-        setLoading(true);
+        if (refetch === 0) {
+          setLoading(true);
+        }
         const response = await brandsAPI.getBrands(page, rowsPerPage);
         if (response.success) {
           const transformedBrands = response.data.map(brand => ({
@@ -44,7 +47,7 @@ export default function Brands() {
     };
 
     fetchBrands();
-  }, [page, rowsPerPage]);
+  }, [page, rowsPerPage, refetch]);
 
   const columns = [
     { id: "nombre", label: "Nombre", align: "left" },
@@ -59,6 +62,15 @@ export default function Brands() {
     { id: "created_at", label: "Fecha de creación", align: "left" },
     { id: "acciones", label: "Acciones", align: "center" },
   ];
+
+  const handleAddButtonClick = async (brandData) => {
+    const response = await brandsAPI.createBrand(brandData);
+    if (!response.success) {
+      setError(response.error);
+    } else {
+      setRefetch(prev => prev + 1);
+    }
+  };
 
   const handleEdit = (brand) => {
     setBrandToEdit(brand.original || brand);
@@ -80,18 +92,7 @@ export default function Brands() {
       setLoading(true);
       const response = await brandsAPI.deleteBrand(selectedBrand.original.id);
       if (response.success) {
-        const newResponse = await brandsAPI.getBrands(page, rowsPerPage);
-        if (newResponse.success) {
-          const transformedBrands = newResponse.data.map(brand => ({
-            nombre: brand.name,
-            description: brand.description,
-            country: brand.country,
-            products_associated: brand.associatedProductCount,
-            created_at: new Date(brand.createdAt).toLocaleDateString(),
-            original: brand
-          }));
-          setBrands(transformedBrands);
-        }
+        setRefetch(prev => prev + 1);
       } else {
         setError(response.error || "Error al eliminar la marca");
       }
@@ -116,27 +117,14 @@ export default function Brands() {
   const handleSaveEdit = async (updatedBrand) => {
     try {
       setLoading(true);
-      // Asumo que existe este método en tu API para actualizar marca
-      const response = await brandsAPI.updateBrand(updatedBrand.id, {
+      console.log(updatedBrand);
+      const response = await brandsAPI.updateBrand(brandToEdit.id, {
         name: updatedBrand.nombre,
-        description: updatedBrand.description,
-        country: updatedBrand.country,
+        description: updatedBrand.descripcion,
+        country: updatedBrand.pais,
       });
       if (response.success) {
-        // Actualizar la lista localmente para reflejar el cambio sin recargar todo
-        setBrands((prevBrands) =>
-          prevBrands.map((b) =>
-            b.original.id === updatedBrand.id
-              ? {
-                  ...b,
-                  nombre: updatedBrand.nombre,
-                  description: updatedBrand.description,
-                  country: updatedBrand.country,
-                  original: { ...b.original, ...updatedBrand },
-                }
-              : b
-          )
-        );
+        setRefetch(prev => prev + 1);
         setOpenEditDialog(false);
         setBrandToEdit(null);
         setError(null);
@@ -171,7 +159,7 @@ export default function Brands() {
         onDelete={handleDelete}
         onPageChange={handlePageChange}
         onRowsPerPageChange={handleRowsPerPageChange}
-        addDialog={<AgregarMarca />}
+        addDialog={<AgregarMarca onAddButtonClick={handleAddButtonClick} />}
         loading={loading}
         error={error}
       />
@@ -181,11 +169,11 @@ export default function Brands() {
         onConfirm={handleConfirmDelete}
         title={`¿Estás seguro que deseas eliminar la marca "${selectedBrand?.nombre}"?`}
       />
-      <DialogEditBrand
+      <AgregarMarca
         open={openEditDialog}
         onClose={handleCloseEdit}
         brand={brandToEdit}
-        onSave={handleSaveEdit}
+        onAddButtonClick={handleSaveEdit}
       />
     </>
   );

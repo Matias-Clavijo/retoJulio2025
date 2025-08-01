@@ -429,15 +429,14 @@ export const brandsAPI = {
   // POST /brands
   createBrand: async (brandData) => {
     try {
-      await new Promise(resolve => setTimeout(resolve, 500));
-      const newBrand = {
-        id: mockBrands.length + 1,
-        ...brandData,
-        createdAt: new Date().toISOString(),
-        associatedProductCount: 0
+      const apiData = {
+        name: brandData.nombre,
+        description: brandData.descripcion,
+        country: brandData.pais
       };
-      mockBrands.push(newBrand);
-      return { success: true, data: newBrand };
+
+      const response = await apiClient.post('/brands', apiData);
+      return { success: true, data: response.data };
     } catch (error) {
       console.log(error);
       return { success: false, error: "Error creating brand" };
@@ -447,14 +446,18 @@ export const brandsAPI = {
   // PUT /brands/{id}
   updateBrand: async (id, brandData) => {
     try {
-      await new Promise(resolve => setTimeout(resolve, 500));
-      const index = mockBrands.findIndex(b => b.id === id);
-      if (index === -1) {
-        return { success: false, error: "Brand not found" };
-      }
-      mockBrands[index] = { ...mockBrands[index], ...brandData };
-      return { success: true, data: mockBrands[index] };
+      console.log(brandData);
+      const apiData = {
+        name: brandData.name,
+        description: brandData.description,
+        country: brandData.country
+      };
+
+
+      const response = await apiClient.put(`/brands/${id}`, apiData);
+      return { success: true, data: response.data };
     } catch (error) {
+      console.log(error)
       return { success: false, error: "Error updating brand" };
     }
   },
@@ -462,14 +465,10 @@ export const brandsAPI = {
   // DELETE /brands/{id}
   deleteBrand: async (id) => {
     try {
-      await new Promise(resolve => setTimeout(resolve, 500));
-      const index = mockBrands.findIndex(b => b.id === id);
-      if (index === -1) {
-        return { success: false, error: "Brand not found" };
-      }
-      mockBrands.splice(index, 1);
-      return { success: true };
+      const response = await apiClient.delete(`/brands/${id}`);
+      return { success: true, data: response.data };
     } catch (error) {
+      console.log(error)
       return { success: false, error: "Error deleting brand" };
     }
   }
