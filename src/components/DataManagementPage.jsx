@@ -22,6 +22,8 @@ import Sidebar from "./Sidebar";
 
 const drawerWidth = 340;
 const mobileDrawerWidth = "19.5rem";
+const primaryColor = '#0B2240';
+const accentColor = '#F5C518';
 
 const DataManagementPage = ({
                                 title,
@@ -54,6 +56,12 @@ const DataManagementPage = ({
     const isMobile = useMediaQuery('(max-width: 768px)');
 
     const toggleDrawer = () => setMobileOpen(!mobileOpen);
+    const iconStyle = {
+        cursor: 'pointer',
+        fontSize: 22,
+        margin: '0 6px',
+        transition: 'color 0.3s',
+    };
 
     const rowsWithActions = data.map((row, index) => ({
         ...row,
@@ -61,7 +69,8 @@ const DataManagementPage = ({
             <Box sx={{ display: 'flex', justifyContent: 'center', gap: 1 }}>
                 {showViewAction && (
                     <IconButton size="small" sx={{ color: '#0B2240' }} onClick={() => onView?.(row)}>
-                        <VisibilityIcon fontSize="small" />
+                        <VisibilityIcon fontSize="small"
+                        sx={{ ...iconStyle,color: primaryColor,'&:hover': { color: accentColor },}} />
                     </IconButton>
                 )}
                 {showEditAction && (
@@ -69,7 +78,7 @@ const DataManagementPage = ({
                         setSelectedItem(row);
                         onEdit ? onEdit(row) : setOpenEditDialog(true);
                     }}>
-                        <EditIcon fontSize="small" />
+                        <EditIcon fontSize="small"sx={{...iconStyle,color: primaryColor,'&:hover': { color: accentColor },}} />
                     </IconButton>
                 )}
                 {showDeleteAction && (
