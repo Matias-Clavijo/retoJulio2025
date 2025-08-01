@@ -29,7 +29,7 @@ const Home = () => {
     const navigate = useNavigate();
 
     return (
-        <Box sx={{ p: 4, textAlign: 'center', backgroundColor: '#f8f9fa' }}>
+        <Box sx={{ minHeight: '100vh', backgroundColor: '#f8f9fa', p: 4, textAlign: 'center' }}>
             <Box sx={{ mb: 3 }}>
                 <img
                     src={logo}

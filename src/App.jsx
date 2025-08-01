@@ -1,5 +1,7 @@
 import React from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { CssBaseline, GlobalStyles } from '@mui/material';
+
 import Home from './pages/Home';
 import About from './pages/About';
 import Login from './pages/Login';
@@ -15,21 +17,25 @@ import Proveedor from './pages/Proveedor';
 
 export default function App() {
   return (
-      <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/about" element={<About />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/signup" element={<Signup />} />
-          <Route path="/category" element={<Category />} />
-          <Route path="/brands" element={<Brands />} />
-          <Route path="/products" element={<Products />} />
-          <Route path="/movements" element={<StockMovements />} />
-          <Route path="/warehouses" element={<Deposits />} />
-          <Route path="/sales" element={<Sales />} />
-          <Route path="/providers" element={<Proveedor />} />
-          <Route path="*" element={<ErrorPage404 />} />
-        </Routes>
-      </BrowserRouter>
+      <>
+        <CssBaseline />
+        <GlobalStyles styles={{ body: { backgroundColor: '#f8f9fa', margin: 0 } }} />
+        <BrowserRouter>
+          <Routes>
+            <Route path="/" element={<Home />} />
+            <Route path="/about" element={<About />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/signup" element={<Signup />} />
+            <Route path="/category" element={<Category />} />
+            <Route path="/brands" element={<Brands />} />
+            <Route path="/products" element={<Products />} />
+            <Route path="/movements" element={<StockMovements />} />
+            <Route path="/warehouses" element={<Deposits />} />
+            <Route path="/sales" element={<Sales />} />
+            <Route path="/providers" element={<Proveedor />} />
+            <Route path="*" element={<ErrorPage404 />} />
+          </Routes>
+        </BrowserRouter>
+      </>
   );
 }
