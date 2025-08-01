@@ -15,7 +15,7 @@ export default function Proveedor() {
   const [proveedorAEditar, setProveedorAEditar] = useState(null);
 
   const [openVer, setOpenVer] = useState(false);
-  const [proveedorAVer, setProveedorAVer] = useState(null); 
+  const [proveedorAVer, setProveedorAVer] = useState(null);
 
   const [rows, setRows] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -60,29 +60,29 @@ export default function Proveedor() {
   };
 
   const handleView = (proveedor) => {
-    setProveedorAVer(proveedor); 
-    setOpenVer(true); 
+    setProveedorAVer(proveedor);
+    setOpenVer(true);
   };
 
   const handleConfirmEliminar = () => {
-    setRows((prev) => prev.filter((p) => p.codigo !== proveedorAEliminar.codigo));
+    setRows((prev) =>
+      prev.filter((p) => p.codigo !== proveedorAEliminar.codigo)
+    );
     setOpenEliminar(false);
     setProveedorAEliminar(null);
   };
 
-  const handleGuardarProveedor = (proveedor) => {
-    if (proveedor.codigo) {
-      const actualizados = rows.map((p) =>
-        p.codigo === proveedor.codigo ? proveedor : p
-      );
-      setRows(actualizados);
-    } else {
-      const nuevoCodigo = rows.length ? rows[rows.length - 1].codigo + 1 : 1;
-      const nuevoProveedor = { ...proveedor, codigo: nuevoCodigo };
-      setRows([...rows, nuevoProveedor]);
-    }
-    setOpenEditar(false);
-    setProveedorAEditar(null);
+  const [setRefetch] = useState(0);
+
+
+
+  const handleGuardarProveedor = async (proveedor) => {
+    const response = await providersAPI.createProvider(proveedor);
+        if (!response.success) {
+          setError(response.error);
+        } else {
+          setRefetch(prev => prev + 1);
+        }
   };
 
   const columns = [

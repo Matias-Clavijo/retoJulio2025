@@ -628,14 +628,15 @@ export const providersAPI = {
   // POST /providers
   createProvider: async (providerData) => {
     try {
-      await new Promise(resolve => setTimeout(resolve, 500));
-      const newProvider = {
-        id: mockProviders.length + 1,
-        ...providerData,
-        associatedDate: new Date().toISOString().split('T')[0]
-      };
-      mockProviders.push(newProvider);
-      return { success: true, data: newProvider };
+      const data = {
+        name : providerData.nombre,
+        phone : providerData.telefono,
+        email : providerData.email
+      }
+      return await apiClient.post('/providers', data).then(response => {
+        console.log(response);
+        return response;
+      })
     } catch (error) {
       return { success: false, error: "Error creating provider" };
     }
