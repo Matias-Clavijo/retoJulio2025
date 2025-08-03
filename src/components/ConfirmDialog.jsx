@@ -9,6 +9,7 @@ import {
 } from '@mui/material';
 
 const ConfirmDialog = ({ open, onClose, onConfirm, title, message }) => {
+    const primaryColor = '#0B2240';
     const accentColor = '#F5C518';
 
     return (
@@ -18,7 +19,22 @@ const ConfirmDialog = ({ open, onClose, onConfirm, title, message }) => {
                 <Typography>{message || 'Esta acción no se puede deshacer.'}</Typography>
             </DialogContent>
             <DialogActions>
-                <Button onClick={onClose}>Cancelar</Button>
+                <Button
+                    onClick={onClose}
+                    sx={{
+                        color: primaryColor,
+                        borderColor: primaryColor,
+                        fontWeight: 'bold',
+                        textTransform: 'none',
+                        '&:hover': {
+                            backgroundColor: primaryColor,
+                            color: 'white'
+                        }
+                    }}
+                    variant="outlined"
+                >
+                    CANCELAR
+                </Button>
                 <Button
                     variant="contained"
                     onClick={() => {

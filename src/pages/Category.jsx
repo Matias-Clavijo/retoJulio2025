@@ -78,7 +78,7 @@ export default function Category() {
         const newResponse = await categoriesAPI.getCategories(page, rowsPerPage);
         if (newResponse.success) {
           const transformedCategories = newResponse.data.map(category => ({
-            nombre: category.name,
+            name: category.name,
             description: "-",
             parent_category: "-",
             products_count: category.productsCount,
@@ -109,7 +109,7 @@ export default function Category() {
     };
 
   const handleDelete = (category) => {
-    setSelectedCategory(category.original);
+    setSelectedCategory(category);
     setOpenDeleteDialog(true);
   };
 
@@ -119,21 +119,27 @@ export default function Category() {
   };
 
   const handleConfirmDelete = async () => {
-    try {
-      setLoading(true);
-      const response = await categoriesAPI.deleteCategory(selectedCategory.original.id);
-      if (response.success) {
-        setRefetch(prev => prev + 1);
-      } else {
-        setError(response.error || "Error al eliminar la categoría");
-      }
-    } catch {
-      setError("Error al conectar con el servidor");
-    } finally {
-      setLoading(false);
-      handleCloseDelete();
+  try {
+    setLoading(true);
+    const response = await categoriesAPI.deleteCategory(selectedCategory.original.id);
+    if (response.success) {
+      setRefetch(prev => prev + 1);
+    } else {
+      setError(response.error || "Error al eliminar la categoría");
     }
-  };
+  } catch (error) {
+    console.error("ERROR COMPLETO:", error);
+    if (error.response) {
+      console.error("DATA:", error.response.data);
+      console.error("STATUS:", error.response.status);
+      console.error("HEADERS:", error.response.headers);
+    }
+    setError("Error al conectar con el servidor");
+  } finally {
+    setLoading(false);
+    handleCloseDelete();
+  }
+};
 
   const handleView = (category) => {
     console.log("Viewing category:", category.original || category);

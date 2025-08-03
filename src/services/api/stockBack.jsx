@@ -42,7 +42,7 @@ apiClient.interceptors.response.use(
   }
 );
 
-const mockProducts = {
+const MOCK_PRODUCTS = {
   data: [
     {
       id: 1,
@@ -140,7 +140,7 @@ const mockProducts = {
   
   ;
 
-const mockBrands = [
+const MOCK_BRANDS = [
   {
     id: 1,
     name: "HP",
@@ -159,12 +159,12 @@ const mockBrands = [
   }
 ];
 
-const mockCategories = [
+const MOCK_CATEGORIES = [
   { id: 1, name: "Computing", productsCount: 3 },
   { id: 2, name: "Electronics", productsCount: 5 }
 ];
 
-const mockDeposits = [
+const MOCK_DEPOSITS = [
   {
     id: 1,
     name: "Central Warehouse",
@@ -183,28 +183,26 @@ const mockDeposits = [
   }
 ];
 
-const mockProviders = [
+const MOCK_PROVIDERS = [
   {
     id: 1,
-    type: "Persona",
-    firstName: "Juan",
-    lastName: "Pérez",
+    name: "Juan Pérez",
     phone: "+598 92 123 456",
     email: "juan@delta.com",
+    address: "Av. 18 de Julio 1234, Montevideo",
     associatedDate: "2006-09-30"
   },
   {
     id: 2,
-    type: "Empresa",
-    firstName: "TechCorp",
-    lastName: "S.A.",
+    name: "TechCorp S.A.",
     phone: "+598 91 987 654",
     email: "contacto@techcorp.com",
+    address: "World Trade Center, Montevideo",
     associatedDate: "2010-03-15"
   }
 ];
 
-const mockUsers = [
+const MOCK_USERS = [
   {
     id: 1,
     firstName: "Lucía",
@@ -214,7 +212,7 @@ const mockUsers = [
   }
 ];
 
-const mockSales = [
+const MOCK_SALES = [
   {
     id: 1,
     date: "2025-07-22",
@@ -287,7 +285,7 @@ const mockSales = [
   }
 ];
 
-const mockStockMovements = [
+const MOCK_STOCK_MOVEMENTS = [
   {
     id: 1,
     type: "IN",
@@ -518,14 +516,15 @@ export const categoriesAPI = {
 
   createCategory: async (categoryData) => {
     try {
-      const apiData = {
-        name: categoryData.nombre,
+      await new Promise(resolve => setTimeout(resolve, 500));
+      const newCategory = {
+        id: MOCK_CATEGORIES.length + 1,
+        ...categoryData,
+        productsCount: 0
       };
-
-      const response = await apiClient.post('/api/categories', apiData);
-      return { success: true, data: response.data };
-    } catch (error) {
-      console.log(error);
+      MOCK_CATEGORIES.push(newCategory);
+      return { success: true, data: newCategory };
+    } catch {
       return { success: false, error: "Error creating category" };
     }
   },
@@ -533,27 +532,29 @@ export const categoriesAPI = {
   // PUT /categories/{id}
   updateCategory: async (id, categoryData) => {
     try {
-      await new Promise(resolve => setTimeout(resolve, 500));
-      const index = mockCategories.findIndex(c => c.id === id);
-      if (index === -1) {
-        return { success: false, error: "Category not found" };
-      }
-      mockCategories[index] = { ...mockCategories[index], ...categoryData };
-      return { success: true, data: mockCategories[index] };
+      console.log(categoryData);
+      const apiData = {
+        name: categoryData.name
+      };
+      const response = await apiClient.put(`/api/categories/${id}`, apiData);
+      return { success: true, data: response.data };
     } catch (error) {
+      console.log(error)
       return { success: false, error: "Error updating category" };
     }
   },
 
   // DELETE /categories/{id}
   deleteCategory: async (id) => {
-    try {const response = await apiClient.delete(`/categories/${id}`);
+    try {
+      const response = await apiClient.delete(`/api/categories/${id}`);
       return { success: true, data: response.data };
     } catch (error) {
       console.log(error)
-      return { success: false, error: "Error deleting brand" };
+      return { success: false, error: "Error deleting category" };
     }
   }
+    
 };
 
 // DEPÓSITOS
@@ -565,7 +566,7 @@ export const depositsAPI = {
         console.log(response);
         return response.data;
       });
-    } catch (error) {
+    } catch {
       return { success: false, error: "Error fetching deposits" };
     }
   },
@@ -590,13 +591,13 @@ export const depositsAPI = {
   updateDeposit: async (id, depositData) => {
     try {
       await new Promise(resolve => setTimeout(resolve, 500));
-      const index = mockDeposits.findIndex(d => d.id === id);
+      const index = MOCK_DEPOSITS.findIndex(d => d.id === id);
       if (index === -1) {
         return { success: false, error: "Deposit not found" };
       }
-      mockDeposits[index] = { ...mockDeposits[index], ...depositData };
-      return { success: true, data: mockDeposits[index] };
-    } catch (error) {
+      MOCK_DEPOSITS[index] = { ...MOCK_DEPOSITS[index], ...depositData };
+      return { success: true, data: MOCK_DEPOSITS[index] };
+    } catch {
       return { success: false, error: "Error updating deposit" };
     }
   },
@@ -605,13 +606,13 @@ export const depositsAPI = {
   deleteDeposit: async (id) => {
     try {
       await new Promise(resolve => setTimeout(resolve, 500));
-      const index = mockDeposits.findIndex(d => d.id === id);
+      const index = MOCK_DEPOSITS.findIndex(d => d.id === id);
       if (index === -1) {
         return { success: false, error: "Deposit not found" };
       }
-      mockDeposits.splice(index, 1);
+      MOCK_DEPOSITS.splice(index, 1);
       return { success: true };
-    } catch (error) {
+    } catch {
       return { success: false, error: "Error deleting deposit" };
     }
   }
@@ -625,7 +626,7 @@ export const stockAPI = {
       await new Promise(resolve => setTimeout(resolve, 500));
       // Mock implementation - in real scenario would update stock count
       return { success: true, data: { depositId, productId, ...stockData } };
-    } catch (error) {
+    } catch {
       return { success: false, error: "Error updating stock" };
     }
   }
@@ -634,7 +635,7 @@ export const stockAPI = {
 // PROVEEDORES
 export const providersAPI = {
   // GET /api/providers
-  getProviders: async (page = 1, items = 10) => {
+  getProviders: async () => {
     try {
       return await apiClient.get('/api/providers').then(response => {
         console.log(response);
@@ -646,48 +647,52 @@ export const providersAPI = {
     }
   },
 
-  // POST /providers
+  // POST /api/providers
   createProvider: async (providerData) => {
     try {
-      await new Promise(resolve => setTimeout(resolve, 500));
-      const newProvider = {
-        id: mockProviders.length + 1,
-        ...providerData,
-        associatedDate: new Date().toISOString().split('T')[0]
+      const apiData = {
+        name: providerData.nombre,
+        phone: providerData.telefono,
+        email: providerData.email,
+        address: providerData.direccion
       };
-      mockProviders.push(newProvider);
-      return { success: true, data: newProvider };
+
+      console.log(apiData);
+
+      const response = await apiClient.post('/api/providers', apiData);
+      return { success: true, data: response.data };
     } catch (error) {
+      console.log("Error creating provider:", error);
       return { success: false, error: "Error creating provider" };
     }
   },
 
-  // PUT /providers/{id}
+  // PUT /api/providers/{id}
   updateProvider: async (id, providerData) => {
     try {
-      await new Promise(resolve => setTimeout(resolve, 500));
-      const index = mockProviders.findIndex(p => p.id === id);
-      if (index === -1) {
-        return { success: false, error: "Provider not found" };
-      }
-      mockProviders[index] = { ...mockProviders[index], ...providerData };
-      return { success: true, data: mockProviders[index] };
+      const apiData = {
+        name: providerData.nombre,
+        phone: providerData.telefono,
+        email: providerData.email,
+        address: providerData.direccion
+      };
+
+      console.log(apiData);
+      const response = await apiClient.put(`/api/providers/${id}`, apiData);
+      return { success: true, data: response.data };
     } catch (error) {
+      console.log("Error updating provider:", error);
       return { success: false, error: "Error updating provider" };
     }
   },
 
-  // DELETE /providers/{id}
+  // DELETE /api/providers/{id}
   deleteProvider: async (id) => {
     try {
-      await new Promise(resolve => setTimeout(resolve, 500));
-      const index = mockProviders.findIndex(p => p.id === id);
-      if (index === -1) {
-        return { success: false, error: "Provider not found" };
-      }
-      mockProviders.splice(index, 1);
-      return { success: true };
+      const response = await apiClient.delete(`/api/providers/${id}`);
+      return { success: true, data: response.data };
     } catch (error) {
+      console.log("Error deleting provider:", error);
       return { success: false, error: "Error deleting provider" };
     }
   }
@@ -699,12 +704,12 @@ export const usersAPI = {
   getUser: async (id) => {
     try {
       await new Promise(resolve => setTimeout(resolve, 500));
-      const user = mockUsers.find(u => u.id === id);
+      const user = MOCK_USERS.find(u => u.id === id);
       if (!user) {
         return { success: false, error: "User not found" };
       }
       return { success: true, data: user };
-    } catch (error) {
+    } catch {
       return { success: false, error: "Error fetching user" };
     }
   },
@@ -714,15 +719,15 @@ export const usersAPI = {
     try {
       await new Promise(resolve => setTimeout(resolve, 500));
       const newUser = {
-        id: mockUsers.length + 1,
+        id: MOCK_USERS.length + 1,
         firstName: userData.firstName,
         lastName: userData.lastName,
         email: userData.email,
         phone: userData.phone
       };
-      mockUsers.push(newUser);
+      MOCK_USERS.push(newUser);
       return { success: true, data: newUser };
-    } catch (error) {
+    } catch {
       return { success: false, error: "Error creating user" };
     }
   },
@@ -731,13 +736,13 @@ export const usersAPI = {
   updateUser: async (id, userData) => {
     try {
       await new Promise(resolve => setTimeout(resolve, 500));
-      const index = mockUsers.findIndex(u => u.id === id);
+      const index = MOCK_USERS.findIndex(u => u.id === id);
       if (index === -1) {
         return { success: false, error: "User not found" };
       }
-      mockUsers[index] = { ...mockUsers[index], ...userData };
-      return { success: true, data: mockUsers[index] };
-    } catch (error) {
+      MOCK_USERS[index] = { ...MOCK_USERS[index], ...userData };
+      return { success: true, data: MOCK_USERS[index] };
+    } catch {
       return { success: false, error: "Error updating user" };
     }
   }
@@ -749,7 +754,7 @@ export const salesAPI = {
   getSales: async (page = 1, items = 10) => {
     try {
       await new Promise(resolve => setTimeout(resolve, 500));
-      const response = createPaginatedResponse(mockSales, page, items);
+      const response = createPaginatedResponse(MOCK_SALES, page, items);
       response.total = 278912;
       response.currency = "USD";
       return response;
@@ -764,12 +769,12 @@ export const salesAPI = {
     try {
       await new Promise(resolve => setTimeout(resolve, 500));
       const newSale = {
-        id: mockSales.length + 1,
+        id: MOCK_SALES.length + 1,
         ...saleData
       };
-      mockSales.push(newSale);
+      MOCK_SALES.push(newSale);
       return { success: true, data: newSale };
-    } catch (error) {
+    } catch {
       return { success: false, error: "Error creating sale" };
     }
   },
@@ -778,13 +783,13 @@ export const salesAPI = {
   updateSale: async (id, saleData) => {
     try {
       await new Promise(resolve => setTimeout(resolve, 500));
-      const index = mockSales.findIndex(s => s.id === id);
+      const index = MOCK_SALES.findIndex(s => s.id === id);
       if (index === -1) {
         return { success: false, error: "Sale not found" };
       }
-      mockSales[index] = { ...mockSales[index], ...saleData };
-      return { success: true, data: mockSales[index] };
-    } catch (error) {
+      MOCK_SALES[index] = { ...MOCK_SALES[index], ...saleData };
+      return { success: true, data: MOCK_SALES[index] };
+    } catch {
       return { success: false, error: "Error updating sale" };
     }
   },
@@ -793,13 +798,13 @@ export const salesAPI = {
   deleteSale: async (id) => {
     try {
       await new Promise(resolve => setTimeout(resolve, 500));
-      const index = mockSales.findIndex(s => s.id === id);
+      const index = MOCK_SALES.findIndex(s => s.id === id);
       if (index === -1) {
         return { success: false, error: "Sale not found" };
       }
-      mockSales.splice(index, 1);
+      MOCK_SALES.splice(index, 1);
       return { success: true };
-    } catch (error) {
+    } catch {
       return { success: false, error: "Error deleting sale" };
     }
   }
@@ -807,79 +812,70 @@ export const salesAPI = {
 
 // MOVIMIENTOS DE STOCK
 export const stockMovementsAPI = {
-  // GET /stock/movements
-  getStockMovements: async (page = 1, items = 10) => {
+  // GET /api/stock/movements
+  getStockMovements: async () => {
     try {
-      await new Promise(resolve => setTimeout(resolve, 500));
-      return createPaginatedResponse(mockStockMovements, page, items);
+      const response = await apiClient.get(`/api/stock-movement`);
+      return response.data;
     } catch (error) {
+      console.log("Error fetching stock movements:", error);
       return { success: false, error: "Error fetching stock movements" };
     }
   },
 
-  // POST /stock/movements
+  // POST /api/stock/movements
   createStockMovement: async (movementData) => {
     try {
-      await new Promise(resolve => setTimeout(resolve, 500));
-      const newMovement = {
-        id: mockStockMovements.length + 1,
-        type: movementData.type.toUpperCase(),
-        product: mockProducts.find(p => p.id === movementData.productId) || { id: movementData.productId, name: "Unknown Product" },
-        deposit: mockDeposits.find(d => d.id === movementData.depositId) || { id: movementData.depositId, name: "Unknown Deposit" },
-        referenceId: movementData.referenceDepositId,
-        quantity: movementData.quantity,
-        date: new Date().toISOString(),
-        user: mockUsers[0] // Default user
+      const apiData = {
+        type: movementData.tipo === 'Entrada' ? 'ENTRY' : movementData.tipo === 'Transferencia' ? 'TRANSFER' : 'EXIT',
+        product: {
+          id: parseInt(movementData.productId)
+        },
+        originalDeposit: {
+          id: parseInt(movementData.depositId)
+        },
+        destinationDeposit: {
+          id: parseInt(movementData.depositId)
+        },
+        quantity: parseInt(movementData.cantidad)
       };
-      mockStockMovements.push(newMovement);
-      return { success: true, data: newMovement };
+
+      console.log("Creating stock movement:", apiData);
+      const response = await apiClient.post('/api/stock-movement', apiData);
+      return { success: true, data: response.data };
     } catch (error) {
+      console.log("Error creating stock movement:", error);
       return { success: false, error: "Error creating stock movement" };
     }
   },
 
-  // PUT /stock/movements/{id}
+  // PUT /api/stock/movements/{id}
   updateStockMovement: async (id, movementData) => {
     try {
-      await new Promise(resolve => setTimeout(resolve, 500));
-      const index = mockStockMovements.findIndex(m => m.id === id);
-      if (index === -1) {
-        return { success: false, error: "Stock movement not found" };
-      }
-      
-      const updatedMovement = {
-        ...mockStockMovements[index],
-        type: movementData.type?.toUpperCase() || mockStockMovements[index].type,
-        quantity: movementData.quantity || mockStockMovements[index].quantity,
-        referenceId: movementData.referenceDepositId || mockStockMovements[index].referenceId
+      const apiData = {
+        type: movementData.type?.toUpperCase(),
+        productId: movementData.productId,
+        depositId: movementData.depositId,
+        referenceDepositId: movementData.referenceDepositId,
+        quantity: parseInt(movementData.quantity)
       };
-      
-      if (movementData.productId) {
-        updatedMovement.product = mockProducts.find(p => p.id === movementData.productId) || updatedMovement.product;
-      }
-      
-      if (movementData.depositId) {
-        updatedMovement.deposit = mockDeposits.find(d => d.id === movementData.depositId) || updatedMovement.deposit;
-      }
-      
-      mockStockMovements[index] = updatedMovement;
-      return { success: true, data: updatedMovement };
+
+      console.log("Updating stock movement:", apiData);
+      const response = await apiClient.put(`/api/stock-movement/${id}`, apiData);
+      return { success: true, data: response.data };
     } catch (error) {
+      console.log("Error updating stock movement:", error);
       return { success: false, error: "Error updating stock movement" };
     }
   },
 
-  // DELETE /stock/movements/{id}
+  // DELETE /api/stock/movements/{id}
   deleteStockMovement: async (id) => {
     try {
-      await new Promise(resolve => setTimeout(resolve, 500));
-      const index = mockStockMovements.findIndex(m => m.id === id);
-      if (index === -1) {
-        return { success: false, error: "Stock movement not found" };
-      }
-      mockStockMovements.splice(index, 1);
-      return { success: true };
+      const response = await apiClient.delete(`/api/stock-movement/${id}`);
+      return { success: true, data: response.data };
     } catch (error) {
+      console.log("Error deleting stock movement:", error);
       return { success: false, error: "Error deleting stock movement" };
     }
   }
