@@ -263,7 +263,7 @@ export default function Products() {
         open={openDeleteDialog}
         onClose={handleCloseDelete}
         onConfirm={handleConfirmDelete}
-        title={`¿Estás seguro que deseas eliminar el producto "${selectedProduct?.producto}"?`}
+        title={`¿Estás seguro que deseas eliminar el producto "${selectedProduct?.name}"?`}
       />
 
       <DialogWatchProducts

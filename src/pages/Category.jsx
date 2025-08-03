@@ -109,7 +109,7 @@ export default function Category() {
     };
 
   const handleDelete = (category) => {
-    setSelectedCategory(category);
+    setSelectedCategory(category.original);
     setOpenDeleteDialog(true);
   };
 
@@ -121,7 +121,6 @@ export default function Category() {
   const handleConfirmDelete = async () => {
     try {
       setLoading(true);
-      console.log("ID a eliminar:", selectedCategory?.original?.id); 
       const response = await categoriesAPI.deleteCategory(selectedCategory.original.id);
       if (response.success) {
         setRefetch(prev => prev + 1);

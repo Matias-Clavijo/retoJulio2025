@@ -1,5 +1,12 @@
 import React from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { CssBaseline, GlobalStyles } from '@mui/material';
+
+// Context
+import { AuthProvider } from './contexts/AuthContext';
+import ProtectedRoute from './components/ProtectedRoute';
+
+// Pages
 import Home from './pages/Home';
 import About from './pages/About';
 import Login from './pages/Login';
@@ -15,21 +22,69 @@ import Proveedor from './pages/Proveedor';
 
 export default function App() {
   return (
+    <AuthProvider>
+      <CssBaseline />
+      <GlobalStyles styles={{ body: { backgroundColor: '#f8f9fa', margin: 0 } }} />
       <BrowserRouter>
         <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/about" element={<About />} />
+          {/* Rutas públicas */}
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<Signup />} />
-          <Route path="/category" element={<Category />} />
-          <Route path="/brands" element={<Brands />} />
-          <Route path="/products" element={<Products />} />
-          <Route path="/movements" element={<StockMovements />} />
-          <Route path="/warehouses" element={<Deposits />} />
-          <Route path="/sales" element={<Sales />} />
-          <Route path="/providers" element={<Proveedor />} />
+          <Route path="/about" element={<About />} />
+          
+          {/* Rutas protegidas */}
+          <Route path="/" element={
+            <ProtectedRoute>
+              <Home />
+            </ProtectedRoute>
+          } />
+          
+          <Route path="/category" element={
+            <ProtectedRoute>
+              <Category />
+            </ProtectedRoute>
+          } />
+          
+          <Route path="/brands" element={
+            <ProtectedRoute>
+              <Brands />
+            </ProtectedRoute>
+          } />
+          
+          <Route path="/products" element={
+            <ProtectedRoute>
+              <Products />
+            </ProtectedRoute>
+          } />
+          
+          <Route path="/movements" element={
+            <ProtectedRoute>
+              <StockMovements />
+            </ProtectedRoute>
+          } />
+          
+          <Route path="/warehouses" element={
+            <ProtectedRoute>
+              <Deposits />
+            </ProtectedRoute>
+          } />
+          
+          <Route path="/sales" element={
+            <ProtectedRoute>
+              <Sales />
+            </ProtectedRoute>
+          } />
+          
+          <Route path="/providers" element={
+            <ProtectedRoute>
+              <Proveedor />
+            </ProtectedRoute>
+          } />
+          
+          {/* Ruta 404 */}
           <Route path="*" element={<ErrorPage404 />} />
         </Routes>
       </BrowserRouter>
+    </AuthProvider>
   );
 }

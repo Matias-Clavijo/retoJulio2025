@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Warehouse } from "@mui/icons-material";
 import DataManagementPage from "../components/DataManagementPage";
-import EditarDeposito from "../components/DialogDeposito.jsx"; // para agregar depósitos
+import AgregarDeposito from "../components/DialogDeposito.jsx"; // para agregar depósitos
 import DialogEditDeposit from "../components/DialogEditDeposit.jsx"; // para editar depósitos
 import { depositsAPI } from "../services/api/stockBack";
 import Eliminar from "../components/Eliminar";
@@ -18,6 +18,7 @@ export default function Deposits() {
   const [selectedDeposit, setSelectedDeposit] = useState(null);
   const [depositoSeleccionado, setDepositoSeleccionado] = useState(null);
   const [openVer, setOpenVer] = useState(false);
+  const [refetch, setRefetch] = useState(0);
 
   // Estados nuevos para editar
   const [openEditar, setOpenEditar] = useState(false);
@@ -51,7 +52,7 @@ export default function Deposits() {
     };
 
     fetchDeposits();
-  }, [page, rowsPerPage]);
+  }, [page, rowsPerPage, refetch]);
 
   useEffect(() => {
     const fetchAllDeposits = async () => {
@@ -119,6 +120,15 @@ export default function Deposits() {
       setLoading(false);
     }
   };
+
+    const handleAddButtonClick = async (depositData) => {
+      const response = await depositsAPI.createDeposit(depositData);
+      if (!response.success) {
+        setError(response.error);
+      } else {
+        setRefetch(prev => prev + 1);
+      }
+    };
 
   const handleDelete = (deposit) => {
     setSelectedDeposit(deposit);
@@ -189,7 +199,7 @@ export default function Deposits() {
         onView={handleView}
         onPageChange={handlePageChange}
         onRowsPerPageChange={handleRowsPerPageChange}
-        addDialog={<EditarDeposito />}
+        addDialog={<AgregarDeposito onAddButtonClick= {handleAddButtonClick}/>}
         loading={loading}
         error={error}
       />
@@ -213,6 +223,7 @@ export default function Deposits() {
         deposito={depositoEditar}
         onSave={handleGuardarEdicion}
       />
+      
     </>
   );
 }

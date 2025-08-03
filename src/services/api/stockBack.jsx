@@ -1,18 +1,46 @@
 import axios from "axios";
 
-// En desarrollo usa el proxy de Vite (/api), en producción usa la URL completa
+// En desarrollo usa el proxy de Vite, en producción usa la URL completa
 const API_BASE_URL = import.meta.env.DEV 
-  ? "/api" 
-  : "https://back-2025-gestion-stock-ventas.onrender.com/api"
+  ? "" 
+  : "https://back-2025-gestion-stock-ventas.onrender.com"
 
 const apiClient = axios.create({
   baseURL: API_BASE_URL,
   headers: {
     'Content-Type': 'application/json',
-    'Authorization': 'Bearer eyJhbGciOiJSUzI1NiJ9.eyJzdWIiOiIxIiwiZXhwIjoxNzU0MDY1NDgzLCJpYXQiOjE3NTQwNTEwODN9.BhlJBRDRlUPr1zkMEi6jEwV9bPY1Y45ODueaaHBG399oQnNVkbBw3HpK0JOuwTEKrbeRCBSMtaF6xr0o69rthUhi7xJUYJPuhyGfMrnkRxrKFgFoLZDQfcptzz-0nVdrWp9pmP0vnH4y3Lx6JHzmAmZGhb8TO_jlrTltF0WvfnpJ2n7okzizgNSY5pgZjgR1-1o4udhrCSVrdVFbzbkvPgjP9bM9QWCFyRcq4-OuLPrcPmviEDxrdw_Y5U2Ay7XrSlCTiq8zWJvLV-iJn4WNuVCGMx15ETlAUpt3-2X4SVKiEu5-6v07Bnfr0cpPd6fSreJuNYj2Br3tCvOmbMCbdg',
   },
   withCredentials: false,
 });
+
+// Interceptor para agregar token automáticamente a todas las peticiones
+apiClient.interceptors.request.use(
+  (config) => {
+    const token = localStorage.getItem('token');
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
+    return config;
+  },
+  (error) => Promise.reject(error)
+);
+
+// Interceptor para manejar respuestas y tokens expirados
+apiClient.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    if (error.response?.status === 401) {
+      // Token expirado o inválido
+      localStorage.removeItem('token');
+      localStorage.removeItem('user');
+      // Redirigir al login solo si no estamos ya en login
+      if (window.location.pathname !== '/login') {
+        window.location.href = '/login';
+      }
+    }
+    return Promise.reject(error);
+  }
+);
 
 const mockProducts = {
   data: [
@@ -327,7 +355,7 @@ const createPaginatedResponse = (data, page = 1, items = 10) => {
 export const productsAPI = {
   getProducts: async () => {
     try {
-      return await apiClient.get('/products').then(response => {
+      return await apiClient.get('/api/products').then(response => {
         console.log(response);
         return response.data;
       });
@@ -337,7 +365,7 @@ export const productsAPI = {
     }
   },
 
-  // POST /products
+  // POST /api/products
   createProduct: async (productData) => {
     try {
       const apiData = {
@@ -360,7 +388,7 @@ export const productsAPI = {
       };
       console.log(apiData);
 
-      const response = await apiClient.post('/products', apiData);
+      const response = await apiClient.post('/api/products', apiData);
       return { success: true, data: response.data };
     } catch (error) {
       console.log("Error creating product:", error);
@@ -368,7 +396,7 @@ export const productsAPI = {
     }
   },
 
-  // PUT /products/{id}
+  // PUT /api/products/{id}
   updateProduct: async (id, productData) => {
     try {
       console.log(productData);
@@ -393,7 +421,7 @@ export const productsAPI = {
 
       console.log(apiData);
 
-      const response = await apiClient.put(`/products/${id}`, apiData);
+      const response = await apiClient.put(`/api/products/${id}`, apiData);
       return { success: true, data: response.data };
     } catch (error) {
       console.log("Error updating product:", error);
@@ -401,22 +429,23 @@ export const productsAPI = {
     }
   },
 
-  // DELETE /products/{id}
+  // DELETE /api/products/{id}
   deleteProduct: async (id) => {
     try {
-      const response = await apiClient.delete(`/products/${id}`);
+      const response = await apiClient.delete(`/api/products/${id}`);
       return { success: true, data: response.data };
     } catch (error) {
+      console.log(error);
       return { success: false, error: "Error deleting product" };
     }
   }
 };
 
 export const brandsAPI = {
-  // GET /brands
+  // GET /api/brands
   getBrands: async () => {
     try {
-      return await apiClient.get('/brands').then(response => {
+      return await apiClient.get('/api/brands').then(response => {
         console.log(response);
         return response.data;
       });
@@ -426,7 +455,7 @@ export const brandsAPI = {
     }
   },
 
-  // POST /brands
+  // POST /api/brands
   createBrand: async (brandData) => {
     try {
       const apiData = {
@@ -435,7 +464,7 @@ export const brandsAPI = {
         country: brandData.pais
       };
 
-      const response = await apiClient.post('/brands', apiData);
+      const response = await apiClient.post('/api/brands', apiData);
       return { success: true, data: response.data };
     } catch (error) {
       console.log(error);
@@ -443,7 +472,7 @@ export const brandsAPI = {
     }
   },
 
-  // PUT /brands/{id}
+  // PUT /api/brands/{id}
   updateBrand: async (id, brandData) => {
     try {
       console.log(brandData);
@@ -454,7 +483,7 @@ export const brandsAPI = {
       };
 
 
-      const response = await apiClient.put(`/brands/${id}`, apiData);
+      const response = await apiClient.put(`/api/brands/${id}`, apiData);
       return { success: true, data: response.data };
     } catch (error) {
       console.log(error)
@@ -462,10 +491,10 @@ export const brandsAPI = {
     }
   },
 
-  // DELETE /brands/{id}
+  // DELETE /api/brands/{id}
   deleteBrand: async (id) => {
     try {
-      const response = await apiClient.delete(`/brands/${id}`);
+      const response = await apiClient.delete(`/api/brands/${id}`);
       return { success: true, data: response.data };
     } catch (error) {
       console.log(error)
@@ -477,7 +506,7 @@ export const brandsAPI = {
 export const categoriesAPI = {
   getCategories: async () => {
     try {
-      return await apiClient.get('/categories').then(response => {
+      return await apiClient.get('/api/categories').then(response => {
         console.log(response);
         return response.data;
       });
@@ -493,7 +522,7 @@ export const categoriesAPI = {
         name: categoryData.nombre,
       };
 
-      const response = await apiClient.post('/categories', apiData);
+      const response = await apiClient.post('/api/categories', apiData);
       return { success: true, data: response.data };
     } catch (error) {
       console.log(error);
@@ -529,10 +558,10 @@ export const categoriesAPI = {
 
 // DEPÓSITOS
 export const depositsAPI = {
-  // GET /deposits
+  // GET /api/deposits
   getDeposits: async () => {
     try {
-      return await apiClient.get('/deposits').then(response => {
+      return await apiClient.get('/api/deposits').then(response => {
         console.log(response);
         return response.data;
       });
@@ -544,16 +573,15 @@ export const depositsAPI = {
   // POST /deposits
   createDeposit: async (depositData) => {
     try {
-      await new Promise(resolve => setTimeout(resolve, 500));
-      const newDeposit = {
-        id: mockDeposits.length + 1,
-        ...depositData,
-        productCount: 0,
-        associatedDate: new Date().toISOString().split('T')[0]
+      const apiData = {
+        name: depositData.nombre,
+        description: depositData.descripcion, 
+        location: depositData.ubicacion
       };
-      mockDeposits.push(newDeposit);
-      return { success: true, data: newDeposit };
+      const response = await apiClient.post("/api/deposits", apiData);
+      return {success: true, data: response.data};
     } catch (error) {
+      console.log(error);
       return { success: false, error: "Error creating deposit" };
     }
   },
@@ -605,10 +633,10 @@ export const stockAPI = {
 
 // PROVEEDORES
 export const providersAPI = {
-  // GET /providers
+  // GET /api/providers
   getProviders: async (page = 1, items = 10) => {
     try {
-      return await apiClient.get('/providers').then(response => {
+      return await apiClient.get('/api/providers').then(response => {
         console.log(response);
         return response.data;
       })
@@ -857,7 +885,50 @@ export const stockMovementsAPI = {
   }
 };
 
+// AUTENTICACIÓN
+export const authAPI = {
+  // POST /auth/register
+  register: async (userData) => {
+    try {
+      const apiData = {
+        firstName: userData.firstName,
+        lastName: userData.lastName,
+        email: userData.email,
+        password: userData.password
+      };
+
+      const response = await apiClient.post('/auth/register', apiData);
+      return { success: true, data: response.data };
+    } catch (error) {
+      console.log("Error registering user:", error);
+      return { 
+        success: false, 
+        error: error.response?.data?.message || "Error creating user account" 
+      };
+    }
+  },
+
+  login: async (credentials) => {
+    try {
+      const apiData = {
+        email: credentials.email,
+        password: credentials.password
+      };
+
+      const response = await apiClient.post('/auth/login', apiData);
+      return response
+    } catch (error) {
+      console.log("Error logging in:", error);
+      return { 
+        success: false, 
+        error: error.response?.data?.message || "Error logging in" 
+      };
+    }
+  }
+};
+
 export default {
+  authAPI,
   productsAPI,
   brandsAPI,
   categoriesAPI,
