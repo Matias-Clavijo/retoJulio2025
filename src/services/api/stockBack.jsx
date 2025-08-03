@@ -532,14 +532,14 @@ export const categoriesAPI = {
   // PUT /categories/{id}
   updateCategory: async (id, categoryData) => {
     try {
-      await new Promise(resolve => setTimeout(resolve, 500));
-      const index = MOCK_CATEGORIES.findIndex(c => c.id === id);
-      if (index === -1) {
-        return { success: false, error: "Category not found" };
-      }
-      MOCK_CATEGORIES[index] = { ...MOCK_CATEGORIES[index], ...categoryData };
-      return { success: true, data: MOCK_CATEGORIES[index] };
-    } catch {
+      console.log(categoryData);
+      const apiData = {
+        name: categoryData.name
+      };
+      const response = await apiClient.put(`/api/categories/${id}`, apiData);
+      return { success: true, data: response.data };
+    } catch (error) {
+      console.log(error)
       return { success: false, error: "Error updating category" };
     }
   },
@@ -547,17 +547,14 @@ export const categoriesAPI = {
   // DELETE /categories/{id}
   deleteCategory: async (id) => {
     try {
-      await new Promise(resolve => setTimeout(resolve, 500));
-      const index = MOCK_CATEGORIES.findIndex(c => c.id === id);
-      if (index === -1) {
-        return { success: false, error: "Category not found" };
-      }
-      MOCK_CATEGORIES.splice(index, 1);
-      return { success: true };
-    } catch {
+      const response = await apiClient.delete(`/api/categories/${id}`);
+      return { success: true, data: response.data };
+    } catch (error) {
+      console.log(error)
       return { success: false, error: "Error deleting category" };
     }
   }
+    
 };
 
 // DEPÓSITOS
@@ -577,16 +574,15 @@ export const depositsAPI = {
   // POST /deposits
   createDeposit: async (depositData) => {
     try {
-      await new Promise(resolve => setTimeout(resolve, 500));
-      const newDeposit = {
-        id: MOCK_DEPOSITS.length + 1,
-        ...depositData,
-        productCount: 0,
-        associatedDate: new Date().toISOString().split('T')[0]
+      const apiData = {
+        name: depositData.nombre,
+        description: depositData.descripcion, 
+        location: depositData.ubicacion
       };
-      MOCK_DEPOSITS.push(newDeposit);
-      return { success: true, data: newDeposit };
-    } catch {
+      const response = await apiClient.post("/api/deposits", apiData);
+      return {success: true, data: response.data};
+    } catch (error) {
+      console.log(error);
       return { success: false, error: "Error creating deposit" };
     }
   },

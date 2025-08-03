@@ -18,15 +18,15 @@ import ConfirmDialog from '../components/ConfirmDialog'; // Ajustá si tu ruta e
 const primaryColor = '#0B2240';  // Azul del logo
 const accentColor = '#F5C518';   // Amarillo del logo
 
-const EditarDeposito = ({ open, onClose }) => {
+const AgregarDeposito = ({ open, onClose, onAddButtonClick}) => {
     const [nombre, setNombre] = useState('');
     const [descripcion, setDescripcion] = useState('');
     const [ubicacion, setUbicacion] = useState('Montevideo, Uruguay');
     const [showConfirm, setShowConfirm] = useState(false);
 
     const handleSubmit = () => {
-        const depositoEditado = { nombre, descripcion, ubicacion };
-        console.log('Depósito editado:', depositoEditado);
+        const nuevoDeposito = { nombre, descripcion, ubicacion };
+        onAddButtonClick(nuevoDeposito)
         onClose();
     };
 
@@ -136,4 +136,4 @@ const EditarDeposito = ({ open, onClose }) => {
     );
 };
 
-export default EditarDeposito;
+export default AgregarDeposito;

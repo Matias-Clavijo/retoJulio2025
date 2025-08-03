@@ -14,6 +14,8 @@ export default function Category() {
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState(null);
+  const [refetch, setRefetch] = useState(0);
+  
 
   // Estado para editar
   const [openEditDialog, setOpenEditDialog] = useState(false);
@@ -47,7 +49,7 @@ export default function Category() {
     };
 
     fetchCategories();
-  }, [page, rowsPerPage]);
+  }, [page, rowsPerPage, refetch]);
 
   const columns = [
     { id: "name", label: "Nombre", align: "left" },
@@ -97,6 +99,15 @@ export default function Category() {
     }
   };
 
+  const handleAddButtonClick = async (categoryData) => {
+      const response = await categoriesAPI.createCategory(categoryData);
+      if (!response.success) {
+        setError(response.error);
+      } else {
+        setRefetch(prev => prev + 1);
+      }
+    };
+
   const handleDelete = (category) => {
     setSelectedCategory(category);
     setOpenDeleteDialog(true);
@@ -104,36 +115,31 @@ export default function Category() {
 
   const handleCloseDelete = () => {
     setOpenDeleteDialog(false);
+    setSelectedCategory(null);
   };
 
   const handleConfirmDelete = async () => {
-    try {
-      setLoading(true);
-      const response = await categoriesAPI.deleteCategory(selectedCategory.original.id);
-      if (response.success) {
-        const newResponse = await categoriesAPI.getCategories(page, rowsPerPage);
-        if (newResponse.success) {
-          const transformedCategories = newResponse.data.map(category => ({
-            name: category.name,
-            description: "-",
-            parent_category: "-",
-            products_count: category.productsCount,
-            status: "Activo",
-            created_at: new Date().toLocaleDateString(),
-            original: category
-          }));
-          setCategories(transformedCategories);
-        }
-      } else {
-        setError(response.error || "Error al eliminar la categoría");
-      }
-    } catch {
-      setError("Error al conectar con el servidor");
-    } finally {
-      setLoading(false);
-      handleCloseDelete();
+  try {
+    setLoading(true);
+    const response = await categoriesAPI.deleteCategory(selectedCategory.original.id);
+    if (response.success) {
+      setRefetch(prev => prev + 1);
+    } else {
+      setError(response.error || "Error al eliminar la categoría");
     }
-  };
+  } catch (error) {
+    console.error("ERROR COMPLETO:", error);
+    if (error.response) {
+      console.error("DATA:", error.response.data);
+      console.error("STATUS:", error.response.status);
+      console.error("HEADERS:", error.response.headers);
+    }
+    setError("Error al conectar con el servidor");
+  } finally {
+    setLoading(false);
+    handleCloseDelete();
+  }
+};
 
   const handleView = (category) => {
     console.log("Viewing category:", category.original || category);
@@ -165,7 +171,7 @@ export default function Category() {
         onView={handleView}
         onPageChange={handlePageChange}
         onRowsPerPageChange={handleRowsPerPageChange}
-        addDialog={<AgregarCategoría />}
+        addDialog={<AgregarCategoría onAddButtonClick={handleAddButtonClick}/>}
         loading={loading}
         error={error}
       />
@@ -174,7 +180,8 @@ export default function Category() {
         open={openDeleteDialog}
         onClose={handleCloseDelete}
         onConfirm={handleConfirmDelete}
-        title={`¿Estás seguro que deseas eliminar la categoría "${selectedCategory?.name}"?`}
+        title={`¿Estás seguro que deseas eliminar la categoría "${selectedCategory?.nombre}"?`}
+
       />
 
       <DialogEditCategory
