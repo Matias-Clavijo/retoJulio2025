@@ -33,7 +33,7 @@ const ConfirmDialog = ({ open, onClose, onConfirm, title, message }) => {
                     }}
                     variant="outlined"
                 >
-                    Cancelar
+                    CANCELAR
                 </Button>
                 <Button
                     variant="contained"
