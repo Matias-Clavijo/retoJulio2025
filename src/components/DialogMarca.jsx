@@ -18,7 +18,7 @@ import ConfirmDialog from '../components/ConfirmDialog'; // Ajustá si es necesa
 const primaryColor = '#0B2240';
 const accentColor = '#F5C518';
 
-const AgregarMarca = ({ open, onClose, onAddButtonClick, brand }) => {
+const AgregarMarca = ({ open, onClose, onAddButtonClick, brand, buttonText, title }) => {
     const [nombre, setNombre] = useState('');
     const [descripcion, setDescripcion] = useState('');
     const [pais, setPais] = useState('UY');
@@ -34,7 +34,7 @@ const AgregarMarca = ({ open, onClose, onAddButtonClick, brand }) => {
         if (brand) {
             setNombre(brand?.name || '');
             setDescripcion(brand?.description || '');
-            setPais(brand?.country || 'UY');
+            setPais(brand?.country || '');
         }
     }, [brand]);
 
@@ -66,7 +66,7 @@ const AgregarMarca = ({ open, onClose, onAddButtonClick, brand }) => {
                         borderTopRightRadius: '4px'
                     }}
                 >
-                    Agregar marca
+                    {title}
                     <IconButton
                         aria-label="close"
                         onClick={onClose}
@@ -128,7 +128,7 @@ const AgregarMarca = ({ open, onClose, onAddButtonClick, brand }) => {
                             }
                         }}
                     >
-                        AGREGAR MARCA
+                        {buttonText}
                     </Button>
                 </DialogActions>
             </Dialog>
@@ -137,8 +137,8 @@ const AgregarMarca = ({ open, onClose, onAddButtonClick, brand }) => {
                 open={showConfirm}
                 onClose={() => setShowConfirm(false)}
                 onConfirm={handleSubmit}
-                title="Confirmar Marca"
-                message="¿Querés guardar esta marca en el sistema?"
+                title={brand ? "Confirmar cambios" : "Confirmar marca"}
+                message={brand ? "¿Querés guardar los cambios en esta marca?" : "¿Querés agregar esta marca en el sistema?"}
             />
         </>
     );

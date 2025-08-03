@@ -32,7 +32,7 @@ const currencies = [
     { code: 'ARG', label: 'ARS' },
 ];
 
-export default function AgregarProductoDialog({ open, onClose, onAddButtonClick, product }) {
+export default function AgregarProductoDialog({ open, onClose, onAddButtonClick, product, buttonText, title }) {
     const [nombre, setNombre] = useState(product?.name || '');
     const [descripcion, setDescripcion] = useState(product?.description || '');
     const [marca, setMarca] = useState(product?.brand?.id || '');
@@ -126,7 +126,7 @@ export default function AgregarProductoDialog({ open, onClose, onAddButtonClick,
         <>
             <Dialog open={open} onClose={onClose} fullWidth maxWidth="md">
                 <Box sx={{ backgroundColor: primaryColor, color: 'white', fontWeight: 'bold', px: 2, py: 1.5, textAlign: 'center', fontSize: '1rem', letterSpacing: 1, textTransform: 'uppercase', position: 'relative', borderTopLeftRadius: '4px', borderTopRightRadius: '4px' }}>
-                    Agregar producto
+                    {title}
                     <IconButton aria-label="close" onClick={onClose} sx={{ position: 'absolute', top: 8, right: 8, color: 'white' }}>
                         <CloseIcon />
                     </IconButton>
@@ -260,7 +260,7 @@ export default function AgregarProductoDialog({ open, onClose, onAddButtonClick,
                             }
                         }}
                     >
-                        AGREGAR PRODUCTO
+                        {buttonText}
                     </Button>
                 </DialogActions>
             </Dialog>
@@ -269,8 +269,8 @@ export default function AgregarProductoDialog({ open, onClose, onAddButtonClick,
                 open={showConfirm}
                 onClose={() => setShowConfirm(false)}
                 onConfirm={handleAgregar}
-                title="Confirmar Producto"
-                message="¿Querés agregar este producto al sistema?"
+                title={product ? "Confirmar cambios" : "Confirmar producto"}
+                message={product ? "¿Querés guardar los cambios en este producto?" : "¿Querés agregar este producto al sistema?"}
             />
         </>
     );

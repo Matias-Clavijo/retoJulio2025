@@ -159,7 +159,7 @@ export default function Brands() {
         onDelete={handleDelete}
         onPageChange={handlePageChange}
         onRowsPerPageChange={handleRowsPerPageChange}
-        addDialog={<AgregarMarca onAddButtonClick={handleAddButtonClick} />}
+        addDialog={<AgregarMarca buttonText="Agregar marca" title="Agregar marca" onAddButtonClick={handleAddButtonClick} />}
         loading={loading}
         error={error}
       />
@@ -171,6 +171,8 @@ export default function Brands() {
       />
       <AgregarMarca
         open={openEditDialog}
+        buttonText={'Guardar cambios'}
+        title={'Editar marca'}
         onClose={handleCloseEdit}
         brand={brandToEdit}
         onAddButtonClick={handleSaveEdit}

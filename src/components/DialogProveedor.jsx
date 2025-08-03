@@ -18,6 +18,7 @@ const AgregarProveedorDialog = ({ open, onClose, onSave, proveedorEditar }) => {
     const [nombre, setNombre] = useState('');
     const [telefono, setTelefono] = useState('');
     const [email, setEmail] = useState('');
+    const [direccion, setDireccion] = useState('');
     const [showConfirm, setShowConfirm] = useState(false);
 
     useEffect(() => {
@@ -37,7 +38,8 @@ const AgregarProveedorDialog = ({ open, onClose, onSave, proveedorEditar }) => {
             id: proveedorEditar?.id,
             nombre,
             telefono,
-            email
+            email,
+            direccion
         };
         onSave(nuevoProveedor);
         onClose();
@@ -110,6 +112,14 @@ const AgregarProveedorDialog = ({ open, onClose, onSave, proveedorEditar }) => {
                     variant="outlined"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
+                />
+                <TextField
+                    margin="dense"
+                    label="Dirección"
+                    fullWidth
+                    variant="outlined"
+                    value={direccion}
+                    onChange={(e) => setDireccion(e.target.value)}
                 />
             </DialogContent>
 

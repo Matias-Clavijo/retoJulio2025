@@ -254,7 +254,7 @@ export default function Products() {
         onView={handleView}
         onPageChange={handlePageChange}
         onRowsPerPageChange={handleRowsPerPageChange}
-        addDialog={<AgregarProductoDialog onAddButtonClick={handleAddButtonClick} />}
+        addDialog={<AgregarProductoDialog buttonText="Agregar producto" title="Agregar producto" onAddButtonClick={handleAddButtonClick} />}
         loading={loading}
         error={error}
       />
@@ -274,6 +274,8 @@ export default function Products() {
 
       <AgregarProductoDialog
         onAddButtonClick={handleSaveEdit}
+        buttonText={productoEditar ? 'Guardar cambios' : 'Agregar producto'}
+        title={productoEditar ? 'Editar producto' : 'Agregar producto'}
         open={openEditar}
         onClose={() => setOpenEditar(false)}
         product={productoEditar}
