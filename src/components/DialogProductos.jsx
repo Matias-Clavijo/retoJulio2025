@@ -163,8 +163,8 @@ export default function AgregarProductoDialog({ open, onClose, onAddButtonClick,
                     </FormControl>
 
                     {/* Precios */}
-                    <Box display="flex" gap={2} mt={2}>
-                        <FormControl margin="dense" sx={{ width: '30%' }}>
+                    <Box display="flex" gap={2} flexDirection={{ xs: 'column', sm: 'row' }} mt={2}>
+                        <FormControl margin="dense" sx={{ width: { xs: '100%', sm: '30%' } }}>
                             <InputLabel>Moneda</InputLabel>
                             <Select value={moneda} onChange={(e) => setMoneda(e.target.value)} label="Moneda">
                                 {currencies.map(opt => (
