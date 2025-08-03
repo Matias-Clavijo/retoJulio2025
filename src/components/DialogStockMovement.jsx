@@ -17,7 +17,7 @@ import {
 import CloseIcon from '@mui/icons-material/Close';
 import ConfirmDialog from '../components/ConfirmDialog'; // ajustá la ruta si es necesario
 
-const AgregarStock = ({ open, onClose }) => {
+const AgregarStock = ({ open, onClose, onSave }) => {
     const [producto, setProducto] = useState('');
     const [deposito, setDeposito] = useState('');
     const [tipo, setTipo] = useState('');
@@ -28,16 +28,35 @@ const AgregarStock = ({ open, onClose }) => {
     const primaryColor = '#0B2240';
     const accentColor = '#F5C518';
 
-    const handleSubmit = () => {
+    const handleSubmit = async () => {
+        if (!producto || !deposito || !tipo || !cantidad) {
+            alert('Por favor completa todos los campos requeridos');
+            return;
+        }
+
         const nuevoStock = {
-            producto,
-            deposito,
-            tipo,
-            cantidad,
-            ...(tipo === 'Transferencia' && { depositoDestino })
+            productId: parseInt(producto), // Convert to ID format expected by API
+            depositId: parseInt(deposito), // Convert to ID format expected by API
+            tipo: tipo, // 'Entrada' or 'Salida'
+            cantidad: parseInt(cantidad),
+            ...(tipo === 'Transferencia' && { referenceDepositId: parseInt(depositoDestino) })
         };
-        console.log('Stock agregado:', nuevoStock);
-        onClose(); // Cierra el modal principal
+
+        try {
+            if (onSave) {
+                await onSave(nuevoStock);
+            }
+            // Reset form
+            setProducto('');
+            setDeposito('');
+            setTipo('');
+            setCantidad('');
+            setDepositoDestino('');
+            setShowConfirm(false);
+            onClose(); // Close the modal
+        } catch (error) {
+            console.error('Error saving stock movement:', error);
+        }
     };
 
     return (
@@ -79,8 +98,8 @@ const AgregarStock = ({ open, onClose }) => {
                             label="Producto"
                             onChange={(e) => setProducto(e.target.value)}
                         >
-                            <MenuItem value="Producto A (BADA)">Producto A (BADA)</MenuItem>
-                            <MenuItem value="Producto B">Producto B</MenuItem>
+                            <MenuItem value={1}>HP Notebook</MenuItem>
+                            <MenuItem value={2}>Dell Laptop</MenuItem>
                         </Select>
                     </FormControl>
 
@@ -91,8 +110,8 @@ const AgregarStock = ({ open, onClose }) => {
                             label="Depósito"
                             onChange={(e) => setDeposito(e.target.value)}
                         >
-                            <MenuItem value="Depósito 1">Depósito 1</MenuItem>
-                            <MenuItem value="Depósito 2">Depósito 2</MenuItem>
+                            <MenuItem value={1}>Central Warehouse</MenuItem>
+                            <MenuItem value={2}>Depósito Norte</MenuItem>
                         </Select>
                     </FormControl>
 
@@ -117,8 +136,8 @@ const AgregarStock = ({ open, onClose }) => {
                                 label="Depósito destino"
                                 onChange={(e) => setDepositoDestino(e.target.value)}
                             >
-                                <MenuItem value="Depósito 1">Depósito 1</MenuItem>
-                                <MenuItem value="Depósito 2">Depósito 2</MenuItem>
+                                <MenuItem value={1}>Central Warehouse</MenuItem>
+                                <MenuItem value={2}>Depósito Norte</MenuItem>
                             </Select>
                         </FormControl>
                     )}
@@ -130,6 +149,7 @@ const AgregarStock = ({ open, onClose }) => {
                         type="number"
                         value={cantidad}
                         onChange={(e) => setCantidad(e.target.value)}
+                        inputProps={{ min: 1 }}
                     />
                 </DialogContent>
 
