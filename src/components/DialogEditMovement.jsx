@@ -205,6 +205,7 @@ const DialogEditMovement = ({ open, onClose, movimiento, onSubmit }) => {
           variant="contained"
           fullWidth
           sx={{
+            
             backgroundColor: accentColor,
             color: 'black',
             fontWeight: 'bold',

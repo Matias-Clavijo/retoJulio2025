@@ -910,7 +910,7 @@ export const stockMovementsAPI = {
         product: {
           id: parseInt(movementData.productId)
         },
-        originalDeposit: {
+        originDeposit: {
           id: parseInt(movementData.depositId)
         },
         destinationDeposit: {
@@ -932,13 +932,19 @@ export const stockMovementsAPI = {
   updateStockMovement: async (id, movementData) => {
     try {
       const apiData = {
-        type: movementData.type?.toUpperCase(),
-        productId: movementData.productId,
-        depositId: movementData.depositId,
-        referenceDepositId: movementData.referenceDepositId,
-        quantity: parseInt(movementData.quantity)
+        type: movementData.tipo === 'Entrada' ? 'ENTRY' : movementData.tipo === 'Transferencia' ? 'TRANSFER' : 'EXIT',
+        product: {
+          id: parseInt(movementData.productId)
+        },
+        originDeposit: {
+          id: parseInt(movementData.depositId)
+        },
+        destinationDeposit: {
+          id: parseInt(movementData.depositId)
+        },
+        quantity: parseInt(movementData.cantidad)
       };
-
+    
       console.log("Updating stock movement:", apiData);
       const response = await apiClient.put(`/api/stock-movement/${id}`, apiData);
       return { success: true, data: response.data };
