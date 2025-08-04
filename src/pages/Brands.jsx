@@ -5,8 +5,11 @@ import AgregarMarca from "../components/DialogMarca.jsx";
 import Eliminar from "../components/Eliminar";
 import DialogEditBrand from "../components/DialogEditBrand.jsx";  // <-- Importa el nuevo componente
 import { brandsAPI } from "../services/api/stockBack";
+import { useNotification } from "../hooks/useNotification";
 
 export default function Brands() {
+  const { showError, showSuccess } = useNotification();
+  
   const [brands, setBrands] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -52,7 +55,7 @@ export default function Brands() {
   const columns = [
     { id: "nombre", label: "Nombre", align: "left" },
     { id: "description", label: "Descripcion", align: "left" },
-    { id: "country", label: "Pais de origen", align: "left" },
+    { id: "country", label: "Pais de origen", align: "left", format: (value) => `📍 ${value || "N/A"}` },
     {
       id: "products_associated",
       label: "Productos Asociados",
@@ -64,11 +67,18 @@ export default function Brands() {
   ];
 
   const handleAddButtonClick = async (brandData) => {
-    const response = await brandsAPI.createBrand(brandData);
-    if (!response.success) {
-      setError(response.error);
-    } else {
-      setRefetch(prev => prev + 1);
+    try {
+      const response = await brandsAPI.createBrand(brandData);
+      if (response.success) {
+        setRefetch(prev => prev + 1);
+        showSuccess("Marca agregada exitosamente");
+      } else {
+        setError(response.error);
+        showError("Error al agregar la marca");
+      }
+    } catch {
+      setError("Error al conectar con el servidor");
+      showError("Error al conectar con el servidor");
     }
   };
 
@@ -84,7 +94,6 @@ export default function Brands() {
 
   const handleCloseDelete = () => {
     setOpenDeleteDialog(false);
-    setSelectedBrand(null);
   };
 
   const handleConfirmDelete = async () => {
@@ -93,11 +102,14 @@ export default function Brands() {
       const response = await brandsAPI.deleteBrand(selectedBrand.original.id);
       if (response.success) {
         setRefetch(prev => prev + 1);
+        showSuccess("Marca eliminada exitosamente");
       } else {
         setError(response.error || "Error al eliminar la marca");
+        showError("Error al eliminar la marca");
       }
     } catch {
       setError("Error al conectar con el servidor");
+      showError("Error al conectar con el servidor");
     } finally {
       setLoading(false);
       handleCloseDelete();
@@ -128,11 +140,14 @@ export default function Brands() {
         setOpenEditDialog(false);
         setBrandToEdit(null);
         setError(null);
+        showSuccess("Marca editada exitosamente");
       } else {
         setError(response.error || "Error al actualizar la marca");
+        showError("Error al actualizar la marca");
       }
     } catch {
       setError("Error al conectar con el servidor");
+      showError("Error al conectar con el servidor");
     } finally {
       setLoading(false);
     }

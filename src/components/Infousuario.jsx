@@ -11,7 +11,14 @@ import {
 } from '@mui/material';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 
-export default function InfoUsuario({ open, onClose, onLogout }) {
+export default function InfoUsuario({ open, onClose }) {
+
+    const handleLogout = () => {
+        localStorage.removeItem('token');
+        window.location.reload();
+        onClose();
+    };
+
     return (
         <Dialog open={open} onClose={onClose}>
             <DialogTitle sx={{ textAlign: 'center' }}>Información del Usuario</DialogTitle>
@@ -34,7 +41,7 @@ export default function InfoUsuario({ open, onClose, onLogout }) {
                     CANCELAR
                 </Button>
                 <Button
-                    onClick={onLogout}
+                    onClick={handleLogout}
                     variant="outlined"
                     sx={{
                         borderColor: '#0B2240',

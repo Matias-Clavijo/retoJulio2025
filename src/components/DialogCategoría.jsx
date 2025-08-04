@@ -83,6 +83,7 @@ export default function AgregarCategoriaDialog({ open, onClose, onAddButtonClick
                                 color: 'white'
                             }
                         }}
+                        disabled={!nombre}
                     >
                         GUARDAR CATEGORÍA
                     </Button>

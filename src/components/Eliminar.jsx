@@ -8,7 +8,6 @@ import {
 
 const Eliminar = ({ open, onClose, onConfirm, title = "¿Quieres eliminar este producto?" }) => {
   const primaryColor = '#0B2240';
-  const accentColor = '#F5C518';
 
   return (
       <Dialog

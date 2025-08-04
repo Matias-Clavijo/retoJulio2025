@@ -91,18 +91,14 @@ const AgregarDeposito = ({ open, onClose, onAddButtonClick}) => {
                         value={descripcion}
                         onChange={(e) => setDescripcion(e.target.value)}
                     />
-                    <FormControl fullWidth margin="dense">
-                        <InputLabel>Ubicación</InputLabel>
-                        <Select
-                            value={ubicacion}
-                            label="Ubicación"
-                            onChange={(e) => setUbicacion(e.target.value)}
-                        >
-                            <MenuItem value="Montevideo, Uruguay">Montevideo, Uruguay</MenuItem>
-                            <MenuItem value="Punta del Este, Uruguay">Punta del Este, Uruguay</MenuItem>
-                            <MenuItem value="Salto, Uruguay">Salto, Uruguay</MenuItem>
-                        </Select>
-                    </FormControl>
+                    <TextField
+                        margin="dense"
+                        label="Ubicación *"
+                        fullWidth
+                        variant="outlined"
+                        value={ubicacion}
+                        onChange={(e) => setUbicacion(e.target.value)}
+                    />
                 </DialogContent>
 
                 <DialogActions sx={{ px: 3, pb: 3 }}>

@@ -6,8 +6,11 @@ import DialogEditDeposit from "../components/DialogEditDeposit.jsx"; // para edi
 import { depositsAPI } from "../services/api/stockBack";
 import Eliminar from "../components/Eliminar";
 import DialogWatchDeposit from "../components/DialogWatchDeposit.jsx";
+import { useNotification } from "../hooks/useNotification";
 
 export default function Deposits() {
+  const { showError, showSuccess } = useNotification();
+  
   const [deposits, setDeposits] = useState([]);
   const [allDeposits, setAllDeposits] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -72,14 +75,16 @@ export default function Deposits() {
   const columns = [
     { id: "nombre", label: "Nombre", align: "left" },
     { id: "description", label: "Descripcion", align: "left" },
-    { id: "location", label: "Ubicación", align: "left" },
+    { id: "location", label: "Ubicación", align: "left", format: (value) => `📍 ${value || "N/A"}` },
     {
       id: "products_associated",
       label: "Productos Asociados",
       align: "center",
       format: (value) => `${value}`,
     },
-    { id: "associated", label: "Asociado el", align: "left" },
+    { id: "associated", label: "Asociado el", align: "left",
+      format: (value) => `${new Date(value).toLocaleDateString() || "N/A"}`
+     },
     { id: "acciones", label: "Acciones", align: "center" },
   ];
 
@@ -201,7 +206,6 @@ export default function Deposits() {
         onRowsPerPageChange={handleRowsPerPageChange}
         addDialog={<AgregarDeposito onAddButtonClick= {handleAddButtonClick}/>}
         loading={loading}
-        error={error}
       />
 
       <Eliminar

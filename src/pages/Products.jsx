@@ -6,13 +6,15 @@ import Eliminar from "../components/Eliminar";
 import { productsAPI } from "../services/api/stockBack";
 import { useListFormatter } from "../hooks/useListFormatter";
 import DialogWatchProducts from "../components/DialogWatchProducts";
-import DialogEditProduct from "../components/DialogEditProduct";  // <-- Importá el nuevo diálogo
+import DialogEditProduct from "../components/DialogEditProduct";
+import { useNotification } from "../hooks/useNotification";
 
 const primaryColor = '#0B2240';
 const accentColor = '#F5C518';
 
 export default function Products() {
   const { formatList } = useListFormatter();
+  const { showError, showSuccess } = useNotification();
 
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -93,11 +95,14 @@ export default function Products() {
       const response = await productsAPI.deleteProduct(selectedProduct.id);
       if (response.success) {
         setRefetch(prev => prev + 1);
+        showSuccess("Producto eliminado exitosamente");
       } else {
         setError(response.error || "Error al eliminar el producto");
+        showError("Error al eliminar el producto");
       }
     } catch {
       setError("Error al conectar con el servidor");
+      showError("Error al conectar con el servidor");
     } finally {
       setLoading(false);
       handleCloseDelete();
@@ -114,20 +119,34 @@ export default function Products() {
   };
 
   const handleAddButtonClick = async (productData) => {
-    const response = await productsAPI.createProduct(productData);
-    if (!response.success) {
-      setError(response.error);
-    } else {
-      setRefetch(prev => prev + 1);
+    try {
+      const response = await productsAPI.createProduct(productData);
+      if (response.success) {
+        setRefetch(prev => prev + 1);
+        showSuccess("Producto agregado exitosamente");
+      } else {
+        setError(response.error);
+        showError("Error al agregar el producto");
+      }
+    } catch {
+      setError("Error al conectar con el servidor");
+      showError("Error al conectar con el servidor");
     }
   };
 
   const handleSaveEdit = async (productData) => {
-    const response = await productsAPI.updateProduct(productoEditar.id, productData);
-    if (!response.success) {
-      setError(response.error);
-    } else {
-      setRefetch(prev => prev + 1);
+    try {
+      const response = await productsAPI.updateProduct(productoEditar.id, productData);
+      if (response.success) {
+        setRefetch(prev => prev + 1);
+        showSuccess("Producto editado exitosamente");
+      } else {
+        setError(response.error);
+        showError("Error al editar el producto");
+      }
+    } catch {
+      setError("Error al conectar con el servidor");
+      showError("Error al conectar con el servidor");
     }
   };
 
@@ -256,7 +275,6 @@ export default function Products() {
         onRowsPerPageChange={handleRowsPerPageChange}
         addDialog={<AgregarProductoDialog buttonText="Agregar producto" title="Agregar producto" onAddButtonClick={handleAddButtonClick} />}
         loading={loading}
-        error={error}
       />
 
       <Eliminar

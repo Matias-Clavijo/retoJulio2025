@@ -137,6 +137,7 @@ const AgregarProveedorDialog = ({ open, onClose, onSave, proveedorEditar }) => {
                             color: 'white'
                         }
                     }}
+                    disabled={!nombre || !telefono || !email || !direccion}
                 >
                     {proveedorEditar ? 'EDITAR PROVEEDOR' : 'GUARDAR PROVEEDOR'}
                 </Button>

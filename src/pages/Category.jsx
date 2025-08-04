@@ -1,12 +1,15 @@
 import React, { useState, useEffect } from "react";
-import { Category as CategoryIcon } from "@mui/icons-material";
+import { Category as CategoryIcon, Visibility, Edit, Delete } from "@mui/icons-material";
 import DataManagementPage from "../components/DataManagementPage";
-import AgregarCategoría from "../components/DialogCategoría.jsx";
-import DialogEditCategory from "../components/DialogEditCategory.jsx"; // <-- Importa el nuevo diálogo
+import AgregarCategoriaDialog from "../components/DialogCategoría";
+import DialogEditCategory from "../components/DialogEditCategory";
 import Eliminar from "../components/Eliminar";
 import { categoriesAPI } from "../services/api/stockBack";
+import { useNotification } from "../hooks/useNotification";
 
-export default function Category() {
+export default function CategoryPage() {
+  const { showError, showSuccess } = useNotification();
+  
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -14,12 +17,13 @@ export default function Category() {
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState(null);
-  const [refetch, setRefetch] = useState(0);
-  
 
-  // Estado para editar
+  // Estados para edición
   const [openEditDialog, setOpenEditDialog] = useState(false);
   const [categoryToEdit, setCategoryToEdit] = useState(null);
+
+  const [refetch, setRefetch] = useState(0);
+  
 
   useEffect(() => {
     const fetchCategories = async () => {
@@ -31,8 +35,7 @@ export default function Category() {
             name: category.name,
             description: "-", // No viene en el mock, pero mantenemos la estructura
             parent_category: "-", 
-            products_count: category.productsCount,
-            status: "Activo",
+            products_count: category.associatedProductCount,
             created_at: new Date().toLocaleDateString(),
             original: category
           }));
@@ -55,7 +58,6 @@ export default function Category() {
     { id: "name", label: "Nombre", align: "left" },
     { id: "description", label: "Descripción", align: "left" },
     { id: "products_count", label: "Productos", align: "center" },
-    { id: "status", label: "Estado", align: "center" },
     { id: "created_at", label: "Fecha de creación", align: "left" },
     { id: "acciones", label: "Acciones", align: "center" },
   ];
@@ -88,25 +90,35 @@ export default function Category() {
           }));
           setCategories(transformedCategories);
           setOpenEditDialog(false);
+          showSuccess("Categoría editada exitosamente");
         }
       } else {
         setError(response.error || "Error al actualizar la categoría");
+        showError("Error al actualizar la categoría");
       }
     } catch {
       setError("Error al conectar con el servidor");
+      showError("Error al conectar con el servidor");
     } finally {
       setLoading(false);
     }
   };
 
   const handleAddButtonClick = async (categoryData) => {
+    try {
       const response = await categoriesAPI.createCategory(categoryData);
-      if (!response.success) {
-        setError(response.error);
-      } else {
+      if (response.success) {
         setRefetch(prev => prev + 1);
+        showSuccess("Categoría agregada exitosamente");
+      } else {
+        setError(response.error);
+        showError("Error al agregar la categoría");
       }
-    };
+    } catch {
+      setError("Error al conectar con el servidor");
+      showError("Error al conectar con el servidor");
+    }
+  };
 
   const handleDelete = (category) => {
     setSelectedCategory(category);
@@ -124,8 +136,10 @@ export default function Category() {
     const response = await categoriesAPI.deleteCategory(selectedCategory.original.id);
     if (response.success) {
       setRefetch(prev => prev + 1);
+      showSuccess("Categoría eliminada exitosamente");
     } else {
       setError(response.error || "Error al eliminar la categoría");
+      showError("Error al eliminar la categoría");
     }
   } catch (error) {
     console.error("ERROR COMPLETO:", error);
@@ -135,6 +149,7 @@ export default function Category() {
       console.error("HEADERS:", error.response.headers);
     }
     setError("Error al conectar con el servidor");
+    showError("Error al conectar con el servidor");
   } finally {
     setLoading(false);
     handleCloseDelete();
@@ -171,16 +186,15 @@ export default function Category() {
         onView={handleView}
         onPageChange={handlePageChange}
         onRowsPerPageChange={handleRowsPerPageChange}
-        addDialog={<AgregarCategoría onAddButtonClick={handleAddButtonClick}/>}
+        addDialog={<AgregarCategoriaDialog onAddButtonClick={handleAddButtonClick}/>}
         loading={loading}
-        error={error}
       />
 
       <Eliminar
         open={openDeleteDialog}
         onClose={handleCloseDelete}
         onConfirm={handleConfirmDelete}
-        title={`¿Estás seguro que deseas eliminar la categoría "${selectedCategory?.nombre}"?`}
+        title={`¿Estás seguro que deseas eliminar la categoría "${selectedCategory?.name}"?`}
 
       />
 

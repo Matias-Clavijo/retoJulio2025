@@ -127,6 +127,7 @@ const AgregarMarca = ({ open, onClose, onAddButtonClick, brand, buttonText, titl
                                 color: 'white'
                             }
                         }}
+                        disabled={!nombre || !descripcion || !pais}
                     >
                         {buttonText}
                     </Button>
