@@ -591,6 +591,7 @@ export const depositsAPI = {
         description: depositData.descripcion, 
         location: depositData.ubicacion
       };
+      console.log(apiData);
       const response = await apiClient.post("/api/deposits", apiData);
       return {success: true, data: response.data};
     } catch (error) {
@@ -602,14 +603,17 @@ export const depositsAPI = {
   // PUT /deposits/{id}
   updateDeposit: async (id, depositData) => {
     try {
-      await new Promise(resolve => setTimeout(resolve, 500));
-      const index = MOCK_DEPOSITS.findIndex(d => d.id === id);
-      if (index === -1) {
-        return { success: false, error: "Deposit not found" };
-      }
-      MOCK_DEPOSITS[index] = { ...MOCK_DEPOSITS[index], ...depositData };
-      return { success: true, data: MOCK_DEPOSITS[index] };
-    } catch {
+      console.log(depositData);
+      const apiData = {
+        name: depositData.name,
+        description: depositData.description,
+        location: depositData.location
+      };
+      console.log(apiData);
+      const response = await apiClient.put(`/api/deposits/${id}`, apiData);
+      return { success: true, data: response.data };
+    } catch (error) {
+      console.log(error);
       return { success: false, error: "Error updating deposit" };
     }
   },
@@ -617,14 +621,10 @@ export const depositsAPI = {
   // DELETE /deposits/{id}
   deleteDeposit: async (id) => {
     try {
-      await new Promise(resolve => setTimeout(resolve, 500));
-      const index = MOCK_DEPOSITS.findIndex(d => d.id === id);
-      if (index === -1) {
-        return { success: false, error: "Deposit not found" };
-      }
-      MOCK_DEPOSITS.splice(index, 1);
-      return { success: true };
-    } catch {
+      const response = await apiClient.delete(`/api/deposits/${id}`);
+      return { success: true, data: response.data };
+    } catch (error) {
+      console.log(error);
       return { success: false, error: "Error deleting deposit" };
     }
   }
