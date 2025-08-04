@@ -12,9 +12,7 @@ export default function Deposits() {
   const { showError, showSuccess } = useNotification();
   
   const [deposits, setDeposits] = useState([]);
-  const [allDeposits, setAllDeposits] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
   const [page, setPage] = useState(1);
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
@@ -43,12 +41,11 @@ export default function Deposits() {
             original: { ...deposit, products: deposit.products || [] },
           }));
           setDeposits(transformedDeposits);
-          setError(null);
         } else {
-          setError(response.error || "Error al cargar los depósitos");
+          showError(response.error || "Error al cargar los depósitos");
         }
       } catch {
-        setError("Error al conectar con el servidor");
+        showError("Error al conectar con el servidor");
       } finally {
         setLoading(false);
       }
@@ -56,21 +53,6 @@ export default function Deposits() {
 
     fetchDeposits();
   }, [page, rowsPerPage, refetch]);
-
-  useEffect(() => {
-    const fetchAllDeposits = async () => {
-      try {
-        const response = await depositsAPI.getAllDeposits();
-        if (response.success) {
-          setAllDeposits(response.data);
-        }
-      } catch (e) {
-        console.error("Error al cargar todos los depósitos:", e);
-      }
-    };
-
-    fetchAllDeposits();
-  }, []);
 
   const columns = [
     { id: "nombre", label: "Nombre", align: "left" },
@@ -102,36 +84,30 @@ export default function Deposits() {
         location: depositoEditado.ubicacion,
       });
       if (response.success) {
-        const newResponse = await depositsAPI.getDeposits(page, rowsPerPage);
-        if (newResponse.success) {
-          const transformedDeposits = newResponse.data.map((deposit) => ({
-            nombre: deposit.name,
-            description: deposit.description,
-            location: deposit.location,
-            products_associated: deposit.productCount,
-            associated: deposit.associatedDate,
-            products: deposit.products || [],
-            original: { ...deposit, products: deposit.products || [] },
-          }));
-          setDeposits(transformedDeposits);
-          setOpenEditar(false);
-        }
+        setOpenEditar(false);
+        setRefetch(prev => prev + 1);
+        showSuccess("Depósito actualizado exitosamente");
       } else {
-        setError(response.error || "Error al actualizar el depósito");
+        showError("Error al actualizar el depósito");
       }
-    } catch (e) {
-      setError("Error al conectar con el servidor");
+    } catch {
+      showError("Error al conectar con el servidor");
     } finally {
       setLoading(false);
     }
   };
 
     const handleAddButtonClick = async (depositData) => {
-      const response = await depositsAPI.createDeposit(depositData);
-      if (!response.success) {
-        setError(response.error);
-      } else {
-        setRefetch(prev => prev + 1);
+      try {
+        const response = await depositsAPI.createDeposit(depositData);
+        if (response.success) {
+          setRefetch(prev => prev + 1);
+          showSuccess("Depósito agregado exitosamente");
+        } else {
+          showError(response.error || "Error al agregar el depósito");
+        }
+      } catch {
+        showError("Error al conectar con el servidor");
       }
     };
 
@@ -149,23 +125,14 @@ export default function Deposits() {
       setLoading(true);
       const response = await depositsAPI.deleteDeposit(selectedDeposit.original.id);
       if (response.success) {
-        const newResponse = await depositsAPI.getDeposits(page, rowsPerPage);
-        if (newResponse.success) {
-          const transformedDeposits = newResponse.data.map((deposit) => ({
-            nombre: deposit.name,
-            description: deposit.description,
-            location: deposit.location,
-            products_associated: deposit.productCount,
-            associated: deposit.associatedDate,
-            original: deposit,
-          }));
-          setDeposits(transformedDeposits);
-        }
+        setRefetch(prev => prev + 1);
+        showSuccess("Depósito eliminado exitosamente");
+        handleCloseDelete();
       } else {
-        setError(response.error || "Error al eliminar el depósito");
+        showError(response.error || "Error al eliminar el depósito");
       }
     } catch {
-      setError("Error al conectar con el servidor");
+      showError("Error al conectar con el servidor");
     } finally {
       setLoading(false);
       handleCloseDelete();
