@@ -1,17 +1,38 @@
 import axios from "axios";
 
-// En desarrollo usa el proxy de Vite, en producción usa la URL completa
-const API_BASE_URL = import.meta.env.DEV 
-  ? "" 
-  : "https://back-2025-gestion-stock-ventas.onrender.com"
+// Configuración de API URL más robusta
+const getApiBaseUrl = () => {
+  // Si hay una variable de entorno específica, úsala
+  if (import.meta.env.VITE_API_BASE_URL) {
+    return import.meta.env.VITE_API_BASE_URL;
+  }
+  
+  // En desarrollo usa el proxy de Vite, en producción usa la URL completa
+  return import.meta.env.DEV 
+    ? "" 
+    : "https://back-2025-gestion-stock-ventas.onrender.com";
+};
+
+const API_BASE_URL = getApiBaseUrl();
 
 const apiClient = axios.create({
   baseURL: API_BASE_URL,
   headers: {
     'Content-Type': 'application/json',
+    'Accept': 'application/json',
   },
   withCredentials: false,
+  timeout: 30000, // 30 segundos de timeout
 });
+
+// Log de configuración para debugging
+if (import.meta.env.DEV) {
+  console.log('🔧 API Configuration:', {
+    baseURL: API_BASE_URL,
+    environment: import.meta.env.DEV ? 'development' : 'production',
+    usingProxy: API_BASE_URL === '',
+  });
+}
 
 // Interceptor para agregar token automáticamente a todas las peticiones
 apiClient.interceptors.request.use(
@@ -29,6 +50,14 @@ apiClient.interceptors.request.use(
 apiClient.interceptors.response.use(
   (response) => response,
   (error) => {
+    // Manejar errores de CORS y conexión
+    if (!error.response) {
+      console.error('🚫 Network Error - Posible problema de CORS o conexión:', error.message);
+      if (error.code === 'ERR_NETWORK') {
+        console.error('💡 Sugerencia: Verificar configuración de CORS en el backend');
+      }
+    }
+    
     if (error.response?.status === 401) {
       // Token expirado o inválido
       localStorage.removeItem('token');
@@ -38,6 +67,7 @@ apiClient.interceptors.response.use(
         window.location.href = '/login';
       }
     }
+    
     return Promise.reject(error);
   }
 );
