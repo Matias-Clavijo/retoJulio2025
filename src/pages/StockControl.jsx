@@ -201,6 +201,7 @@ export default function StockControl() {
         onPageChange={handlePageChange}
         onRowsPerPageChange={handleRowsPerPageChange}
         onAddButtonClick={handleAddButtonClick}
+        addDialog={<DialogAddStock />}
         loading={loading}
       />
 
