@@ -4,7 +4,6 @@ import {
     DialogContent,
     DialogActions,
     Button,
-    TextField,
     MenuItem,
     Box,
     Typography,
@@ -13,12 +12,9 @@ import {
     InputLabel,
     OutlinedInput,
     InputAdornment,
-    Select,
-    Chip,
-    Divider
+    Select
 } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
-import AddIcon from '@mui/icons-material/Add';
 import ConfirmDialog from '../components/ConfirmDialog';
 import { brandsAPI, categoriesAPI } from '../services/api/stockBack';
 
@@ -38,10 +34,8 @@ export default function AgregarProductoDialog({ open, onClose, onAddButtonClick,
     const [marca, setMarca] = useState(product?.brand?.id || '');
     const [categoria, setCategoria] = useState(product?.category?.id || '');
     const [moneda, setMoneda] = useState(product?.purchasePrices?.[0]?.currency || 'UY');
-    const [precioCompra, setPrecioCompra] = useState('');
-    const [precioVenta, setPrecioVenta] = useState('');
-    const [preciosCompra, setPreciosCompra] = useState(product?.purchasePrices?.map(price => ({ id: price.id, precio: price.value, moneda: price.currency })) || []);
-    const [preciosVenta, setPreciosVenta] = useState(product?.salePrices?.map(price => ({ id: price.id, precio: price.value, moneda: price.currency })) || []);
+    const [precioCompra, setPrecioCompra] = useState(product?.purchasePrices?.[0]?.value || '');
+    const [precioVenta, setPrecioVenta] = useState(product?.salePrices?.[0]?.value || '');
 
     const [brands, setBrands] = useState([]);
     const [categories, setCategories] = useState([]);
@@ -54,58 +48,35 @@ export default function AgregarProductoDialog({ open, onClose, onAddButtonClick,
             setMarca(product?.brand?.id || '');
             setCategoria(product?.category?.id || '');
             setMoneda(product?.purchasePrices?.[0]?.currency || 'UY');
-            setPreciosCompra(product?.purchasePrices?.map(price => ({ id: price.id, precio: price.value, moneda: price.currency })) || []);
-            setPreciosVenta(product?.salePrices?.map(price => ({ id: price.id, precio: price.value, moneda: price.currency })) || []);
+            setPrecioCompra(product?.purchasePrices?.[0]?.value || '');
+            setPrecioVenta(product?.salePrices?.[0]?.value || '');
+        } else {
+            // Reset para nuevo producto
+            setNombre('');
+            setDescripcion('');
+            setMarca('');
+            setCategoria('');
+            setMoneda('UY');
+            setPrecioCompra('');
+            setPrecioVenta('');
         }
     }, [product]);
 
     const handleAgregar = () => {
+        const preciosCompra = [{ precio: parseFloat(precioCompra), moneda }];
+        const preciosVenta = [{ precio: parseFloat(precioVenta), moneda }];
         onAddButtonClick({ nombre, descripcion, marca, categoria, moneda, preciosCompra, preciosVenta });
         if (onClose) onClose();
     };
 
-    const agregarPrecioCompra = () => {
-        if (precioCompra.trim() !== '') {
-            const nuevoPrecio = { id: Date.now(), precio: parseFloat(precioCompra), moneda };
-            setPreciosCompra([...preciosCompra, nuevoPrecio]);
-            setPrecioCompra('');
-        }
-    };
-
-    const agregarPrecioVenta = () => {
-        if (precioVenta.trim() !== '') {
-            const nuevoPrecio = { id: Date.now(), precio: parseFloat(precioVenta), moneda };
-            setPreciosVenta([...preciosVenta, nuevoPrecio]);
-            setPrecioVenta('');
-        }
-    };
-
-    const eliminarPrecioCompra = id => setPreciosCompra(preciosCompra.filter(p => p.id !== id));
-    const eliminarPrecioVenta = id => setPreciosVenta(preciosVenta.filter(p => p.id !== id));
-
-    const validarMonedasIguales = () => {
-        if (!preciosCompra.length || !preciosVenta.length) return false;
-        const monedasCompra = [...new Set(preciosCompra.map(p => p.moneda))];
-        const monedasVenta = [...new Set(preciosVenta.map(p => p.moneda))];
-        return monedasCompra.every(m => monedasVenta.includes(m)) && monedasVenta.every(m => monedasCompra.includes(m));
-    };
-
-    const getMensajeMonedasFaltantes = () => {
-        if (!preciosCompra.length || !preciosVenta.length) return null;
-        const monedasCompra = [...new Set(preciosCompra.map(p => p.moneda))];
-        const monedasVenta = [...new Set(preciosVenta.map(p => p.moneda))];
-        const faltanEnVenta = monedasCompra.filter(m => !monedasVenta.includes(m));
-        const faltanEnCompra = monedasVenta.filter(m => !monedasCompra.includes(m));
-        if (faltanEnVenta.length || faltanEnCompra.length) {
-            let msg = '⚠️ Monedas faltantes: ';
-            if (faltanEnVenta.length) msg += `Venta en ${faltanEnVenta.join(', ')}`;
-            if (faltanEnCompra.length) msg += `${faltanEnVenta.length ? ' | ' : ''}Compra en ${faltanEnCompra.join(', ')}`;
-            return msg;
-        }
-        return null;
-    };
-
-    const isFormValid = nombre.trim() && descripcion.trim() && preciosCompra.length && preciosVenta.length && validarMonedasIguales();
+    const isFormValid = nombre.trim() && 
+                        descripcion.trim() && 
+                        precioCompra.trim() && 
+                        precioVenta.trim() && 
+                        !isNaN(parseFloat(precioCompra)) && 
+                        !isNaN(parseFloat(precioVenta)) && 
+                        parseFloat(precioCompra) > 0 && 
+                        parseFloat(precioVenta) > 0;
 
     useEffect(() => {
         const fetchBrands = async () => {
@@ -174,70 +145,29 @@ export default function AgregarProductoDialog({ open, onClose, onAddButtonClick,
                         </FormControl>
 
                         <FormControl fullWidth margin="dense">
-                            <InputLabel>Precio de Compra</InputLabel>
+                            <InputLabel>Precio de Compra *</InputLabel>
                             <OutlinedInput
+                                type="number"
                                 value={precioCompra}
                                 onChange={(e) => setPrecioCompra(e.target.value)}
                                 startAdornment={<InputAdornment position="start">{moneda}</InputAdornment>}
-                                endAdornment={
-                                    <InputAdornment position="end">
-                                        <IconButton onClick={agregarPrecioCompra} disabled={!precioCompra.trim()} size="small" sx={{ color: primaryColor }}>
-                                            <AddIcon />
-                                        </IconButton>
-                                    </InputAdornment>
-                                }
-                                onKeyPress={(e) => e.key === 'Enter' && agregarPrecioCompra()}
-                                label="Precio de Compra"
+                                label="Precio de Compra *"
+                                inputProps={{ min: 0, step: 0.01 }}
                             />
                         </FormControl>
 
                         <FormControl fullWidth margin="dense">
-                            <InputLabel>Precio de Venta</InputLabel>
+                            <InputLabel>Precio de Venta *</InputLabel>
                             <OutlinedInput
+                                type="number"
                                 value={precioVenta}
                                 onChange={(e) => setPrecioVenta(e.target.value)}
                                 startAdornment={<InputAdornment position="start">{moneda}</InputAdornment>}
-                                endAdornment={
-                                    <InputAdornment position="end">
-                                        <IconButton onClick={agregarPrecioVenta} disabled={!precioVenta.trim()} size="small" sx={{ color: primaryColor }}>
-                                            <AddIcon />
-                                        </IconButton>
-                                    </InputAdornment>
-                                }
-                                onKeyPress={(e) => e.key === 'Enter' && agregarPrecioVenta()}
-                                label="Precio de Venta"
+                                label="Precio de Venta *"
+                                inputProps={{ min: 0, step: 0.01 }}
                             />
                         </FormControl>
                     </Box>
-
-                    {/* Chips de precios */}
-                    {preciosCompra.length > 0 && (
-                        <Box mt={2}>
-                            <Typography variant="subtitle2" sx={{ mb: 1, color: primaryColor }}>Precios de Compra:</Typography>
-                            <Box display="flex" flexWrap="wrap" gap={1}>
-                                {preciosCompra.map(p => (
-                                    <Chip key={p.id} label={`${p.moneda} ${p.precio.toFixed(2)}`} onDelete={() => eliminarPrecioCompra(p.id)} sx={{ backgroundColor: '#e3f2fd', color: primaryColor }} />
-                                ))}
-                            </Box>
-                        </Box>
-                    )}
-
-                    {preciosVenta.length > 0 && (
-                        <Box mt={2}>
-                            <Typography variant="subtitle2" sx={{ mb: 1, color: primaryColor }}>Precios de Venta:</Typography>
-                            <Box display="flex" flexWrap="wrap" gap={1}>
-                                {preciosVenta.map(p => (
-                                    <Chip key={p.id} label={`${p.moneda} ${p.precio.toFixed(2)}`} onDelete={() => eliminarPrecioVenta(p.id)} sx={{ backgroundColor: '#fff3e0', color: '#e65100' }} />
-                                ))}
-                            </Box>
-                        </Box>
-                    )}
-
-                    {getMensajeMonedasFaltantes() && (
-                        <Box mt={2} p={1.5} sx={{ backgroundColor: '#fff3cd', border: '1px solid #ffeaa7', borderRadius: 1 }}>
-                            <Typography variant="body2" sx={{ color: '#856404' }}>{getMensajeMonedasFaltantes()}</Typography>
-                        </Box>
-                    )}
                 </DialogContent>
 
                 <DialogActions sx={{ px: 3, pb: 3 }}>
