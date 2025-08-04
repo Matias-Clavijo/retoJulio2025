@@ -332,23 +332,7 @@ const MOCK_STOCK_MOVEMENTS = [
   }
 ];
 
-// Helper function to create paginated response
-const createPaginatedResponse = (data, page = 1, items = 10) => {
-  const startIndex = (page - 1) * items;
-  const endIndex = startIndex + items;
-  const paginatedData = data.slice(startIndex, endIndex);
-  
-  return {
-    success: true,
-    data: paginatedData,
-    pagination: {
-      page: page,
-      items: items,
-      count: paginatedData.length,
-      totalCount: data.length
-    }
-  };
-};
+
 
 export const productsAPI = {
   getProducts: async () => {
@@ -516,14 +500,12 @@ export const categoriesAPI = {
 
   createCategory: async (categoryData) => {
     try {
-      await new Promise(resolve => setTimeout(resolve, 500));
-      const newCategory = {
-        id: MOCK_CATEGORIES.length + 1,
-        ...categoryData,
-        productsCount: 0
+      const apiData = {
+        name: categoryData.nombre,
+        description: categoryData.descripcion
       };
-      MOCK_CATEGORIES.push(newCategory);
-      return { success: true, data: newCategory };
+      const response = await apiClient.post('/api/categories', apiData);
+      return { success: true, data: response.data };
     } catch {
       return { success: false, error: "Error creating category" };
     }
@@ -620,8 +602,66 @@ export const depositsAPI = {
 
 // STOCK
 export const stockAPI = {
-  // PUT /deposits/{depositId}/products/{productId}
-  updateStock: async (depositId, productId, stockData) => {
+  // GET /api/stock
+  getStock: async (page = 1, items = 10) => {
+    try {
+      const response = await apiClient.get(`/api/stock?page=${page}&items=${items}`);
+      return response.data;
+    } catch (error) {
+      console.log("Error fetching stock:", error);
+      return { success: false, error: "Error fetching stock" };
+    }
+  },
+
+  // POST /api/stock
+  createStock: async (stockData) => {
+    try {
+      // The stockData already comes in the correct format from DialogAddStock
+      console.log("Creating stock entry:", stockData);
+      const response = await apiClient.post('/api/stock', stockData);
+      return { success: true, data: response.data };
+    } catch (error) {
+      console.log("Error creating stock:", error);
+      return { success: false, error: "Error creating stock entry" };
+    }
+  },
+
+  // PUT /api/stock/{id}
+  updateStock: async (id, stockData) => {
+    try {
+      // Ensure the data is in the correct format
+      const apiData = {
+        product: {
+          id: parseInt(stockData.product?.id || stockData.productId)
+        },
+        deposit: {
+          id: parseInt(stockData.deposit?.id || stockData.depositId)
+        },
+        quantity: parseInt(stockData.quantity)
+      };
+
+      console.log("Updating stock entry:", apiData);
+      const response = await apiClient.put(`/api/stock/${id}`, apiData);
+      return { success: true, data: response.data };
+    } catch (error) {
+      console.log("Error updating stock:", error);
+      return { success: false, error: "Error updating stock entry" };
+    }
+  },
+
+  // DELETE /api/stock/{id}
+  deleteStock: async (id) => {
+    try {
+      const response = await apiClient.delete(`/api/stock/${id}`);
+      return { success: true, data: response.data };
+    } catch (error) {
+      console.log("Error deleting stock:", error);
+      return { success: false, error: "Error deleting stock entry" };
+    }
+  },
+
+  // PUT /deposits/{depositId}/products/{productId} - Legacy function kept for compatibility
+  updateStockLegacy: async (depositId, productId, stockData) => {
     try {
       await new Promise(resolve => setTimeout(resolve, 500));
       // Mock implementation - in real scenario would update stock count
@@ -750,61 +790,70 @@ export const usersAPI = {
 
 // VENTAS
 export const salesAPI = {
-  // GET /sales
+  // GET /api/sales
   getSales: async (page = 1, items = 10) => {
     try {
-      await new Promise(resolve => setTimeout(resolve, 500));
-      const response = createPaginatedResponse(MOCK_SALES, page, items);
-      response.total = 278912;
-      response.currency = "USD";
-      return response;
+      const response = await apiClient.get(`/api/sales?page=${page}&items=${items}`);
+      return response.data;
     } catch (error) {
-      console.log(error);
+      console.log("Error fetching sales:", error);
       return { success: false, error: "Error fetching sales" };
     }
   },
 
-  // POST /sales
+  // POST /api/sales
   createSale: async (saleData) => {
     try {
-      await new Promise(resolve => setTimeout(resolve, 500));
-      const newSale = {
-        id: MOCK_SALES.length + 1,
-        ...saleData
+      const apiData = {
+        date: new Date(saleData.fecha || saleData.date).toISOString(),
+        products: saleData.product.map(producto => ({
+          id: parseInt(producto.id),
+          count: parseInt(producto.cantidad || 1)
+        })),
+        paymentMethod: saleData.metodoPago || saleData.paymentMethod,
+        reseller: saleData.revendedor || saleData.reseller,
       };
-      MOCK_SALES.push(newSale);
-      return { success: true, data: newSale };
-    } catch {
+
+      console.log("Creating sale:", apiData);
+      const response = await apiClient.post('/api/sales', apiData);
+      return { success: true, data: response.data };
+    } catch (error) {
+      console.log("Error creating sale:", error);
       return { success: false, error: "Error creating sale" };
     }
   },
 
-  // PUT /sales/{id}
+  // PUT /api/sales/{id}
   updateSale: async (id, saleData) => {
     try {
-      await new Promise(resolve => setTimeout(resolve, 500));
-      const index = MOCK_SALES.findIndex(s => s.id === id);
-      if (index === -1) {
-        return { success: false, error: "Sale not found" };
-      }
-      MOCK_SALES[index] = { ...MOCK_SALES[index], ...saleData };
-      return { success: true, data: MOCK_SALES[index] };
-    } catch {
+      const apiData = {
+        date: new Date(saleData.fecha || saleData.date).toISOString(),
+        products: saleData.product.map(producto => ({
+          id: parseInt(producto.id),
+          count: parseInt(producto.cantidad || 1)
+        })),
+        paymentMethod: saleData.metodoPago || saleData.paymentMethod,
+        reseller: saleData.revendedor || saleData.reseller,
+        price: parseFloat(saleData.precio || saleData.price || saleData.total || 0),
+        currency: saleData.moneda || saleData.currency || 'USD'
+      };
+
+      console.log("Updating sale:", apiData);
+      const response = await apiClient.put(`/api/sales/${id}`, apiData);
+      return { success: true, data: response.data };
+    } catch (error) {
+      console.log("Error updating sale:", error);
       return { success: false, error: "Error updating sale" };
     }
   },
 
-  // DELETE /sales/{id}
+  // DELETE /api/sales/{id}
   deleteSale: async (id) => {
     try {
-      await new Promise(resolve => setTimeout(resolve, 500));
-      const index = MOCK_SALES.findIndex(s => s.id === id);
-      if (index === -1) {
-        return { success: false, error: "Sale not found" };
-      }
-      MOCK_SALES.splice(index, 1);
-      return { success: true };
-    } catch {
+      const response = await apiClient.delete(`/api/sales/${id}`);
+      return { success: true, data: response.data };
+    } catch (error) {
+      console.log("Error deleting sale:", error);
       return { success: false, error: "Error deleting sale" };
     }
   }

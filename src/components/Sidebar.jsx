@@ -15,6 +15,7 @@ import {
 } from '@mui/material';
 import {
     Inventory,
+    Inventory2,
     Category,
     LocalOffer,
     Warehouse,
@@ -45,6 +46,7 @@ const Sidebar = ({ onClose }) => {
     ];
 
     const operationsItems = [
+        { text: 'Control de Stock', icon: <Inventory2 />, path: '/stock' },
         { text: 'Movimientos', icon: <TrendingUp />, path: '/movements' },
         { text: 'Ventas', icon: <PointOfSale />, path: '/sales' }
     ];

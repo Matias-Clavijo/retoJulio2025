@@ -28,16 +28,33 @@ export default function StockMovements() {
             const response = await stockMovementsAPI.getStockMovements();
             if (response.success) {
                 console.log(response);
-                const transformedMovements = response.data.map(movement => ({
-                    id: movement.id,
-                    producto: movement?.product?.name,
-                    deposito: movement?.deposit?.name,
-                    tipo: movement?.type,
-                    cantidad: movement?.quantity,
-                    asociado: new Date(movement?.date).toLocaleDateString(),
-                    // Keep original data for editing/viewing
-                    original: movement
-                }));
+                const transformedMovements = response.data.map(movement => {
+                    // Handle deposit display logic
+                    let depositoDisplay = '';
+                    const originalDeposit = movement?.originalDeposit?.name;
+                    const destinationDeposit = movement?.destinationDeposit?.name;
+                    
+                    if (originalDeposit && destinationDeposit && originalDeposit !== destinationDeposit) {
+                        depositoDisplay = `${originalDeposit} → ${destinationDeposit}`;
+                    } else if (originalDeposit) {
+                        depositoDisplay = originalDeposit;
+                    } else if (destinationDeposit) {
+                        depositoDisplay = destinationDeposit;
+                    } else {
+                        depositoDisplay = 'No especificado';
+                    }
+
+                    return {
+                        id: movement.id,
+                        producto: movement?.product?.name,
+                        deposito: depositoDisplay,
+                        tipo: movement?.type,
+                        cantidad: movement?.quantity,
+                        asociado: new Date(movement?.createdAt).toLocaleDateString(),
+                        // Keep original data for editing/viewing
+                        original: movement
+                    };
+                });
                 setMovements(transformedMovements);
                 setError(null);
             } else {
@@ -57,7 +74,27 @@ export default function StockMovements() {
 
     const columns = [
         { id: "producto", label: "Producto", align: "left" },
-        { id: "deposito", label: "Depósito", align: "left" },
+        { 
+            id: "deposito", 
+            label: "Depósito", 
+            align: "left", 
+            format: (value, row) => {
+                const original = row?.original;
+                const originDeposit = original?.originDeposit?.name;
+                const destinationDeposit = original?.destinationDeposit?.name;
+                
+                console.log(originDeposit, destinationDeposit);
+                if (originDeposit && destinationDeposit && originDeposit !== destinationDeposit) {
+                    return `${originDeposit} → ${destinationDeposit}`;
+                } else if (originDeposit) {
+                    return originDeposit;
+                } else if (destinationDeposit) {
+                    return destinationDeposit;
+                } else {
+                    return value || 'No especificado';
+                }
+            }
+        },
         { 
             id: "tipo", 
             label: "Tipo", 
@@ -65,8 +102,8 @@ export default function StockMovements() {
             format: (value) => (
                 <Box
                     sx={{
-                        backgroundColor: value === "ENTRY" ? '#e8f5e9' : '#ffebee',
-                        color: value === "ENTRY" ? '#2e7d32' : '#c62828',
+                        backgroundColor: value === "ENTRY" ? '#e8f5e9' : value === "TRANSFER" ? '#e3f2fd' : '#ffebee',
+                        color: value === "ENTRY" ? '#2e7d32' : value === "TRANSFER" ? '#1565c0' : '#c62828',
                         borderRadius: 1,
                         px: 1.5,
                         py: 0.5,
@@ -75,7 +112,7 @@ export default function StockMovements() {
                         fontWeight: 'medium'
                     }}
                 >
-                    {value === "ENTRY" ? "Entrada" : "Salida"}
+                    {value === "ENTRY" ? "Entrada" : value === "TRANSFER" ? "Transferencia" : "Salida"}
                 </Box>
             )
         },
@@ -85,7 +122,7 @@ export default function StockMovements() {
             align: "center",
             format: (value) => value.toLocaleString()
         },
-        { id: "asociado", label: "Asociado", align: "center" },
+        { id: "asociado", label: "Fecha", align: "center" },
         { id: "acciones", label: "Acciones", align: "center" },
     ];
 
@@ -185,7 +222,6 @@ export default function StockMovements() {
             onRowsPerPageChange={handleRowsPerPageChange}
             addDialog={<DialogStockMovement onSave={handleSubmitMovement} />}
             loading={loading}
-            error={error}  
         />
         
         <DialogWatchMovements
@@ -194,14 +230,11 @@ export default function StockMovements() {
             movimiento={movimientoSeleccionado}
         />
         
-        <DialogEditMovement
+        <DialogStockMovement
+            onClose={() => setOpenEditar(false)}
+            onSave={handleSubmitMovement}
             open={openEditar}
-            onClose={() => {
-                setOpenEditar(false);
-                setMovimientoSeleccionado(null);
-            }}
-            movimiento={movimientoSeleccionado}
-            onSubmit={handleSubmitMovement}
+            movement={movimientoSeleccionado}
         />
 
         <Eliminar

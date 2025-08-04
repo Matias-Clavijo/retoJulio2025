@@ -146,7 +146,6 @@ export default function Proveedor() {
         onView={handleView}
         addDialog={<AgregarProveedorDialog onSave={handleGuardarProveedor} />}
         loading={loading}
-        error={error}
       />
 
       <DialogEditProvider
