@@ -5,6 +5,7 @@ import DataManagementPage from "../components/DataManagementPage";
 import { stockAPI } from "../services/api/stockBack";
 import Eliminar from "../components/Eliminar";
 import DialogAddStock from "../components/DialogAddStock";
+import DialogWatchStock from "../components/DialogWatchStock";
 import { useNotification } from "../hooks/useNotification";
 
 export default function StockControl() {
@@ -21,6 +22,10 @@ export default function StockControl() {
   // Estados para agregar/editar stock
   const [openStockDialog, setOpenStockDialog] = useState(false);
   const [stockToEdit, setStockToEdit] = useState(null);
+
+  // Estados para ver detalles del stock
+  const [openViewDialog, setOpenViewDialog] = useState(false);
+  const [stockToView, setStockToView] = useState(null);
 
   useEffect(() => {
     const fetchStock = async () => {
@@ -123,6 +128,8 @@ export default function StockControl() {
         response = await stockAPI.updateStock(stockId, stockData);
         if (response.success) {
           setRefetch(prev => prev + 1);
+          setOpenStockDialog(false);
+          setStockToEdit(null);
           showSuccess("Stock actualizado exitosamente");
         } else {
           showError("Error al actualizar el stock");
@@ -130,9 +137,12 @@ export default function StockControl() {
       } else {
         // Modo creación: solo un argumento con data
         const [stockData] = args;
+        console.log("Creating stock with data:", stockData);
         response = await stockAPI.createStock(stockData);
         if (response.success) {
           setRefetch(prev => prev + 1);
+          setOpenStockDialog(false);
+          setStockToEdit(null);
           showSuccess("Stock agregado exitosamente");
         } else {
           showError("Error al agregar el stock");
@@ -175,6 +185,16 @@ export default function StockControl() {
     }
   };
 
+  const handleView = (stockItem) => {
+    setStockToView(stockItem);
+    setOpenViewDialog(true);
+  };
+
+  const handleCloseViewDialog = () => {
+    setOpenViewDialog(false);
+    setStockToView(null);
+  };
+
   const handlePageChange = (newPage) => {
     setPage(newPage);
   };
@@ -198,6 +218,8 @@ export default function StockControl() {
         rowsPerPageOptions={[5, 10, 25, 50]}
         onEdit={handleEdit}
         onDelete={handleDelete}
+        addDialog={<DialogAddStock onAddButtonClick={handleSaveStock} />}
+        onView={handleView}
         onPageChange={handlePageChange}
         onRowsPerPageChange={handleRowsPerPageChange}
         onAddButtonClick={handleAddButtonClick}
@@ -213,6 +235,13 @@ export default function StockControl() {
         }}
         onAddButtonClick={handleSaveStock}
         stock={stockToEdit}
+      />
+
+      {/* Diálogo para ver detalles del stock */}
+      <DialogWatchStock
+        open={openViewDialog}
+        onClose={handleCloseViewDialog}
+        stock={stockToView}
       />
 
       <Eliminar
