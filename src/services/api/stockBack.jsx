@@ -416,14 +416,14 @@ export const productsAPI = {
       const apiData = {
         name: productData.nombre,
         description: productData.descripcion,
-        purchasePrices: productData.preciosCompra.map(price => ({
-          currency: price.moneda,
-          value: price.precio
-        })),
-        sealPrices: productData.preciosVenta.map(price => ({
-          currency: price.moneda,
-          value: price.precio
-        })),
+        purchasePrice: {
+          currency: productData.preciosCompra[0].moneda,
+          value: productData.preciosCompra[0].precio
+        },
+        salePrice: {
+          currency: productData.preciosVenta[0].moneda,
+          value: productData.preciosVenta[0].precio
+        },
         brand: {
           id: productData.marca
         },

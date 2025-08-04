@@ -69,10 +69,10 @@ export default function AgregarProductoDialog({ open, onClose, onAddButtonClick,
         if (onClose) onClose();
     };
 
-    const isFormValid = nombre.trim() && 
-                        descripcion.trim() && 
-                        precioCompra.trim() && 
-                        precioVenta.trim() && 
+    const isFormValid = nombre?.trim() && 
+                        descripcion && 
+                        precioCompra && 
+                        precioVenta && 
                         !isNaN(parseFloat(precioCompra)) && 
                         !isNaN(parseFloat(precioVenta)) && 
                         parseFloat(precioCompra) > 0 && 
@@ -97,7 +97,7 @@ export default function AgregarProductoDialog({ open, onClose, onAddButtonClick,
         <>
             <Dialog open={open} onClose={onClose} fullWidth maxWidth="md">
                 <Box sx={{ backgroundColor: primaryColor, color: 'white', fontWeight: 'bold', px: 2, py: 1.5, textAlign: 'center', fontSize: '1rem', letterSpacing: 1, textTransform: 'uppercase', position: 'relative', borderTopLeftRadius: '4px', borderTopRightRadius: '4px' }}>
-                    {title}
+                    {title}trim()
                     <IconButton aria-label="close" onClick={onClose} sx={{ position: 'absolute', top: 8, right: 8, color: 'white' }}>
                         <CloseIcon />
                     </IconButton>
