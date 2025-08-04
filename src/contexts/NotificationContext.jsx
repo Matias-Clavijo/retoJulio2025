@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, createContext } from 'react';
 import { Snackbar, Alert, AlertTitle } from '@mui/material';
-import { NotificationContext } from './notificationContext';
+
+export const NotificationContext = createContext();
 
 export const NotificationProvider = ({ children }) => {
   const [notification, setNotification] = useState({
