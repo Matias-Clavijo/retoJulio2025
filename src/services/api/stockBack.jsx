@@ -19,9 +19,8 @@ const apiClient = axios.create({
   baseURL: API_BASE_URL,
   headers: {
     'Content-Type': 'application/json',
-    'Accept': 'application/json',
-    'Access-Control-Allow-Origin': '*'
-  },
+    'Accept': 'application/json'
+    },
   withCredentials: false,
   timeout: 30000, // 30 segundos de timeout
 });
