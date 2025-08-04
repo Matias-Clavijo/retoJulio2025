@@ -20,6 +20,7 @@ export default function StockMovements() {
     const [openEliminar, setOpenEliminar] = useState(false);
     const [movimientoAEliminar, setMovimientoAEliminar] = useState(null);
     const [refetch, setRefetch] = useState(1);
+    const [stockMovementToEdit, setStockMovementToEdit] = useState(null);
 
     // Function to fetch movements from API
     const fetchMovements = async () => {
@@ -130,6 +131,35 @@ export default function StockMovements() {
         setMovimientoSeleccionado(movement.original);
         setOpenEditar(true);
     };
+
+      const handleSaveEdit = async (updatedSTockMovement) => {
+        try {
+          setLoading(true);
+          console.log(updatedSTockMovement);
+          const response = await stockMovementsAPI.updateStockMovement(stockMovementToEdit.id, {
+            type: updatedSTockMovement.type,
+            product: updatedSTockMovement.productId, 
+            deposit: updatedSTockMovement.depositId,
+            reference: updatedSTockMovement.referenceDepositId,
+            quantity: updatedSTockMovement.quantity
+          });
+          if (response.success) {
+            setRefetch(prev => prev + 1);
+            setOpenEditDialog(false);
+            setStockMovementToEdit(null);
+            setError(null);
+            showSuccess("Movimiento editado exitosamente");
+          } else {
+            setError(response.error || "Error al actualizar el movimiento");
+            showError("Error al actualizar el movimiento");
+          }
+        } catch {
+          setError("Error al conectar con el servidor");
+          showError("Error al conectar con el servidor");
+        } finally {
+          setLoading(false);
+        }
+      };
 
     const handleDelete = (movement) => {
         setMovimientoAEliminar(movement.original || movement);
