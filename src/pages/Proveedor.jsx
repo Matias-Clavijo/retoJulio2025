@@ -20,34 +20,38 @@ export default function Proveedor() {
   const [rows, setRows] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [refetch, setRefetch] = useState(1);
+
+  // Function to fetch providers from API
+  const fetchProveedores = async () => {
+    try {
+      setLoading(true);
+      const response = await providersAPI.getProviders();
+      if (response?.success) {
+        const mappedData = response.data.map((p) => ({
+          codigo: p.id,
+          nombre: p.name,
+          telefono: p.phone,
+          email: p.email,
+          direccion: p.address,
+          associatedDate: p.associatedDate,
+        }));
+        setRows(mappedData);
+        setError(null);
+      } else {
+        setError(response.error || "Error al cargar los proveedores");
+      }
+    } catch (error) {
+      console.error("Error fetching providers:", error);
+      setError("Error al conectar con el servidor");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
-    const fetchProveedores = async () => {
-      try {
-        const response = await providersAPI.getProviders();
-        if (response?.success) {
-          const mappedData = response.data.map((p) => ({
-            codigo: p.id,
-            nombre: p.name,
-            telefono: p.phone,
-            email: p.email,
-            direccion: p.address,
-            associatedDate: p.associatedDate,
-          }));
-          setRows(mappedData);
-          setError(null);
-        } else {
-          setError(response.error || "Error al cargar los proveedores");
-        }
-      } catch (err) {
-        setError("Error al conectar con el servidor");
-      } finally {
-        setLoading(false);
-      }
-    };
-
     fetchProveedores();
-  }, []);
+  }, [refetch]);
 
   const handleEdit = (proveedor) => {
     setProveedorAEditar(proveedor);
@@ -64,29 +68,59 @@ export default function Proveedor() {
     setOpenVer(true); 
   };
 
-  const handleConfirmEliminar = () => {
-    setRows((prev) => prev.filter((p) => p.codigo !== proveedorAEliminar.codigo));
-    setOpenEliminar(false);
-    setProveedorAEliminar(null);
+  const handleConfirmEliminar = async () => {
+    if (!proveedorAEliminar) return;
+
+    try {
+      setLoading(true);
+      const response = await providersAPI.deleteProvider(proveedorAEliminar.codigo);
+      
+      if (response?.success) {
+        setRows((prev) => prev.filter((p) => p.codigo !== proveedorAEliminar.codigo));
+        setError(null);
+      } else {
+        setError(response.error || "Error al eliminar el proveedor");
+      }
+    } catch (error) {
+      console.error("Error deleting provider:", error);
+      setError("Error al conectar con el servidor");
+    } finally {
+      setLoading(false);
+      setOpenEliminar(false);
+      setProveedorAEliminar(null);
+    }
   };
 
-  const handleGuardarProveedor = (proveedor) => {
-    if (proveedor.codigo) {
-      const actualizados = rows.map((p) =>
-        p.codigo === proveedor.codigo ? proveedor : p
-      );
-      setRows(actualizados);
-    } else {
-      const nuevoCodigo = rows.length ? rows[rows.length - 1].codigo + 1 : 1;
-      const nuevoProveedor = { ...proveedor, codigo: nuevoCodigo };
-      setRows([...rows, nuevoProveedor]);
+  const handleGuardarProveedor = async (proveedor) => {
+    try {
+      setLoading(true);
+      let response;
+
+      if (proveedor.codigo) {
+        // Update existing provider
+        response = await providersAPI.updateProvider(proveedor.codigo, proveedor);
+      } else {
+        // Create new provider
+        response = await providersAPI.createProvider(proveedor);
+      }
+
+      if (response?.success) {
+        setError(null);
+      } else {
+        setError(response.error || "Error al guardar el proveedor");
+      }
+      setRefetch(refetch + 1);
+    } catch (error) {
+      console.error("Error saving provider:", error);
+      setError("Error al conectar con el servidor");
+    } finally {
+      setLoading(false);
+      setOpenEditar(false);
+      setProveedorAEditar(null);
     }
-    setOpenEditar(false);
-    setProveedorAEditar(null);
   };
 
   const columns = [
-    { id: "codigo", label: "Código", align: "left" },
     { id: "nombre", label: "Nombre", align: "left" },
     { id: "telefono", label: "Teléfono", align: "left" },
     { id: "email", label: "Email", align: "left" },
@@ -104,15 +138,14 @@ export default function Proveedor() {
         tableTitle="Lista de Proveedores"
         columns={columns}
         data={rows}
-        defaultRowsPerPage={5}
-        rowsPerPageOptions={[5, 10, 25]}
+        defaultRowsPerPage={10}
+        rowsPerPageOptions={[10, 25]}
         showViewAction={true}
         onEdit={handleEdit}
         onDelete={handleDelete}
         onView={handleView}
         addDialog={<AgregarProveedorDialog onSave={handleGuardarProveedor} />}
         loading={loading}
-        error={error}
       />
 
       <DialogEditProvider

@@ -18,7 +18,7 @@ import {
   ResponsiveContainer
 } from 'recharts';
 
-export default function SalesDashboard({ totalIncome = 278912, salesData = [] }) {
+export default function SalesDashboard({ salesData = [] }) {
   const isMobile = useMediaQuery('(max-width:768px)');
 
   // Agrupar y contar ventas por fecha
@@ -35,6 +35,19 @@ export default function SalesDashboard({ totalIncome = 278912, salesData = [] })
         dateObj: new Date(fecha.split('/').reverse().join('-'))
       }))
       .sort((a, b) => a.dateObj - b.dateObj);
+
+  // Calcular estadísticas de ventas
+  const totalSales = salesData.length;
+  const thisWeekSales = salesData.filter(sale => {
+    const saleDate = new Date(sale.fecha.split('/').reverse().join('-'));
+    const today = new Date();
+    const weekAgo = new Date(today.getTime() - 7 * 24 * 60 * 60 * 1000);
+    console.log(saleDate, weekAgo);
+    return saleDate >= weekAgo;
+  }).length;
+
+  const growthPercentage = chartData.length > 1 ? 
+    Math.round(((chartData[chartData.length - 1]?.value || 0) / (chartData[0]?.value || 1) - 1) * 100) : 0;
 
   // === Vista para MOBILE ===
   if (isMobile) {
@@ -67,13 +80,13 @@ export default function SalesDashboard({ totalIncome = 278912, salesData = [] })
               }}
           >
             <Typography variant="subtitle2" sx={{ fontWeight: 'bold', color: '#0B2240' }}>
-              INCOME
+              TOTAL VENTAS
             </Typography>
             <Typography variant="body2" sx={{ mb: 1 }}>
-              You sold an extra $27.67
+              {thisWeekSales} ventas esta semana
             </Typography>
             <Typography variant="h4" sx={{ fontWeight: 'bold', color: '#0B2240' }}>
-              ${totalIncome.toLocaleString()}
+              {totalSales}
             </Typography>
             <Box
                 sx={{
@@ -86,7 +99,7 @@ export default function SalesDashboard({ totalIncome = 278912, salesData = [] })
                   mt: 1
                 }}
             >
-              +970%
+              {growthPercentage > 0 ? '+' : ''}{growthPercentage}%
             </Box>
           </Paper>
         </Box>
@@ -132,7 +145,7 @@ export default function SalesDashboard({ totalIncome = 278912, salesData = [] })
             </Box>
           </Grid>
 
-          {/* Income card */}
+          {/* Sales card */}
           <Grid item xs={12} md={3} style={{ width: '15%' }}>
             <Box sx={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', height: '100%' }}>
               <Card sx={{ backgroundColor: '#f8f9fa', border: '1px solid #0B2240' }}>
@@ -141,13 +154,13 @@ export default function SalesDashboard({ totalIncome = 278912, salesData = [] })
                       variant="caption"
                       sx={{ color: '#0B2240', fontWeight: 'bold', display: 'block', mb: 1 }}
                   >
-                    INCOME
+                    TOTAL VENTAS
                   </Typography>
                   <Typography variant="caption" sx={{ color: '#0B2240', display: 'block', mb: 2 }}>
-                    You sold an extra $27.67
+                    {thisWeekSales} ventas esta semana
                   </Typography>
                   <Typography variant="h3" sx={{ fontWeight: 'bold', color: '#0B2240', mb: 2 }}>
-                    ${totalIncome.toLocaleString()}
+                    {totalSales}
                   </Typography>
                   <Box sx={{ display: 'flex', justifyContent: 'center' }}>
                     <Box
@@ -161,7 +174,7 @@ export default function SalesDashboard({ totalIncome = 278912, salesData = [] })
                           fontWeight: 'bold'
                         }}
                     >
-                      +970%
+                      {growthPercentage > 0 ? '+' : ''}{growthPercentage}%
                     </Box>
                   </Box>
                 </CardContent>

@@ -25,7 +25,7 @@ const DialogWatchProducts = ({ open, onClose, product }) => {
     if (!Array.isArray(list) || list.length === 0) return '-';
     return list.map((item, i) => {
       if (typeof item === 'string') return item;
-      if (item.currency && item.value) return `${item.currency} ${item.value}`;
+      if (item.currency && (item.value || item.value === 0)) return `${item.currency} ${item.value}`;
       if (item.name) return item.name;
       return '-';
     }).join(', ');

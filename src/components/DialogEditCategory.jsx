@@ -21,11 +21,8 @@ const DialogEditCategory = ({ open, onClose, category, onSave }) => {
     if (category) {
       setName(category.name || '');
       setDescription(category.description || '');
-    } else {
-      setName('');
-      setDescription('');
     }
-  }, [category, open]);
+  }, [category]);
 
   const handleSubmit = () => {
     if (!name.trim()) {

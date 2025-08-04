@@ -6,8 +6,7 @@ import DialogStockMovement from "../components/DialogStockMovement.jsx";
 import { stockMovementsAPI } from "../services/api/stockBack";
 import DialogWatchMovements from "../components/DialogWatchMovements.jsx";
 import DialogEditMovement from "../components/DialogEditMovement.jsx";
-
-
+import Eliminar from "../components/Eliminar";
 
 export default function StockMovements() {
     const [movements, setMovements] = useState([]);
@@ -18,43 +17,84 @@ export default function StockMovements() {
     const [openVer, setOpenVer] = useState(false);
     const [movimientoSeleccionado, setMovimientoSeleccionado] = useState(null);
     const [openEditar, setOpenEditar] = useState(false);
+    const [openEliminar, setOpenEliminar] = useState(false);
+    const [movimientoAEliminar, setMovimientoAEliminar] = useState(null);
+    const [refetch, setRefetch] = useState(1);
 
+    // Function to fetch movements from API
+    const fetchMovements = async () => {
+        try {
+            setLoading(true);
+            const response = await stockMovementsAPI.getStockMovements();
+            if (response.success) {
+                console.log(response);
+                const transformedMovements = response.data.map(movement => {
+                    // Handle deposit display logic
+                    let depositoDisplay = '';
+                    const originalDeposit = movement?.originalDeposit?.name;
+                    const destinationDeposit = movement?.destinationDeposit?.name;
+                    
+                    if (originalDeposit && destinationDeposit && originalDeposit !== destinationDeposit) {
+                        depositoDisplay = `${originalDeposit} → ${destinationDeposit}`;
+                    } else if (originalDeposit) {
+                        depositoDisplay = originalDeposit;
+                    } else if (destinationDeposit) {
+                        depositoDisplay = destinationDeposit;
+                    } else {
+                        depositoDisplay = 'No especificado';
+                    }
 
+                    return {
+                        id: movement.id,
+                        producto: movement?.product?.name,
+                        deposito: depositoDisplay,
+                        tipo: movement?.type,
+                        cantidad: movement?.quantity,
+                        asociado: new Date(movement?.createdAt).toLocaleDateString(),
+                        // Keep original data for editing/viewing
+                        original: movement
+                    };
+                });
+                setMovements(transformedMovements);
+                setError(null);
+            } else {
+                setError(response.error || "Error al cargar los movimientos de stock");
+            }
+        } catch (error) {
+            console.error("Error fetching movements:", error);
+            setError("Error al conectar con el servidor");
+        } finally {
+            setLoading(false);
+        }
+    };
 
     useEffect(() => {
-        const fetchMovements = async () => {
-            try {
-                setLoading(true);
-                const response = await stockMovementsAPI.getStockMovements(page, rowsPerPage);
-                if (response.success) {
-                    // Transformar los datos al formato esperado por la tabla
-                    const transformedMovements = response.data.map(movement => ({
-                        producto: movement.product.name,
-                        deposito: movement.deposit.name,
-                        tipo: movement.type,
-                        cantidad: movement.quantity,
-                        asociado: new Date(movement.date).toLocaleDateString(),
-                        // Mantener los datos originales para edición/visualización
-                        original: movement
-                    }));
-                    setMovements(transformedMovements);
-                    setError(null);
-                } else {
-                    setError(response.error || "Error al cargar los movimientos de stock");
-                }
-            } catch {
-                setError("Error al conectar con el servidor");
-            } finally {
-                setLoading(false);
-            }
-        };
-
         fetchMovements();
-    }, [page, rowsPerPage]);
+    }, [page, rowsPerPage, refetch]);
 
     const columns = [
         { id: "producto", label: "Producto", align: "left" },
-        { id: "deposito", label: "Depósito", align: "left" },
+        { 
+            id: "deposito", 
+            label: "Depósito", 
+            align: "left", 
+            format: (value, row) => {
+                const original = row?.original;
+                const originDeposit = original?.originDeposit?.name;
+                const destinationDeposit = original?.destinationDeposit?.name;
+                
+                console.log(originDeposit, destinationDeposit);
+                if (originDeposit && destinationDeposit && originDeposit !== destinationDeposit) {
+                    return `${originDeposit} → ${destinationDeposit}`;
+                } else if (originDeposit) {
+                    return originDeposit;
+                } else if (destinationDeposit) {
+                    return destinationDeposit;
+                } else {
+                    return value || 'No especificado';
+                }
+            }
+        },
         { 
             id: "tipo", 
             label: "Tipo", 
@@ -62,8 +102,8 @@ export default function StockMovements() {
             format: (value) => (
                 <Box
                     sx={{
-                        backgroundColor: value === "IN" ? '#e8f5e9' : '#ffebee',
-                        color: value === "IN" ? '#2e7d32' : '#c62828',
+                        backgroundColor: value === "ENTRY" ? '#e8f5e9' : value === "TRANSFER" ? '#e3f2fd' : '#ffebee',
+                        color: value === "ENTRY" ? '#2e7d32' : value === "TRANSFER" ? '#1565c0' : '#c62828',
                         borderRadius: 1,
                         px: 1.5,
                         py: 0.5,
@@ -72,7 +112,7 @@ export default function StockMovements() {
                         fontWeight: 'medium'
                     }}
                 >
-                    {value === "IN" ? "Entrada" : "Salida"}
+                    {value === "ENTRY" ? "Entrada" : value === "TRANSFER" ? "Transferencia" : "Salida"}
                 </Box>
             )
         },
@@ -82,7 +122,7 @@ export default function StockMovements() {
             align: "center",
             format: (value) => value.toLocaleString()
         },
-        { id: "asociado", label: "Asociado", align: "center" },
+        { id: "asociado", label: "Fecha", align: "center" },
         { id: "acciones", label: "Acciones", align: "center" },
     ];
 
@@ -92,7 +132,31 @@ export default function StockMovements() {
     };
 
     const handleDelete = (movement) => {
-        console.log("Deleting movement:", movement.original || movement);
+        setMovimientoAEliminar(movement.original || movement);
+        setOpenEliminar(true);
+    };
+
+    const handleConfirmEliminar = async () => {
+        if (!movimientoAEliminar) return;
+
+        try {
+            setLoading(true);
+            const response = await stockMovementsAPI.deleteStockMovement(movimientoAEliminar.id);
+            
+            if (response?.success) {
+                setError(null);
+                setRefetch(refetch + 1); // Trigger refetch
+            } else {
+                setError(response.error || "Error al eliminar el movimiento");
+            }
+        } catch (error) {
+            console.error("Error deleting movement:", error);
+            setError("Error al conectar con el servidor");
+        } finally {
+            setLoading(false);
+            setOpenEliminar(false);
+            setMovimientoAEliminar(null);
+        }
     };
 
     const handleView = (movement) => {
@@ -109,6 +173,35 @@ export default function StockMovements() {
         setPage(1); // Reset to first page when changing rows per page
     };
 
+    const handleSubmitMovement = async (movimientoData) => {
+        try {
+            setLoading(true);
+            let response;
+
+            if (movimientoData.id) {
+                // Update existing movement
+                response = await stockMovementsAPI.updateStockMovement(movimientoData.id, movimientoData);
+            } else {
+                // Create new movement
+                response = await stockMovementsAPI.createStockMovement(movimientoData);
+            }
+
+            if (response?.success) {
+                setError(null);
+                setRefetch(refetch + 1); // Trigger refetch
+            } else {
+                setError(response.error || "Error al guardar el movimiento");
+            }
+        } catch (error) {
+            console.error("Error saving movement:", error);
+            setError("Error al conectar con el servidor");
+        } finally {
+            setLoading(false);
+            setOpenEditar(false);
+            setMovimientoSeleccionado(null);
+        }
+    };
+
     return (
         <>
         <DataManagementPage
@@ -120,33 +213,36 @@ export default function StockMovements() {
             columns={columns}
             data={movements}
             defaultRowsPerPage={rowsPerPage}
-            rowsPerPageOptions={[5, 10, 25, 50]}
+            rowsPerPageOptions={[10, 25, 50]}
             showViewAction={true}
             onEdit={handleEdit}
             onDelete={handleDelete}
             onView={handleView}
             onPageChange={handlePageChange}
             onRowsPerPageChange={handleRowsPerPageChange}
-            addDialog={<DialogStockMovement/>}
+            addDialog={<DialogStockMovement onSave={handleSubmitMovement} />}
             loading={loading}
-            error={error}  
         />
+        
         <DialogWatchMovements
             open={openVer}
             onClose={() => setOpenVer(false)}
             movimiento={movimientoSeleccionado}
         />
-        <DialogEditMovement
-            open={openEditar}
+        
+        <DialogStockMovement
             onClose={() => setOpenEditar(false)}
-            movimiento={movimientoSeleccionado}
-            onSubmit={(movimientoEditado) => {
-                console.log("Movimiento actualizado:", movimientoEditado);
-                // Acá llamás a la API y recargás la tabla si querés
-            }}
+            onSave={handleSubmitMovement}
+            open={openEditar}
+            movement={movimientoSeleccionado}
+        />
+
+        <Eliminar
+            open={openEliminar}
+            onClose={() => setOpenEliminar(false)}
+            onConfirm={handleConfirmEliminar}
+            title={`¿Estás seguro que deseas eliminar este movimiento de stock?`}
         />
         </>
-
-        
     );
 } 

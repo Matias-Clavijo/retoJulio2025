@@ -10,6 +10,11 @@ export default defineConfig({
         target: 'https://back-2025-gestion-stock-ventas.onrender.com',
         changeOrigin: true,
         secure: true,
+      },
+      '/auth': {
+        target: 'https://back-2025-gestion-stock-ventas.onrender.com',
+        changeOrigin: true,
+        secure: true,
       }
     }
   }
